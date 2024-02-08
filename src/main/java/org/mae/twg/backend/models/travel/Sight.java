@@ -39,6 +39,7 @@ public class Sight {
     @NonNull
     @Column(name = "address")
     private String address;
+//    TODO: add field for map data
 
     @ManyToMany(fetch = FetchType.LAZY,
             mappedBy = "sights")
