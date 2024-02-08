@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.mae.twg.backend.models.travel.Hotel;
-import org.mae.twg.backend.models.travel.Resort;
 
 @Entity
 @Data

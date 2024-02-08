@@ -9,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.mae.twg.backend.models.travel.Tour;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Data

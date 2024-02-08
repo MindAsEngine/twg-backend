@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
-import org.mae.twg.backend.models.travel.media.ResortMedia;
 
 import java.util.ArrayList;
 import java.util.HashSet;

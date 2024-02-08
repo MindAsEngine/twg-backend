@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.mae.twg.backend.models.travel.media.HotelMedia;
 
 import java.util.ArrayList;
 import java.util.List;
