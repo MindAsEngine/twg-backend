@@ -1,4 +1,4 @@
-package org.mae.backend;
+package org.mae.twg.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
