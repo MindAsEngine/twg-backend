@@ -1,4 +1,4 @@
-package org.mae.backend;
+package org.mae.twg.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
