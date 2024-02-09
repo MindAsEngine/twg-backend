@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.mae.twg.backend.models.travel.enums.TourType;
+import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 
 import java.time.LocalDate;
@@ -26,9 +27,10 @@ public class Tour {
 //    private String slug;
 //    TODO: add slug generation
 
-    @NonNull
-    @Column(name = "title")
-    private String title;
+    @OneToMany(mappedBy = "tour",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<TourLocal> locals = new ArrayList<>();
 
     @NonNull
     @Enumerated(EnumType.STRING)
@@ -40,11 +42,6 @@ public class Tour {
             optional = false)
     @JoinColumn(name = "country_id")
     private Country country;
-
-    @NonNull
-    @Column(name = "description",
-            columnDefinition = "TEXT")
-    private String description;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tour_hotels",
@@ -83,6 +80,16 @@ public class Tour {
     @OneToMany(mappedBy = "tour",
             cascade = CascadeType.ALL)
     private List<TourMedia> medias = new ArrayList<>();
+
+    public void addLocal(TourLocal local) {
+        locals.add(local);
+        local.setTour(this);
+    }
+
+    public void removeLocal(TourLocal local) {
+        locals.remove(local);
+        local.setTour(null);
+    }
 
     public void addMedia(TourMedia media) {
         medias.add(media);

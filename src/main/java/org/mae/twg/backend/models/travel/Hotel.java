@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.mae.twg.backend.models.travel.enums.Stars;
+import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
 
 import java.util.ArrayList;
@@ -28,27 +29,15 @@ public class Hotel {
 //    private String slug;
 //    TODO: add slug generation
 
-    @NonNull
-    @Column(name = "name")
-    private String name;
+    @OneToMany(mappedBy = "hotel",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<HotelLocal> locals = new ArrayList<>();
 
     @NonNull
     @Enumerated(EnumType.STRING)
     @Column(name = "stars")
     private Stars stars;
-
-    @NonNull
-    @Column(name = "city")
-    private String city;
-
-    @NonNull
-    @Column(name = "description",
-            columnDefinition = "TEXT")
-    private String description;
-
-    @NonNull
-    @Column(name = "address")
-    private String address;
 //    TODO: add field for map data
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -71,6 +60,16 @@ public class Hotel {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<HotelMedia> medias = new ArrayList<>();
+
+    public void addLocal(HotelLocal local) {
+        locals.add(local);
+        local.setHotel(this);
+    }
+
+    public void removeLocal(HotelLocal local) {
+        locals.remove(local);
+        local.setHotel(null);
+    }
 
     public void addMedia(HotelMedia media) {
         medias.add(media);

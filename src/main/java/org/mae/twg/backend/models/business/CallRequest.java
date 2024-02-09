@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tour_requests")
+@Table(name = "call_requests")
 public class CallRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "tour_request_id")
+    @Column(name = "call_request_id")
     private Long id;
 
     @NonNull

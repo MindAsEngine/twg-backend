@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.models.travel.media.SightMedia;
 
 import java.util.ArrayList;
@@ -27,18 +27,10 @@ public class Sight {
 //    private String slug;
 //    TODO: add slug generation
 
-    @NonNull
-    @Column(name = "name")
-    private String name;
-
-    @NonNull
-    @Column(name = "description",
-            columnDefinition = "TEXT")
-    private String description;
-
-    @NonNull
-    @Column(name = "address")
-    private String address;
+    @OneToMany(mappedBy = "sight",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<SightLocal> locals = new ArrayList<>();
 //    TODO: add field for map data
 
     @ManyToMany(fetch = FetchType.LAZY,
@@ -49,6 +41,16 @@ public class Sight {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<SightMedia> medias = new ArrayList<>();
+
+    public void addLocal(SightLocal local) {
+        locals.add(local);
+        local.setSight(this);
+    }
+
+    public void removeLocal(SightLocal local) {
+        locals.remove(local);
+        local.setSight(null);
+    }
 
     public void addMedia(SightMedia media) {
         medias.add(media);

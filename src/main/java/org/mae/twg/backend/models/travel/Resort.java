@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.mae.twg.backend.models.travel.localization.ResortLocal;
 import org.mae.twg.backend.models.travel.media.ResortMedia;
 
 import java.util.ArrayList;
@@ -27,14 +27,10 @@ public class Resort {
 //    private String slug;
 //    TODO: add slug generation
 
-    @NonNull
-    @Column(name = "name")
-    private String name;
-
-    @NonNull
-    @Column(name = "description",
-            columnDefinition = "TEXT")
-    private String description;
+    @OneToMany(mappedBy = "resort",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<ResortLocal> locals = new ArrayList<>();
 
     @OneToMany(mappedBy = "resort",
             cascade = CascadeType.ALL,
@@ -44,6 +40,16 @@ public class Resort {
     @ManyToMany(fetch = FetchType.LAZY,
             mappedBy = "resorts")
     private Set<Tour> tours = new HashSet<>();
+
+    public void addLocal(ResortLocal local) {
+        locals.add(local);
+        local.setResort(this);
+    }
+
+    public void removeLocal(ResortLocal local) {
+        locals.remove(local);
+        local.setResort(null);
+    }
 
     public void addMedia(ResortMedia media) {
         medias.add(media);

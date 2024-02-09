@@ -19,19 +19,11 @@ public class Agency {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "agency_id")
     private Long id;
-
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
-
-    @Column(name = "address")
-    private String address;
-
-    @Column(name = "contacts", columnDefinition = "TEXT")
-    private String contacts;
 //    TODO: add field for map data
+
+    @OneToMany(mappedBy = "agency",
+            cascade = CascadeType.ALL)
+    private List<AgencyLocal> locals = new ArrayList<>();
 
     @OneToMany(mappedBy = "agency",
             cascade = CascadeType.DETACH)
