@@ -9,9 +9,9 @@ import lombok.Data;
 @Schema(description = "Запрос на аутентификацию")
 public class SignInRequest {
 
-    @Schema(description = "Имя пользователя", example = "Jon")
-    @Size(min = 5, max = 50, message = "Имя пользователя должно содержать от 5 до 50 символов")
-    @NotBlank(message = "Имя пользователя не может быть пустыми")
+    @Schema(description = "Логин пользователя", example = "Jon")
+    @Size(min = 5, max = 50, message = "Логин пользователя должно содержать от 5 до 50 символов")
+    @NotBlank(message = "Логин пользователя не может быть пустыми")
     private String username;
 
     @Schema(description = "Пароль", example = "my_1secret1_password")
