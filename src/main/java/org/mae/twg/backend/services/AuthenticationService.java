@@ -31,6 +31,10 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .phone(request.getPhone())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .patronymic(request.getPatronymic() == null ? "No patronymic" : request.getPatronymic())
                 .role(Role.USER)
                 .build();
 
