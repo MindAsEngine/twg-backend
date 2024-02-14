@@ -3,7 +3,7 @@ package org.mae.twg.backend.services;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.models.business.Role;
 import org.mae.twg.backend.models.business.User;
-import org.mae.twg.backend.repositories.UserRepository;
+import org.mae.twg.backend.repositories.UserRepo;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository repository;
+    private final UserRepo userRepo;
 
     /**
      * Сохранение пользователя
@@ -20,7 +20,7 @@ public class UserService {
      * @return сохраненный пользователь
      */
     public User save(User user) {
-        return repository.save(user);
+        return userRepo.save(user);
     }
 
 
@@ -30,12 +30,12 @@ public class UserService {
      * @return созданный пользователь
      */
     public User create(User user) {
-        if (repository.existsByUsername(user.getUsername())) {
-            // Заменить на свои исключения
+        if (userRepo.existsByUsername(user.getUsername())) {
+            // TODO: Заменить на свои исключения
             throw new RuntimeException("Пользователь с таким именем уже существует");
         }
 
-        if (repository.existsByEmail(user.getEmail())) {
+        if (userRepo.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Пользователь с таким email уже существует");
         }
 
@@ -48,7 +48,7 @@ public class UserService {
      * @return пользователь
      */
     public User getByUsername(String username) {
-        return repository.findByUsername(username)
+        return userRepo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
 
     }

@@ -1,9 +1,9 @@
 package org.mae.twg.backend.services;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.models.DTO.JwtAuthenticationResponse;
-import org.mae.twg.backend.models.DTO.SignInRequest;
-import org.mae.twg.backend.models.DTO.SignUpRequest;
+import org.mae.twg.backend.dto.JwtAuthenticationResponse;
+import org.mae.twg.backend.dto.SignInRequest;
+import org.mae.twg.backend.dto.SignUpRequest;
 import org.mae.twg.backend.models.business.Role;
 import org.mae.twg.backend.models.business.User;
 import org.springframework.security.authentication.AuthenticationManager;

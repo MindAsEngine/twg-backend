@@ -1,4 +1,4 @@
-package org.mae.twg.backend.models.DTO;
+package org.mae.twg.backend.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
