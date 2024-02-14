@@ -1,10 +1,11 @@
-package org.mae.twg.backend.services;
+package org.mae.twg.backend.utils.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.mae.twg.backend.models.admin.Admin;
 import org.mae.twg.backend.models.business.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JwtService {
+public class JwtUtils {
     //@Value("${token.signing.key}")
     private String jwtSigningKey = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855";
 
@@ -26,7 +27,7 @@ public class JwtService {
      * @param token токен
      * @return имя пользователя
      */
-    public String extractUserName(String token) {
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -41,21 +42,14 @@ public class JwtService {
         if (userDetails instanceof User customUserDetails) {
             claims.put("id", customUserDetails.getId());
             claims.put("email", customUserDetails.getEmail());
-            claims.put("role", customUserDetails.getRole());
+            claims.put("role", customUserDetails.getUserRole());
+        }
+        if (userDetails instanceof Admin customUserDetails) {
+            claims.put("id", customUserDetails.getId());
+            claims.put("email", customUserDetails.getEmail());
+            claims.put("role", customUserDetails.getAdminRole());
         }
         return generateToken(claims, userDetails);
-    }
-
-    /**
-     * Проверка токена на валидность
-     *
-     * @param token       токен
-     * @param userDetails данные пользователя
-     * @return true, если токен валиден
-     */
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     /**
@@ -86,38 +80,16 @@ public class JwtService {
     }
 
     /**
-     * Проверка токена на просроченность
-     *
-     * @param token токен
-     * @return true, если токен просрочен
-     */
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    /**
-     * Извлечение даты истечения токена
-     *
-     * @param token токен
-     * @return дата истечения
-     */
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    /**
      * Извлечение всех данных из токена
      *
      * @param token токен
      * @return данные
      */
     private Claims extractAllClaims(String token) {
-        /*
-        return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
-                .getBody();
-        */
-        return Jwts.parser().setSigningKey(getSigningKey()).parseClaimsJws(token)
-                .getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token).getBody();
     }
 
     /**

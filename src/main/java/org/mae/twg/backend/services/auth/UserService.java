@@ -1,7 +1,7 @@
-package org.mae.twg.backend.services;
+package org.mae.twg.backend.services.auth;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.models.business.Role;
 import org.mae.twg.backend.models.business.User;
 import org.mae.twg.backend.repositories.UserRepo;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,11 +32,11 @@ public class UserService {
     public User create(User user) {
         if (userRepo.existsByUsername(user.getUsername())) {
             // TODO: Заменить на свои исключения
-            throw new RuntimeException("Пользователь с таким именем уже существует");
+            throw new ValidationException("Пользователь с таким именем уже существует");
         }
 
         if (userRepo.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
+            throw new ValidationException("Пользователь с таким email уже существует");
         }
 
         return save(user);
@@ -73,18 +73,5 @@ public class UserService {
         // Получение имени пользователя из контекста Spring Security
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
-    }
-
-
-    /**
-     * Выдача прав администратора текущему пользователю
-     * <p>
-     * Нужен для демонстрации
-     */
-    @Deprecated
-    public void getAdmin() {
-        var user = getCurrentUser();
-        user.setRole(Role.ADMIN);
-        save(user);
     }
 }

@@ -1,7 +1,8 @@
 package org.mae.twg.backend.config;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.services.UserService;
+import org.mae.twg.backend.services.auth.UserService;
+import org.mae.twg.backend.utils.auth.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +27,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class SecurityConfiguration {
+public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserService userService;
 
