@@ -14,7 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -64,8 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
-        UserDetails userDetails = getUserDetailsByUsername(username);
+        Boolean isToAdmin = request.getServletPath().startsWith("/admin");
+        UserDetails userDetails = getUserDetailsByUsername(username, isToAdmin);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
@@ -90,17 +90,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private UserDetails getUserDetailsByUsername(String username) {
-        UserDetails userDetails;
-        try {
-            userDetails = adminService
-                    .userDetailsService()
-                    .loadUserByUsername(username);
-        } catch (UsernameNotFoundException exception) {
-            userDetails = userService
-                    .userDetailsService()
-                    .loadUserByUsername(username);
-        }
-        return userDetails;
+    private UserDetails getUserDetailsByUsername(String username, Boolean isToAdmin) {
+        UserDetailsService service = isToAdmin
+                ? adminService.userDetailsService()
+                : userService.userDetailsService();
+        return service.loadUserByUsername(username);
     }
 }
