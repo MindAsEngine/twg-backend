@@ -4,12 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Hotel;
-import org.mae.twg.backend.models.travel.Sight;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
-import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
-import org.mae.twg.backend.models.travel.media.SightMedia;
 
 import java.io.Serializable;
 import java.util.List;
