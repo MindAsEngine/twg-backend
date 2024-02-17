@@ -1,6 +1,7 @@
 package org.mae.twg.backend.utils.controllerAdvices;
 
 import jakarta.validation.ValidationException;
+import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,4 +22,14 @@ public class AllControllersAdvice {
         LOGGER.error(ex.getMessage());
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
+
+    @ExceptionHandler(value = ObjectNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleObjectNotFoundException(ObjectNotFoundException ex, WebRequest request) {
+//        TODO: запись в логи
+        LOGGER.error(ex.getMessage());
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+
 }
