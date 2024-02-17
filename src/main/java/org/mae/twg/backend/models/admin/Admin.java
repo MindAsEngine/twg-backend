@@ -1,4 +1,4 @@
-package org.mae.twg.backend.models.business;
+package org.mae.twg.backend.models.admin;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,20 +13,17 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
-public class User implements UserDetails {
+@Table(name = "admins")
+public class Admin implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
+    @Column(name = "admin_id")
     private Long id;
 
     @NonNull
     @Column(name = "username", unique = true)
     private String username;
-
-    @Column(name = "telegram_id", unique = true)
-    private String telegramId;
 
     @NonNull
     @Column(name = "phone", unique = true)
@@ -44,6 +41,7 @@ public class User implements UserDetails {
     @Column(name = "last_name")
     private String lastName;
 
+    @NonNull
     @Column(name = "patronymic")
     private String patronymic = "";
 
@@ -52,11 +50,14 @@ public class User implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private AdminRole adminRole;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(userRole);
+        if (adminRole == AdminRole.ROLE_ADMIN) {
+            return List.of(AdminRole.values());
+        }
+        return List.of(adminRole);
     }
 
     @Override
