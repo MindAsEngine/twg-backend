@@ -1,9 +1,9 @@
 package org.mae.twg.backend.services.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.JwtAuthenticationResponse;
-import org.mae.twg.backend.dto.SignInRequest;
-import org.mae.twg.backend.dto.SignUpRequest;
+import org.mae.twg.backend.dto.auth.JwtAuthenticationResponse;
+import org.mae.twg.backend.dto.auth.SignInRequest;
+import org.mae.twg.backend.dto.auth.SignUpRequest;
 import org.mae.twg.backend.models.admin.Admin;
 import org.mae.twg.backend.models.admin.AdminRole;
 import org.mae.twg.backend.utils.auth.JwtUtils;
