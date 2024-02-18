@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.mae.twg.backend.dto.business.AgencyDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -20,7 +21,9 @@ public class TourDTO implements Serializable {
     private CountryDTO country;
     private Localization localization;
     private List<String> medias;
-    private List<HotelDTO> hotels;
+    private List<HotelLightDTO> hotels;
+    private List<ResortLightDTO> resorts;
+    private AgencyDTO agency;
 
     public TourDTO(Tour tour, Localization localization) {
         this.id = tour.getId();
@@ -34,9 +37,13 @@ public class TourDTO implements Serializable {
         this.description = cur_local.getDescription();
         this.medias = tour.getMedias().stream().map(TourMedia::getMediaPath).toList();
         this.hotels = tour.getHotels().stream()
-                .map(hotel -> new HotelDTO(hotel, localization))
+                .map(hotel -> new HotelLightDTO(hotel, localization))
+                .toList();
+        this.resorts = tour.getResorts().stream()
+                .map(resort -> new ResortLightDTO(resort, localization))
                 .toList();
         this.country = new CountryDTO(tour.getCountry(), localization);
+        this.agency = new AgencyDTO(tour.getAgency(), localization);
         this.localization = localization;
     }
 }

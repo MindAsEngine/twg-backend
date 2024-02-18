@@ -6,25 +6,23 @@ import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Hotel;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
-import org.mae.twg.backend.models.travel.media.HotelMedia;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class HotelDTO implements Serializable {
+public class HotelLightDTO implements Serializable {
     private Long id;
     private String name;
-    private String city;
-    private String description;
-    private String address;
+//    private String city;
+//    private String description;
+//    private String address;
     private Localization localization;
-    private List<String> medias;
-    private List<PropertyDTO> properties;
-    private List<SightLightDTO> sights;
+//    private List<String> medias;
+//    private List<PropertyDTO> properties;
+//    private List<SightDTO> sights;
 
-    public HotelDTO(Hotel hotel, Localization localization) {
+    public HotelLightDTO(Hotel hotel, Localization localization) {
         this.id = hotel.getId();
         HotelLocal cur_local =
                 hotel.getLocals().stream()
@@ -33,16 +31,16 @@ public class HotelDTO implements Serializable {
                         .orElseThrow(() -> new ObjectNotFoundException("Hotel "
                                 + localization.name() + " localization not found"));
         this.name = cur_local.getName();
-        this.city = cur_local.getCity();
-        this.description = cur_local.getDescription();
-        this.address = cur_local.getAddress();
-        this.medias = hotel.getMedias().stream().map(HotelMedia::getMediaPath).toList();
-        this.properties = hotel.getProperties().stream()
-                .map(property -> new PropertyDTO(property, localization))
-                .toList();
-        this.sights = hotel.getSights().stream()
-                .map(sight -> new SightLightDTO(sight, localization))
-                .toList();
+//        this.city = cur_local.getCity();
+//        this.description = cur_local.getDescription();
+//        this.address = cur_local.getAddress();
+//        this.medias = hotel.getMedias().stream().map(HotelMedia::getMediaPath).toList();
+//        this.properties = hotel.getProperties().stream()
+//                .map(property -> new PropertyDTO(property, localization))
+//                .toList();
+//        this.sights = hotel.getSights().stream()
+//                .map(sight -> new SightDTO(sight, localization))
+//                .toList();
         this.localization = localization;
     }
 }
