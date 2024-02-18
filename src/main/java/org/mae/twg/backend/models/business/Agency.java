@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.mae.twg.backend.models.travel.Tour;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,11 @@ public class Agency {
     @Column(name = "agency_id")
     private Long id;
 //    TODO: add field for map data
+
+    @OneToMany(mappedBy = "agency",
+            cascade = CascadeType.DETACH,
+            orphanRemoval = true)
+    private List<Tour> tours = new ArrayList<>();
 
     @OneToMany(mappedBy = "agency",
             cascade = CascadeType.ALL)

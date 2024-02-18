@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.mae.twg.backend.models.business.Agency;
 import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.TourMedia;
@@ -42,6 +43,12 @@ public class Tour {
             optional = false)
     @JoinColumn(name = "country_id")
     private Country country;
+
+    @NonNull
+    @ManyToOne(fetch = FetchType.LAZY,
+            optional = false)
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tour_hotels",
