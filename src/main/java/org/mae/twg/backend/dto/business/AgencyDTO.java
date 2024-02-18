@@ -15,6 +15,7 @@ public class AgencyDTO implements Serializable {
     private Long id;
     private String name;
     private String description;
+    private String address;
     private String contacts;
     private Localization localization;
 
@@ -28,6 +29,7 @@ public class AgencyDTO implements Serializable {
                                 + localization.name() + " localization not found"));
         this.name = cur_local.getName();
         this.description = cur_local.getDescription();
+        this.address = cur_local.getAddress();
         this.contacts = cur_local.getContacts();
         this.localization = localization;
     }
