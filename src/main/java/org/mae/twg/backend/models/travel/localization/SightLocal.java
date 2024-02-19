@@ -24,21 +24,30 @@ public class SightLocal {
     @Column(name = "name")
     private String name;
 
-    @NonNull
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
 
-    @NonNull
     @Column(name = "address")
     private String address;
 
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY,
             optional = false)
     @JoinColumn(name = "sight_id")
     private Sight sight;
+
+    public SightLocal(@NonNull String name,
+                      String description,
+                      String address,
+                      Sight sight,
+                      Localization local) {
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.sight = sight;
+        this.localization = local;
+    }
 }
