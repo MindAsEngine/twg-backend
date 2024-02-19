@@ -1,6 +1,5 @@
 package org.mae.twg.backend.services.travel;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.travel.SightDTO;
 import org.mae.twg.backend.dto.travel.request.SightRequestDTO;
@@ -12,6 +11,7 @@ import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.localization.SightLocalRepo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -84,7 +84,7 @@ public class SightService {
                         .filter(local -> local.getLocalization() == localization)
                         .findFirst()
                         .orElseThrow(() -> new ObjectNotFoundException("Sight "
-                                + localization.name() + " localization not found"));
+                                + localization + " localization not found"));
         cur_local.setName(sightDTO.getName());
         cur_local.setDescription(sightDTO.getDescription());
         cur_local.setAddress(sightDTO.getAddress());
