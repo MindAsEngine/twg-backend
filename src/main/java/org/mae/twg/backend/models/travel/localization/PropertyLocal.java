@@ -24,16 +24,24 @@ public class PropertyLocal {
     @Column(name = "title")
     private String title;
 
-    @NonNull
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY,
             optional = false)
     @JoinColumn(name = "property_id")
     private Property property;
+
+    public PropertyLocal(@NonNull String title,
+                         String description,
+                         Property property,
+                         Localization localization) {
+        this.title = title;
+        this.description = description;
+        this.localization = localization;
+        this.property = property;
+    }
 }
