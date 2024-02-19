@@ -27,7 +27,7 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>./log/application.%d.%i.log.gz</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize>
+            <maxFileSize>100MB</maxFileSize>
         </rollingPolicy>
     </appender>
 
