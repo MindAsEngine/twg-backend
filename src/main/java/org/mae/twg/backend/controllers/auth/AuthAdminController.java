@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.mae.twg.backend.dto.SignInRequest;
-import org.mae.twg.backend.dto.SignUpRequest;
 import org.mae.twg.backend.dto.auth.SignInRequest;
 import org.mae.twg.backend.dto.auth.SignUpRequest;
 import org.mae.twg.backend.services.auth.AuthAdminService;
