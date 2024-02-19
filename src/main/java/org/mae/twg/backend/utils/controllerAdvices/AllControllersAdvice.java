@@ -13,22 +13,22 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class AllControllersAdvice {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AllControllersAdvice.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AllControllersAdvice.class);
 
     @ExceptionHandler(value = ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleValidationException(ValidationException ex, WebRequest request) {
 //        TODO: запись в логи
-        LOGGER.error(ex.getMessage());
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        LOG.error(ex.getMessage());
+        return ex.getMessage();
     }
 
     @ExceptionHandler(value = ObjectNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleObjectNotFoundException(ObjectNotFoundException ex, WebRequest request) {
 //        TODO: запись в логи
-        LOGGER.error(ex.getMessage());
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        LOG.error(ex.getMessage());
+        return ex.getMessage();
     }
 
 
