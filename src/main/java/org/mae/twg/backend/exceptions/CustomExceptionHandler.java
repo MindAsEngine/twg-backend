@@ -14,32 +14,32 @@ public class CustomExceptionHandler {
             TokenValidationException.class
     })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseError responseAuthError(RuntimeException exception)  {
+    public ResponseErrorDTO responseAuthError(RuntimeException exception)  {
         log.error(exception.getMessage());
-        return new ResponseError(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        return new ResponseErrorDTO(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
     @ExceptionHandler(value = {ObjectNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseError responseErrorNotFoundException(ObjectNotFoundException exception) {
+    public ResponseErrorDTO responseErrorNotFoundException(ObjectNotFoundException exception) {
         log.error(exception.getMessage());
-        return new ResponseError(HttpStatus.NOT_FOUND, exception.getMessage());
+        return new ResponseErrorDTO(HttpStatus.NOT_FOUND, exception.getMessage());
     }
     @ExceptionHandler(value = {
             ObjectAlreadyExistsException.class,
             ValidationException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseError responseValidationException(RuntimeException exception) {
+    public ResponseErrorDTO responseValidationException(RuntimeException exception) {
         log.error(exception.getMessage());
-        return new ResponseError(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return new ResponseErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
     @ExceptionHandler(value = {
             RuntimeException.class
     })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseError responseUnhandledException(RuntimeException exception) {
+    public ResponseErrorDTO responseUnhandledException(RuntimeException exception) {
         log.error(exception.getMessage());
-        return new ResponseError(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return new ResponseErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
 }
