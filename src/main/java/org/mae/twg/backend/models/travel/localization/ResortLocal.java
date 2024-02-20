@@ -23,7 +23,6 @@ public class ResortLocal {
     @Column(name = "name")
     private String name;
 
-    @NonNull
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
@@ -31,9 +30,18 @@ public class ResortLocal {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY,
             optional = false)
     @JoinColumn(name = "resort_id")
     private Resort resort;
+
+    public ResortLocal(@NonNull String name,
+                       String description,
+                       Localization localization,
+                       Resort resort) {
+        this.name = name;
+        this.description = description;
+        this.localization = localization;
+        this.resort = resort;
+    }
 }
