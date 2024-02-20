@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CountryDTO implements Serializable {
     private Long id;
-    private String name;
+    private String title;
     private String description;
     private String media;
     private Localization localization;
@@ -26,7 +26,7 @@ public class CountryDTO implements Serializable {
                         .findFirst()
                         .orElseThrow(() -> new ObjectNotFoundException("Country '"
                                 + localization.name() + "' localization not found"));
-        this.name = cur_local.getName();
+        this.title = cur_local.getName();
         this.description = cur_local.getDescription();
         this.localization = localization;
         this.media = country.getMediaPath();
