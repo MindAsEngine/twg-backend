@@ -20,19 +20,27 @@ public class CountryLocal {
     private Long id;
 
     @NonNull
-    @Column(name = "title")
-    private String title;
+    @Column(name = "name")
+    private String name;
 
-    @NonNull
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY,
             optional = false)
     @JoinColumn(name = "country_id")
     private Country country;
+
+    public CountryLocal(@NonNull String name,
+                        String description,
+                        Localization localization,
+                        Country country) {
+        this.name = name;
+        this.description = description;
+        this.localization = localization;
+        this.country = country;
+    }
 }
