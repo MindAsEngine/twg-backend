@@ -120,14 +120,15 @@ public class HotelService {
     public HotelDTO updateProperties(Long id, List<Long> propertyIds, Localization localization) {
         Hotel hotel = hotelRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
-        hotel.getProperties().stream().peek(hotel::removeProperty).close();
+        for (Property property : hotel.getProperties().stream().toList()) {
+            hotel.removeProperty(property);
+        }
 
-        propertyIds
-                .stream()
-                .map(property_id -> propertyRepo.findById(property_id)
-                        .orElseThrow(() -> new ObjectNotFoundException(
-                                "Property with id=" + property_id + " not found")))
-                .peek(hotel::addProperty).close();
+        for (Long propertyId : propertyIds) {
+            Property property = propertyRepo.findById(propertyId)
+                    .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + propertyId + " not found"));
+            hotel.addProperty(property);
+        }
 
         hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
@@ -137,14 +138,16 @@ public class HotelService {
     public HotelDTO updateSights(Long id, List<Long> sightIds, Localization localization) {
         Hotel hotel = hotelRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
-        hotel.getProperties().stream().peek(hotel::removeProperty).close();
 
-        sightIds
-                .stream()
-                .map(property_id -> sightRepo.findById(property_id)
-                        .orElseThrow(() -> new ObjectNotFoundException(
-                                "Property with id=" + property_id + " not found")))
-                .peek(hotel::addSight).close();
+        for (Sight sight : hotel.getSights().stream().toList()) {
+            hotel.removeSight(sight);
+        }
+
+        for (Long sightId : sightIds) {
+            Sight sight = sightRepo.findById(sightId)
+                    .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + sightId + " not found"));
+            hotel.removeSight(sight);
+        }
 
         hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
