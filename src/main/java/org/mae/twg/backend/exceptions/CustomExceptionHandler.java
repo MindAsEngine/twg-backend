@@ -10,34 +10,36 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Log4j2
 public class CustomExceptionHandler {
-    @ExceptionHandler
+    @ExceptionHandler(value = {
+            TokenValidationException.class
+    })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseError responseErrorValidation(ValidationException exception)  {
+    public ResponseError responseAuthError(RuntimeException exception)  {
         log.error(exception.getMessage());
         return new ResponseError(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseError responseErrorTokenValidation(TokenValidationException exception) {
-        log.error(exception.getMessage());
-        return new ResponseError(HttpStatus.UNAUTHORIZED, exception.getMessage());
-    }
-    @ExceptionHandler
+    @ExceptionHandler(value = {ObjectNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseError responseErrorNotFoundException(ObjectNotFoundException exception) {
         log.error(exception.getMessage());
         return new ResponseError(HttpStatus.NOT_FOUND, exception.getMessage());
     }
-    @ExceptionHandler
+    @ExceptionHandler(value = {
+            ObjectAlreadyExistsException.class,
+            ValidationException.class
+    })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseError responseErrorValidationException(RuntimeException exception) {
+    public ResponseError responseValidationException(RuntimeException exception) {
         log.error(exception.getMessage());
         return new ResponseError(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseError responseErrorObjectAlreadyExist(ObjectAlreadyExistsException exception) {
+    @ExceptionHandler(value = {
+            RuntimeException.class
+    })
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseError responseUnhandledException(RuntimeException exception) {
         log.error(exception.getMessage());
         return new ResponseError(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
+
 }
