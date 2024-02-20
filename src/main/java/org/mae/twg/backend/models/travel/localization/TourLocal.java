@@ -23,7 +23,6 @@ public class TourLocal {
     @Column(name = "title")
     private String title;
 
-    @NonNull
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
@@ -31,9 +30,18 @@ public class TourLocal {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY,
             optional = false)
     @JoinColumn(name = "tour_id")
     private Tour tour;
+
+    public TourLocal(@NonNull String title,
+                     String description,
+                     Tour tour,
+                     Localization localization) {
+        this.title = title;
+        this.description = description;
+        this.tour = tour;
+        this.localization = localization;
+    }
 }
