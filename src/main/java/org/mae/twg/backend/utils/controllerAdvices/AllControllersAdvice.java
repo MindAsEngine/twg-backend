@@ -32,6 +32,4 @@ public class AllControllersAdvice {
         LOG.error(ex.getMessage());
         return ex.getMessage();
     }
-
-
 }
