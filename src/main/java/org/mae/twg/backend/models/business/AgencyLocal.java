@@ -23,7 +23,6 @@ public class AgencyLocal {
     @Column(name = "name")
     private String name;
 
-    @NonNull
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
@@ -32,16 +31,28 @@ public class AgencyLocal {
             columnDefinition = "TEXT")
     private String contacts;
 
-    @NonNull
     @Column(name = "address")
     private String address;
 
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY,
             optional = false)
     @JoinColumn(name = "agency_id")
     private Agency agency;
+
+    public AgencyLocal(@NonNull String name,
+                       String description,
+                       String contacts,
+                       String address,
+                       Agency agency,
+                       Localization localization) {
+        this.name = name;
+        this.description = description;
+        this.contacts = contacts;
+        this.address = address;
+        this.agency = agency;
+        this.localization = localization;
+    }
 }

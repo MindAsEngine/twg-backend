@@ -35,4 +35,13 @@ public class Agency {
             cascade = CascadeType.DETACH)
     private List<Manager> managers = new ArrayList<>();
 
+    public void addLocal(AgencyLocal local) {
+        locals.add(local);
+        local.setAgency(this);
+    }
+
+    public void removeLocal(AgencyLocal local) {
+        locals.remove(local);
+        local.setAgency(null);
+    }
 }
