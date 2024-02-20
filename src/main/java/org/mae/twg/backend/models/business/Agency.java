@@ -1,16 +1,16 @@
 package org.mae.twg.backend.models.business;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.mae.twg.backend.models.travel.Tour;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+//@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "agencies")
