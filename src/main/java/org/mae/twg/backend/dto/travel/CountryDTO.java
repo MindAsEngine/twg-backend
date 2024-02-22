@@ -31,4 +31,12 @@ public class CountryDTO implements Serializable {
         this.localization = localization;
         this.media = country.getMediaPath();
     }
+
+
+    static public CountryDTO getDTO(Country country, Localization localization) {
+        if (country == null || country.getIsDeleted()) {
+            return null;
+        }
+        return new CountryDTO(country, localization);
+    }
 }
