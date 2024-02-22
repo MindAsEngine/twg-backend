@@ -29,10 +29,20 @@ public class TourService {
     private final CountryRepo countryRepo;
     private final AgencyRepo agencyRepo;
 
+    private Tour findById(Long id) {
+        Tour tour = tourRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Tour with id=" + id + " not found"));
+        if (tour.getIsDeleted()) {
+            throw new ObjectNotFoundException("Tour with id=" + id + " marked as deleted");
+        }
+        return tour;
+    }
+
     public List<TourDTO> getAll(Localization localization) {
         List<Tour> tours = tourRepo.findAll();
         List<TourDTO> hotelDTOs = tours.stream()
-                .filter(hotel -> hotel.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(tour -> !tour.getIsDeleted())
+                .filter(tour -> tour.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(tour -> new TourDTO(tour, localization))
                 .toList();
         if (hotelDTOs.isEmpty()) {
@@ -42,10 +52,14 @@ public class TourService {
     }
 
     public TourDTO getById(Long id, Localization localization) {
-        Tour tour = tourRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        localization + " localization for tour with id=" + id + " not found"));
-        return new TourDTO(tour, localization);
+        return new TourDTO(findById(id), localization);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Tour tour = findById(id);
+        tour.setIsDeleted(true);
+        tourRepo.save(tour);
     }
 
     @Transactional
@@ -91,8 +105,7 @@ public class TourService {
 
     @Transactional
     public TourDTO addLocal(Long id, TourLocalRequestDTO tourDTO, Localization localization) {
-        Tour tour = tourRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Tour with id=" + id + " not found"));
+        Tour tour = findById(id);
         boolean isExists = tour.getLocals().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
@@ -111,8 +124,7 @@ public class TourService {
 
     @Transactional
     public TourDTO updateLocal(Long id, TourLocalRequestDTO tourDTO, Localization localization) {
-        Tour tour = tourRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Tour with id=" + id + " not found"));
+        Tour tour = findById(id);
         TourLocal cur_local = tour.getLocals().stream()
                 .filter(local -> local.getLocalization() == localization)
                 .findFirst()
@@ -127,8 +139,7 @@ public class TourService {
 
     @Transactional
     public TourDTO updateResorts(Long id, List<Long> resortIds, Localization localization) {
-        Tour tour = tourRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Tour with id=" + id + " not found"));
+        Tour tour = findById(id);
         for (Resort resort : tour.getResorts().stream().toList()) {
             tour.removeResort(resort);
         }
@@ -145,8 +156,7 @@ public class TourService {
 
     @Transactional
     public TourDTO updateHotels(Long id, List<Long> hotelIds, Localization localization) {
-        Tour tour = tourRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Tour with id=" + id + " not found"));
+        Tour tour = findById(id);
         for (Resort resort : tour.getResorts().stream().toList()) {
             tour.removeResort(resort);
         }
@@ -163,8 +173,7 @@ public class TourService {
 
     @Transactional
     public TourDTO update(Long id, TourUpdateDTO tourDTO, Localization localization) {
-        Tour tour = tourRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Tour with id=" + id + " not found"));
+        Tour tour = findById(id);
         if (tourDTO.getCountryId() != null) {
             Country country = countryRepo.findById(tourDTO.getCountryId())
                     .orElseThrow(() -> new ObjectNotFoundException(

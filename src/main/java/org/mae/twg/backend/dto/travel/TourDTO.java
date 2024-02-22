@@ -60,4 +60,11 @@ public class TourDTO implements Serializable {
         this.agency = AgencyDTO.getDTO(tour.getAgency(), localization);
         this.localization = localization;
     }
+
+    static public TourDTO getDTO(Tour tour, Localization localization) {
+        if (tour == null || tour.getIsDeleted()) {
+            return null;
+        }
+        return new TourDTO(tour, localization);
+    }
 }

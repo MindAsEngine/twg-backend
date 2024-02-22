@@ -32,6 +32,13 @@ public class TourController {
         return ResponseEntity.ok(tourService.getById(id, local));
     }
 
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> deleteById(@PathVariable Long id,
+                                        @PathVariable Localization local) {
+        tourService.deleteById(id);
+        return ResponseEntity.ok("Marked as deleted");
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@PathVariable Localization local,
                                     @Valid @RequestBody TourRequestDTO tourDTO) throws URISyntaxException {
