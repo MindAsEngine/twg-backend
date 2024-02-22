@@ -21,9 +21,19 @@ public class PropertyService {
     private final PropertyRepo propertyRepo;
     private final PropertyLocalRepo localRepo;
 
+    private Property findById(Long id) {
+        Property property = propertyRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + id + " not found"));
+        if (property.getIsDeleted()) {
+            throw new ObjectNotFoundException("Property with id=" + id + " marked as deleted");
+        }
+        return property;
+    }
+
     public List<PropertyDTO> getAll(Localization localization) {
         List<Property> properties = propertyRepo.findAll();
         List<PropertyDTO> propertyDTOs = properties.stream()
+                .filter(property -> !property.getIsDeleted())
                 .filter(hotel -> hotel.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(property -> new PropertyDTO(property, localization))
                 .toList();
@@ -48,8 +58,7 @@ public class PropertyService {
 
     @Transactional
     public PropertyDTO addLocal(Long id, PropertyRequestDTO propertyDTO, Localization localization) {
-        Property property = propertyRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + id + " not found"));
+        Property property = findById(id);
         boolean isExists = property.getLocals().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
@@ -68,8 +77,7 @@ public class PropertyService {
 
     @Transactional
     public PropertyDTO updateLocal(Long id, PropertyRequestDTO propertyDTO, Localization localization) {
-        Property property = propertyRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + id + " not found"));
+        Property property = findById(id);
         PropertyLocal cur_local =
                 property.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)

@@ -29,4 +29,11 @@ public class PropertyDTO implements Serializable {
         this.description = cur_local.getDescription();
         this.localization = localization;
     }
+
+    static public PropertyDTO getDTO(Property property, Localization localization) {
+        if (property == null || property.getIsDeleted()) {
+            return null;
+        }
+        return new PropertyDTO(property, localization);
+    }
 }

@@ -41,7 +41,7 @@ public class HotelDTO implements Serializable {
         this.address = cur_local.getAddress();
         this.medias = hotel.getMedias().stream().map(HotelMedia::getMediaPath).toList();
         this.properties = hotel.getProperties().stream()
-                .map(property -> new PropertyDTO(property, localization))
+                .map(property -> PropertyDTO.getDTO(property, localization))
                 .toList();
         this.sights = hotel.getSights().stream()
                 .map(sight -> new SightLightDTO(sight, localization))
