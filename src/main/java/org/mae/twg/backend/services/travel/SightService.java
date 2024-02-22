@@ -22,9 +22,19 @@ public class SightService {
     private final SightRepo sightRepo;
     private final SightLocalRepo localRepo;
 
+    private Sight findById(Long id) {
+        Sight sight = sightRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + id + " not found"));
+        if (sight.getIsDeleted()) {
+            throw new ObjectNotFoundException("Sight with id=" + id + " marked as deleted");
+        }
+        return sight;
+    }
+
     public List<SightDTO> getAll(Localization localization) {
         List<Sight> sights = sightRepo.findAll();
         List<SightDTO> sightDTOs = sights.stream()
+                .filter(sight -> !sight.getIsDeleted())
                 .filter(sight -> sight.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(sight -> new SightDTO(sight, localization))
                 .toList();
@@ -35,9 +45,7 @@ public class SightService {
     }
 
     public SightDTO getById(Long id, Localization local) {
-        Sight sight = sightRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + id + " not found"));
-        return new SightDTO(sight, local);
+        return new SightDTO(findById(id), local);
     }
 
     @Transactional
@@ -56,8 +64,7 @@ public class SightService {
 
     @Transactional
     public SightDTO addLocal(Long id, SightRequestDTO sightDTO, Localization localization) {
-        Sight sight = sightRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + id + " not found"));
+        Sight sight = findById(id);
         boolean isExists = sight.getLocals().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
@@ -77,8 +84,7 @@ public class SightService {
 
     @Transactional
     public SightDTO updateLocal(Long id, SightRequestDTO sightDTO, Localization localization) {
-        Sight sight = sightRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + id + " not found"));
+        Sight sight = findById(id);
         SightLocal cur_local =
                 sight.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)

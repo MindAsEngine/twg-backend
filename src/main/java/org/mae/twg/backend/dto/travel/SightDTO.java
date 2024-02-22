@@ -35,4 +35,11 @@ public class SightDTO implements Serializable {
         this.medias = sight.getMedias().stream().map(SightMedia::getMediaPath).toList();
         this.localization = localization;
     }
+
+    static public SightDTO getDTO(Sight sight, Localization localization) {
+        if (sight == null || sight.getIsDeleted()) {
+            return null;
+        }
+        return new SightDTO(sight, localization);
+    }
 }
