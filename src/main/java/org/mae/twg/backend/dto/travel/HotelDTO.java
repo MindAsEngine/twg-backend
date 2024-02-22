@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Hotel;
+import org.mae.twg.backend.models.travel.Property;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
@@ -47,5 +48,12 @@ public class HotelDTO implements Serializable {
                 .map(sight -> SightLightDTO.getDTO(sight, localization))
                 .toList();
         this.localization = localization;
+    }
+
+    static public HotelDTO getDTO(Hotel hotel, Localization localization) {
+        if (hotel == null || hotel.getIsDeleted()) {
+            return null;
+        }
+        return new HotelDTO(hotel, localization);
     }
 }

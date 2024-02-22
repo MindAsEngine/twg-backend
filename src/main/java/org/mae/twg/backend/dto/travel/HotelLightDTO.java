@@ -43,4 +43,11 @@ public class HotelLightDTO implements Serializable {
 //                .toList();
         this.localization = localization;
     }
+
+    static public HotelLightDTO getDTO(Hotel hotel, Localization localization) {
+        if (hotel == null || hotel.getIsDeleted()) {
+            return null;
+        }
+        return new HotelLightDTO(hotel, localization);
+    }
 }

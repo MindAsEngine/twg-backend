@@ -51,7 +51,7 @@ public class TourDTO implements Serializable {
         this.description = cur_local.getDescription();
         this.medias = tour.getMedias().stream().map(TourMedia::getMediaPath).toList();
         this.hotels = tour.getHotels().stream()
-                .map(hotel -> new HotelLightDTO(hotel, localization))
+                .map(hotel -> HotelLightDTO.getDTO(hotel, localization))
                 .toList();
         this.resorts = tour.getResorts().stream()
                 .map(resort -> ResortLightDTO.getDTO(resort, localization))
