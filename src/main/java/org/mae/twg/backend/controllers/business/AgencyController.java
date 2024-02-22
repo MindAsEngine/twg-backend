@@ -29,6 +29,13 @@ public class AgencyController {
         return ResponseEntity.ok(agencyService.getById(id, local));
     }
 
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> deleteById(@PathVariable Long id,
+                                        @PathVariable Localization local) {
+        agencyService.deleteById(id);
+        return ResponseEntity.ok("Marked as deleted");
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@PathVariable Localization local,
                                     @Valid @RequestBody AgencyRequestDTO agencyDTO) throws URISyntaxException {

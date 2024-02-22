@@ -33,4 +33,11 @@ public class AgencyDTO implements Serializable {
         this.contacts = cur_local.getContacts();
         this.localization = localization;
     }
+
+    static public AgencyDTO getDTO(Agency agency, Localization localization) {
+        if (agency == null || agency.getIsDeleted()) {
+            return null;
+        }
+        return new AgencyDTO(agency, localization);
+    }
 }

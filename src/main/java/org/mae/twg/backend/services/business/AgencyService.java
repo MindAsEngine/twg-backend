@@ -22,10 +22,20 @@ public class AgencyService {
     private final AgencyRepo agencyRepo;
     private final AgencyLocalRepo localRepo;
 
+    private Agency findById(Long id) {
+        Agency agency = agencyRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Agency with id=" + id + " not found"));
+        if (agency.getIsDeleted()) {
+            throw new ObjectNotFoundException("Agency with id=" + id + " marked as deleted");
+        }
+        return agency;
+    }
+
     public List<AgencyDTO> getAll(Localization localization) {
-        List<Agency> resorts = agencyRepo.findAll();
-        List<AgencyDTO> agencyDTOs = resorts.stream()
-                .filter(resort -> resort.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+        List<Agency> agencies = agencyRepo.findAll();
+        List<AgencyDTO> agencyDTOs = agencies.stream()
+                .filter(agency -> !agency.getIsDeleted())
+                .filter(agency -> agency.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(agency -> new AgencyDTO(agency, localization))
                 .toList();
         if (agencyDTOs.isEmpty()) {
@@ -35,9 +45,14 @@ public class AgencyService {
     }
 
     public AgencyDTO getById(Long id, Localization local) {
-        Agency agency = agencyRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Agency with id=" + id + " not found"));
-        return new AgencyDTO(agency, local);
+        return new AgencyDTO(findById(id), local);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Agency agency = findById(id);
+        agency.setIsDeleted(true);
+        agencyRepo.save(agency);
     }
 
     @Transactional
@@ -57,8 +72,7 @@ public class AgencyService {
 
     @Transactional
     public AgencyDTO addLocal(Long id, AgencyRequestDTO agencyDTO, Localization localization) {
-        Agency agency = agencyRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Agency with id=" + id + " not found"));
+        Agency agency = findById(id);
         boolean isExists = agency.getLocals().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
@@ -79,8 +93,7 @@ public class AgencyService {
 
     @Transactional
     public AgencyDTO updateLocal(Long id, AgencyRequestDTO agencyDTO, Localization localization) {
-        Agency agency = agencyRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Agency with id=" + id + " not found"));
+        Agency agency = findById(id);
         AgencyLocal cur_local =
                 agency.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
