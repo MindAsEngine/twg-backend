@@ -1,6 +1,8 @@
 package org.mae.twg.backend.controllers.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,10 @@ public class AuthUserController {
         return ResponseEntity.ok(authUserService.signUp(request));
     }
 
-    @Operation(summary = "Вход пользователя")
+    @Operation(
+            summary = "Вход пользователя",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody @Valid SignInRequest request) {
         log.info("Вход пользователя");
