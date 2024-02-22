@@ -31,4 +31,11 @@ public class ResortLightDTO implements Serializable {
 //        this.medias = resort.getMedias().stream().map(ResortMedia::getMediaPath).toList();
         this.localization = localization;
     }
+
+    static public ResortLightDTO getDTO(Resort resort, Localization localization) {
+        if (resort == null || resort.getIsDeleted()) {
+            return null;
+        }
+        return new ResortLightDTO(resort, localization);
+    }
 }

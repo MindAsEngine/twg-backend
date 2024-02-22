@@ -54,7 +54,7 @@ public class TourDTO implements Serializable {
                 .map(hotel -> new HotelLightDTO(hotel, localization))
                 .toList();
         this.resorts = tour.getResorts().stream()
-                .map(resort -> new ResortLightDTO(resort, localization))
+                .map(resort -> ResortLightDTO.getDTO(resort, localization))
                 .toList();
         this.country = CountryDTO.getDTO(tour.getCountry(), localization);
         this.agency = AgencyDTO.getDTO(tour.getAgency(), localization);
