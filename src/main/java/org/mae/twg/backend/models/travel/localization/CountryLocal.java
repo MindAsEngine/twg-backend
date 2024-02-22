@@ -1,15 +1,14 @@
 package org.mae.twg.backend.models.travel.localization;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.mae.twg.backend.models.travel.Country;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
-@Data
+//@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "country_local")
@@ -21,19 +20,27 @@ public class CountryLocal {
     private Long id;
 
     @NonNull
-    @Column(name = "title")
-    private String title;
+    @Column(name = "name")
+    private String name;
 
-    @NonNull
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY,
             optional = false)
     @JoinColumn(name = "country_id")
     private Country country;
+
+    public CountryLocal(@NonNull String name,
+                        String description,
+                        Localization localization,
+                        Country country) {
+        this.name = name;
+        this.description = description;
+        this.localization = localization;
+        this.country = country;
+    }
 }

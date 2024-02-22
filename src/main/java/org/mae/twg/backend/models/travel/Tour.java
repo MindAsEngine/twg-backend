@@ -1,10 +1,8 @@
 package org.mae.twg.backend.models.travel;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
+import org.mae.twg.backend.models.business.Agency;
 import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.TourMedia;
@@ -13,7 +11,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Data
+//@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tours")
@@ -37,11 +37,13 @@ public class Tour {
     @Column(name = "type")
     private TourType type;
 
-    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private Country country;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tour_hotels",

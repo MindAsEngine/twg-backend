@@ -1,15 +1,14 @@
 package org.mae.twg.backend.models.travel.localization;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.mae.twg.backend.models.travel.Sight;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
-@Data
+//@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "sight_local")
@@ -24,21 +23,30 @@ public class SightLocal {
     @Column(name = "name")
     private String name;
 
-    @NonNull
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
 
-    @NonNull
     @Column(name = "address")
     private String address;
 
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY,
             optional = false)
     @JoinColumn(name = "sight_id")
     private Sight sight;
+
+    public SightLocal(@NonNull String name,
+                      String description,
+                      String address,
+                      Sight sight,
+                      Localization local) {
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.sight = sight;
+        this.localization = local;
+    }
 }

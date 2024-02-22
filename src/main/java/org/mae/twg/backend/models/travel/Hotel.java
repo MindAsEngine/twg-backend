@@ -1,10 +1,7 @@
 package org.mae.twg.backend.models.travel;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
@@ -15,7 +12,9 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Data
+//@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "hotels")
