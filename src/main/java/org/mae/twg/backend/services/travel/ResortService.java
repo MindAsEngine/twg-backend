@@ -22,9 +22,19 @@ public class ResortService {
     private final ResortRepo resortRepo;
     private final ResortLocalRepo localRepo;
 
+    private Resort findById(Long id) {
+        Resort resort = resortRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Resort with id=" + id + " not found"));
+        if (resort.getIsDeleted()) {
+            throw new ObjectNotFoundException("Resort with id=" + id + " marked as deleted");
+        }
+        return resort;
+    }
+
     public List<ResortDTO> getAll(Localization localization) {
         List<Resort> resorts = resortRepo.findAll();
         List<ResortDTO> resortsDTOs = resorts.stream()
+                .filter(resort -> !resort.getIsDeleted())
                 .filter(resort -> resort.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(resort -> new ResortDTO(resort, localization))
                 .toList();
@@ -35,9 +45,14 @@ public class ResortService {
     }
 
     public ResortDTO getById(Long id, Localization local) {
-        Resort resort = resortRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Resort with id=" + id + " not found"));
-        return new ResortDTO(resort, local);
+        return new ResortDTO(findById(id), local);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Resort resort = findById(id);
+        resort.setIsDeleted(true);
+        resortRepo.save(resort);
     }
 
     @Transactional
@@ -55,8 +70,7 @@ public class ResortService {
 
     @Transactional
     public ResortDTO addLocal(Long id, ResortRequestDTO sightDTO, Localization localization) {
-        Resort resort = resortRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Resort with id=" + id + " not found"));
+        Resort resort = findById(id);
         boolean isExists = resort.getLocals().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
@@ -75,8 +89,7 @@ public class ResortService {
 
     @Transactional
     public ResortDTO updateLocal(Long id, ResortRequestDTO sightDTO, Localization localization) {
-        Resort resort = resortRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Resort with id=" + id + " not found"));
+        Resort resort = findById(id);
         ResortLocal cur_local =
                 resort.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)

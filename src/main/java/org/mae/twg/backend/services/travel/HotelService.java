@@ -28,9 +28,19 @@ public class HotelService {
     private final PropertyRepo propertyRepo;
     private final SightRepo sightRepo;
 
+    private Hotel findById(Long id) {
+        Hotel hotel = hotelRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + id + " not found"));
+        if (hotel.getIsDeleted()) {
+            throw new ObjectNotFoundException("Property with id=" + id + " marked as deleted");
+        }
+        return hotel;
+    }
+
     public List<HotelDTO> getAll(Localization localization) {
         List<Hotel> hotels = hotelRepo.findAll();
         List<HotelDTO> hotelDTOs = hotels.stream()
+                .filter(hotel -> !hotel.getIsDeleted())
                 .filter(hotel -> hotel.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(hotel -> new HotelDTO(hotel, localization))
                 .toList();
@@ -41,10 +51,14 @@ public class HotelService {
     }
 
     public HotelDTO getById(Long id, Localization localization) {
-        Hotel hotel = hotelRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        localization + " localization for hotel with id=" + id + " not found"));
-        return new HotelDTO(hotel, localization);
+        return new HotelDTO(findById(id), localization);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Hotel hotel = findById(id);
+        hotel.setIsDeleted(true);
+        hotelRepo.save(hotel);
     }
 
     @Transactional
@@ -78,8 +92,7 @@ public class HotelService {
 
     @Transactional
     public HotelDTO addLocal(Long id, HotelLocalRequestDTO hotelDTO, Localization localization) {
-        Hotel hotel = hotelRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
+        Hotel hotel = findById(id);
         boolean isExists = hotel.getLocals().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
@@ -100,8 +113,7 @@ public class HotelService {
 
     @Transactional
     public HotelDTO updateLocal(Long id, HotelLocalRequestDTO hotelDTO, Localization localization) {
-        Hotel hotel = hotelRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
+        Hotel hotel = findById(id);
         HotelLocal cur_local = hotel.getLocals().stream()
                 .filter(local -> local.getLocalization() == localization)
                 .findFirst()
@@ -118,8 +130,7 @@ public class HotelService {
 
     @Transactional
     public HotelDTO updateProperties(Long id, List<Long> propertyIds, Localization localization) {
-        Hotel hotel = hotelRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
+        Hotel hotel = findById(id);
         for (Property property : hotel.getProperties().stream().toList()) {
             hotel.removeProperty(property);
         }
@@ -136,9 +147,7 @@ public class HotelService {
 
     @Transactional
     public HotelDTO updateSights(Long id, List<Long> sightIds, Localization localization) {
-        Hotel hotel = hotelRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
-
+        Hotel hotel = findById(id);
         for (Sight sight : hotel.getSights().stream().toList()) {
             hotel.removeSight(sight);
         }

@@ -20,6 +20,9 @@ public class Agency {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "agency_id")
     private Long id;
+
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = Boolean.FALSE;
 //    TODO: add field for map data
 
     @OneToMany(mappedBy = "agency",

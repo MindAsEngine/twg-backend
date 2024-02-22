@@ -23,6 +23,9 @@ public class Resort {
     @Column(name = "resort_id")
     private Long id;
 
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = Boolean.FALSE;
+
 //    @Column(name = "slug", unique = true)
 //    private String slug;
 //    TODO: add slug generation

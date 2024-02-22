@@ -33,6 +33,13 @@ public class SightController {
         return ResponseEntity.ok(sightDTO);
     }
 
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> deleteById(@PathVariable Long id,
+                                        @PathVariable Localization local) {
+        sightService.deleteById(id);
+        return ResponseEntity.ok("Marked as deleted");
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createSight(@PathVariable Localization local,
                                          @Valid @RequestBody SightRequestDTO sightDTO) throws URISyntaxException {

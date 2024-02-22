@@ -20,6 +20,9 @@ public class Country {
     @Column(name = "country_id")
     private Long id;
 
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = Boolean.FALSE;
+
     @OneToMany(mappedBy = "country",
             cascade = CascadeType.ALL,
             orphanRemoval = true)

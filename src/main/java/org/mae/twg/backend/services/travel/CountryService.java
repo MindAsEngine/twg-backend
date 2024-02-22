@@ -21,16 +21,33 @@ public class CountryService {
     private final CountryRepo countryRepo;
     private final CountryLocalRepo localRepo;
 
+    private Country findById(Long id) {
+        Country country = countryRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Country with id=" + id + " not found"));
+        if (country.getIsDeleted()) {
+            throw new ObjectNotFoundException("Country with id=" + id + " marked as deleted");
+        }
+        return country;
+    }
+
     public List<CountryDTO> getAll(Localization localization) {
         List<Country> countries = countryRepo.findAll();
         List<CountryDTO> countryDTOs = countries.stream()
-                .filter(hotel -> hotel.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(country -> !country.getIsDeleted())
+                .filter(country -> country.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(country -> new CountryDTO(country, localization))
                 .toList();
         if (countryDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Countries with " + localization + " localization not found");
         }
         return countryDTOs;
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Country country = findById(id);
+        country.setIsDeleted(true);
+        countryRepo.save(country);
     }
 
     @Transactional
@@ -48,8 +65,7 @@ public class CountryService {
 
     @Transactional
     public CountryDTO addLocal(Long id, CountryRequestDTO propertyDTO, Localization localization) {
-        Country country = countryRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Country with id=" + id + " not found"));
+        Country country = findById(id);
         boolean isExists = country.getLocals().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
@@ -68,8 +84,7 @@ public class CountryService {
 
     @Transactional
     public CountryDTO updateLocal(Long id, CountryRequestDTO propertyDTO, Localization localization) {
-        Country country = countryRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Country with id=" + id + " not found"));
+        Country country = findById(id);
         CountryLocal cur_local =
                 country.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)

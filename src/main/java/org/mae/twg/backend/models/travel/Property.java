@@ -22,6 +22,9 @@ public class Property {
     @Column(name = "property_id")
     private Long id;
 
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = Boolean.FALSE;
+
     @OneToMany(mappedBy = "property",
             cascade = CascadeType.ALL,
             orphanRemoval = true)

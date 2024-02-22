@@ -20,6 +20,13 @@ public class CountryController {
         return ResponseEntity.ok(propertyService.getAll(local));
     }
 
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> deleteById(@PathVariable Long id,
+                                        @PathVariable Localization local) {
+        propertyService.deleteById(id);
+        return ResponseEntity.ok("Marked as deleted");
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@PathVariable Localization local,
                                     @Valid @RequestBody CountryRequestDTO countryDTO) {
