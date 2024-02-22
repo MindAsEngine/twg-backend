@@ -49,6 +49,13 @@ public class SightService {
     }
 
     @Transactional
+    public void deleteById(Long id) {
+        Sight sight = findById(id);
+        sight.setIsDeleted(true);
+        sightRepo.save(sight);
+    }
+
+    @Transactional
     public SightDTO create(SightRequestDTO sightDTO, Localization local) {
         Sight sight = new Sight();
         sightRepo.saveAndFlush(sight);

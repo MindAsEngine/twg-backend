@@ -55,6 +55,13 @@ public class HotelService {
     }
 
     @Transactional
+    public void deleteById(Long id) {
+        Hotel hotel = findById(id);
+        hotel.setIsDeleted(true);
+        hotelRepo.save(hotel);
+    }
+
+    @Transactional
     public HotelDTO create(HotelRequestDTO hotelDTO, Localization localization) {
         Hotel hotel = new Hotel();
         hotel.setStars(hotelDTO.getStars());

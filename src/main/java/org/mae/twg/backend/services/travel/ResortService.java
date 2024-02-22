@@ -49,6 +49,13 @@ public class ResortService {
     }
 
     @Transactional
+    public void deleteById(Long id) {
+        Resort resort = findById(id);
+        resort.setIsDeleted(true);
+        resortRepo.save(resort);
+    }
+
+    @Transactional
     public ResortDTO create(ResortRequestDTO sightDTO, Localization local) {
         Resort resort = new Resort();
         resortRepo.saveAndFlush(resort);

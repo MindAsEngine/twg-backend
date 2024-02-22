@@ -44,6 +44,13 @@ public class CountryService {
     }
 
     @Transactional
+    public void deleteById(Long id) {
+        Country country = findById(id);
+        country.setIsDeleted(true);
+        countryRepo.save(country);
+    }
+
+    @Transactional
     public CountryDTO create(CountryRequestDTO countryDTO, Localization localization) {
         Country country = new Country();
         countryRepo.saveAndFlush(country);

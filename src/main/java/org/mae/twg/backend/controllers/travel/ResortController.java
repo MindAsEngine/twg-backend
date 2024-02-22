@@ -29,6 +29,13 @@ public class ResortController {
         return ResponseEntity.ok(resortService.getById(id, local));
     }
 
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<?> deleteById(@PathVariable Long id,
+                                        @PathVariable Localization local) {
+        resortService.deleteById(id);
+        return ResponseEntity.ok("Marked as deleted");
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@PathVariable Localization local,
                                     @Valid @RequestBody ResortRequestDTO resortDTO) throws URISyntaxException {

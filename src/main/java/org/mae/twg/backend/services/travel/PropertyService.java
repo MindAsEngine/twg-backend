@@ -44,6 +44,13 @@ public class PropertyService {
     }
 
     @Transactional
+    public void deleteById(Long id) {
+        Property property = findById(id);
+        property.setIsDeleted(true);
+        propertyRepo.save(property);
+    }
+
+    @Transactional
     public PropertyDTO create(PropertyRequestDTO propertyDTO, Localization localization) {
         Property property = new Property();
         propertyRepo.saveAndFlush(property);
