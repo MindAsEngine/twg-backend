@@ -34,7 +34,7 @@ public class PropertyService {
         List<Property> properties = propertyRepo.findAll();
         List<PropertyDTO> propertyDTOs = properties.stream()
                 .filter(property -> !property.getIsDeleted())
-                .filter(hotel -> hotel.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(property -> property.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(property -> new PropertyDTO(property, localization))
                 .toList();
         if (propertyDTOs.isEmpty()) {
