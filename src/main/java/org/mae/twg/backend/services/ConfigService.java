@@ -63,5 +63,7 @@ public class ConfigService {
         return configRepo.findAll();
     }
 
-
+    public void delete(String key) {
+        configRepo.deleteById(key);
+    }
 }

@@ -17,24 +17,28 @@ public class ConfigController {
     private final ConfigService configService;
 
     @Operation(summary = "Получить всю конфигурацию")
-    @GetMapping("/all")
+    @GetMapping()
     public ResponseEntity<?> getAll() {
-//        log.info("Пользователь зарегистрирован");
         return ResponseEntity.ok(configService.getAll());
     }
 
     @Operation(summary = "Получить конфиг по ключу")
-    @GetMapping("/get/{key}")
+    @GetMapping("/{key}")
     public ResponseEntity<?> get(@PathVariable String key) {
-//        log.info("Администратор вошел");
         return ResponseEntity.ok(configService.get(key));
     }
 
     @Operation(summary = "Получить конфиг по ключу")
-    @PostMapping("/put/{key}")
-    public ResponseEntity<?> signIn(@PathVariable String key,
-                                    @RequestBody String value) {
-//        log.info("Администратор вошел");
+    @PostMapping("/{key}/put")
+    public ResponseEntity<?> put(@PathVariable String key,
+                                 @RequestBody String value) {
         return ResponseEntity.ok(configService.put(key, value));
+    }
+
+    @Operation(summary = "Удалить конфиг по ключу")
+    @DeleteMapping("/{key}/delete")
+    public ResponseEntity<?> delete(@PathVariable String key) {
+        configService.delete(key);
+        return ResponseEntity.ok().body("Config was deleted");
     }
 }
