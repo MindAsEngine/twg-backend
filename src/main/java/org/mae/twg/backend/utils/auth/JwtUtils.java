@@ -27,11 +27,11 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class JwtUtils {
-    @Value("${config.token.secret_key}")
+    @Value("${config.jwt.secret_key}")
     private String jwtSigningKey;
-    @Value("${config.token.refresh_expiration_hours}")
+    @Value("${config.jwt.refresh.expiration_hours}")
     private Long refreshTokenExpirationHours;
-    @Value("${config.token.access_expiration_hours}")
+    @Value("${config.jwt.access.expiration_hours}")
     private Long tokenExpirationHours;
     @NonNull
     private final RefreshTokenRepo refreshTokenRepo;
