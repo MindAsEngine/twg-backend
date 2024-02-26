@@ -1,4 +1,4 @@
-package org.mae.twg.backend.models.business;
+package org.mae.twg.backend.models.auth;
 
 import jakarta.persistence.*;
 import lombok.*;

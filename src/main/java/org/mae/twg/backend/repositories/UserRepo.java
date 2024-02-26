@@ -1,6 +1,6 @@
 package org.mae.twg.backend.repositories;
 
-import org.mae.twg.backend.models.business.User;
+import org.mae.twg.backend.models.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

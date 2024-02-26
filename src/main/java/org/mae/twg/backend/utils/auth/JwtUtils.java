@@ -6,7 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.mae.twg.backend.models.admin.Admin;
-import org.mae.twg.backend.models.business.User;
+import org.mae.twg.backend.models.auth.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.function.Function;
 @Service
 public class JwtUtils {
     //@Value("${token.signing.key}")
-    private String jwtSigningKey = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855";
+    private final String jwtSigningKey = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855";
 
     /**
      * Извлечение имени пользователя из токена

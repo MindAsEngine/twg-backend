@@ -93,7 +93,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserDetails getUserDetailsByUsername(String username, Boolean isToAdmin) {
         UserDetailsService service = isToAdmin
                 ? adminService.userDetailsService()
-                : userService.userDetailsService();
+                : userService;
         return service.loadUserByUsername(username);
     }
 }

@@ -2,16 +2,16 @@ package org.mae.twg.backend.services.auth;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.models.business.User;
+import org.mae.twg.backend.exceptions.UserNotFound;
+import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.repositories.UserRepo;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService{
     private final UserRepo userRepo;
 
     /**
@@ -42,36 +42,15 @@ public class UserService {
         return save(user);
     }
 
-    /**
-     * Получение пользователя по имени пользователя
-     *
-     * @return пользователь
-     */
-    public User getByUsername(String username) {
+    public User getById(Long id) throws UserNotFound {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new UserNotFound("Пользователь с id=" + id + "не найден"));
+    }
+
+    @Override
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
-
-    }
-
-    /**
-     * Получение пользователя по имени пользователя
-     * <p>
-     * Нужен для Spring Security
-     *
-     * @return пользователь
-     */
-    public UserDetailsService userDetailsService() {
-        return this::getByUsername;
-    }
-
-    /**
-     * Получение текущего пользователя
-     *
-     * @return текущий пользователь
-     */
-    public User getCurrentUser() {
-        // Получение имени пользователя из контекста Spring Security
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByUsername(username);
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Пользователь c username=" + username + " не найден"));
     }
 }

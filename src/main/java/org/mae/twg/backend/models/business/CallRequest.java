@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
+import org.mae.twg.backend.models.auth.User;
 
 import java.time.LocalDateTime;
 
