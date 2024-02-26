@@ -1,4 +1,4 @@
-package org.mae.twg.backend.models;
+package org.mae.twg.backend.utils.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

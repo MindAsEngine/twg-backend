@@ -1,11 +1,9 @@
-package org.mae.twg.backend.services;
+package org.mae.twg.backend.utils.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
-import org.mae.twg.backend.models.ConfigParam;
-import org.mae.twg.backend.repositories.ConfigRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
