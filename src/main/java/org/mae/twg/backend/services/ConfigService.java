@@ -16,8 +16,8 @@ public class ConfigService {
     private final String accessExpirationKey = "access_token_expiration";
 
     public ConfigService(ConfigRepo repo,
-                         @Value("${config.token.refresh_expiration_hours}") Integer refreshExpirationTime,
-                         @Value("${config.token.access_expiration_hours}") Integer accessExpirationTime) {
+                         @Value("${config.jwt.refresh.expiration_hours}") Integer refreshExpirationTime,
+                         @Value("${config.jwt.access.expiration_hours}") Integer accessExpirationTime) {
         configRepo = repo;
         if (!configRepo.existsById(refreshExpirationKey)) {
             configRepo.save(new ConfigParam(
