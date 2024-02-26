@@ -12,6 +12,7 @@ import org.mae.twg.backend.models.admin.Admin;
 import org.mae.twg.backend.models.auth.RefreshToken;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
+import org.mae.twg.backend.utils.config.ConfigService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -29,12 +30,10 @@ import java.util.function.Function;
 public class JwtUtils {
     @Value("${config.jwt.secret_key}")
     private String jwtSigningKey;
-    @Value("${config.jwt.refresh.expiration_hours}")
-    private Long refreshTokenExpirationHours;
-    @Value("${config.jwt.access.expiration_hours}")
-    private Long tokenExpirationHours;
     @NonNull
     private final RefreshTokenRepo refreshTokenRepo;
+    @NonNull
+    private final ConfigService configService;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -63,7 +62,7 @@ public class JwtUtils {
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + tokenExpirationHours * 3600 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + configService.getAccessExpiration() * 3600 * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
@@ -83,7 +82,7 @@ public class JwtUtils {
         RefreshToken refreshToken = new RefreshToken();
 
         refreshToken.setUser(user);
-        refreshToken.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpirationHours * 3600));
+        refreshToken.setExpiryDate(Instant.now().plusSeconds(configService.getRefreshExpiration() * 3600));
         refreshToken.setToken(UUID.randomUUID().toString());
 
         refreshTokenRepo.saveAndFlush(refreshToken);

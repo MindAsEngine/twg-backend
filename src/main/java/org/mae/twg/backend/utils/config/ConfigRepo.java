@@ -1,6 +1,5 @@
-package org.mae.twg.backend.repositories;
+package org.mae.twg.backend.utils.config;
 
-import org.mae.twg.backend.models.ConfigParam;
 import org.springframework.data.keyvalue.repository.KeyValueRepository;
 import org.springframework.stereotype.Repository;
 

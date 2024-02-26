@@ -1,8 +1,9 @@
-package org.mae.twg.backend.services;
+package org.mae.twg.backend.utils.config;
 
+import jakarta.annotation.PostConstruct;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
-import org.mae.twg.backend.models.ConfigParam;
-import org.mae.twg.backend.repositories.ConfigRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -10,24 +11,29 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ConfigService {
+    @NonNull
     private final ConfigRepo configRepo;
+
+    @Value("${config.jwt.refresh.expiration_hours}")
+    private Long refreshExpirationHours;
+    @Value("${config.jwt.access.expiration_hours}")
+    private Long accessExpirationHours;
     private final String refreshExpirationKey = "refresh_token_expiration";
     private final String accessExpirationKey = "access_token_expiration";
 
-    public ConfigService(ConfigRepo repo,
-                         @Value("${config.jwt.refresh.expiration_hours}") Integer refreshExpirationTime,
-                         @Value("${config.jwt.access.expiration_hours}") Integer accessExpirationTime) {
-        configRepo = repo;
+    @PostConstruct
+    public void init() {
         if (!configRepo.existsById(refreshExpirationKey)) {
             configRepo.save(new ConfigParam(
                     refreshExpirationKey,
-                    String.valueOf(refreshExpirationTime * 3600)));
+                    String.valueOf(refreshExpirationHours)));
         }
         if (!configRepo.existsById(accessExpirationKey)) {
             configRepo.save(new ConfigParam(
                     accessExpirationKey,
-                    String.valueOf(accessExpirationTime * 3600)));
+                    String.valueOf(accessExpirationHours)));
         }
     }
 
