@@ -7,11 +7,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
+
 @RestControllerAdvice
 @Log4j2
 public class CustomExceptionHandler {
     @ExceptionHandler(value = {
-            TokenValidationException.class
+            TokenValidationException.class,
+            AuthenticationException.class
     })
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseErrorDTO responseAuthError(RuntimeException exception)  {

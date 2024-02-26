@@ -1,4 +1,4 @@
-package org.mae.twg.backend.models.business;
+package org.mae.twg.backend.models.auth;
 
 import org.springframework.security.core.GrantedAuthority;
 

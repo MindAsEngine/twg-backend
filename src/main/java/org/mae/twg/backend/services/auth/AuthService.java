@@ -1,11 +1,15 @@
 package org.mae.twg.backend.services.auth;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.mae.twg.backend.dto.auth.JwtAuthenticationResponse;
 import org.mae.twg.backend.dto.auth.SignInRequest;
 import org.mae.twg.backend.dto.auth.SignUpRequest;
-import org.mae.twg.backend.models.business.UserRole;
-import org.mae.twg.backend.models.business.User;
+import org.mae.twg.backend.dto.auth.TokenRefreshRequest;
+import org.mae.twg.backend.exceptions.TokenValidationException;
+import org.mae.twg.backend.models.auth.RefreshToken;
+import org.mae.twg.backend.models.auth.User;
+import org.mae.twg.backend.models.auth.UserRole;
+import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
 import org.mae.twg.backend.utils.auth.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,19 +17,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-public class AuthUserService {
+@AllArgsConstructor
+public class AuthService {
     private final UserService userService;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenRepo refreshTokenRepo;
 
-    /**
-     * Регистрация пользователя
-     *
-     * @param request данные пользователя
-     * @return токен
-     */
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
 
         var user = User.builder()
@@ -42,27 +41,33 @@ public class AuthUserService {
         userService.create(user);
 
         var jwt = jwtUtils.generateToken(user);
-        return new JwtAuthenticationResponse(jwt);
+        var refreshToken = jwtUtils.createRefreshToken(user);
+        return new JwtAuthenticationResponse(jwt, refreshToken.getToken());
     }
 
-    /**
-     * Аутентификация пользователя
-     *
-     * @param request данные пользователя
-     * @return токен
-     */
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
                 request.getPassword()
         ));
 
-
         var user = userService
-                .userDetailsService()
                 .loadUserByUsername(request.getUsername());
 
         var jwt = jwtUtils.generateToken(user);
-        return new JwtAuthenticationResponse(jwt);
+        var refreshToken = jwtUtils.createRefreshToken(user);
+        return new JwtAuthenticationResponse(jwt, refreshToken.getToken());
     }
+
+    public JwtAuthenticationResponse refreshToken(TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        RefreshToken token = refreshTokenRepo.findByToken(requestRefreshToken)
+                .orElseThrow(() -> new TokenValidationException(
+                        "Refresh token '" + requestRefreshToken +"' not found"));
+        jwtUtils.verifyExpiration(token);
+        String accessToken = jwtUtils.generateToken(token.getUser());
+        return new JwtAuthenticationResponse(accessToken, token.getToken());
+    }
+
 }

@@ -42,7 +42,7 @@ public class AuthAdminService {
         adminService.create(admin);
 
         var jwt = jwtUtils.generateToken(admin);
-        return new JwtAuthenticationResponse(jwt);
+        return new JwtAuthenticationResponse(jwt, "");
     }
 
     /**
@@ -62,6 +62,6 @@ public class AuthAdminService {
                 .loadUserByUsername(request.getUsername());
 
         var jwt = jwtUtils.generateToken(user);
-        return new JwtAuthenticationResponse(jwt);
+        return new JwtAuthenticationResponse(jwt, "");
     }
 }

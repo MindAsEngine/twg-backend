@@ -5,38 +5,41 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.mae.twg.backend.exceptions.TokenValidationException;
 import org.mae.twg.backend.models.admin.Admin;
-import org.mae.twg.backend.models.business.User;
+import org.mae.twg.backend.models.auth.RefreshToken;
+import org.mae.twg.backend.models.auth.User;
+import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtUtils {
-    //@Value("${token.signing.key}")
-    private String jwtSigningKey = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855";
+    @Value("${config.jwt.secret_key}")
+    private String jwtSigningKey;
+    @Value("${config.jwt.refresh.expiration_hours}")
+    private Long refreshTokenExpirationHours;
+    @Value("${config.jwt.access.expiration_hours}")
+    private Long tokenExpirationHours;
+    @NonNull
+    private final RefreshTokenRepo refreshTokenRepo;
 
-    /**
-     * Извлечение имени пользователя из токена
-     *
-     * @param token токен
-     * @return имя пользователя
-     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    /**
-     * Генерация токена
-     *
-     * @param userDetails данные пользователя
-     * @return токен
-     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof User customUserDetails) {
@@ -52,39 +55,18 @@ public class JwtUtils {
         return generateToken(claims, userDetails);
     }
 
-    /**
-     * Извлечение данных из токена
-     *
-     * @param token           токен
-     * @param claimsResolvers функция извлечения данных
-     * @param <T>             тип данных
-     * @return данные
-     */
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
         final Claims claims = extractAllClaims(token);
         return claimsResolvers.apply(claims);
     }
 
-    /**
-     * Генерация токена
-     *
-     * @param extraClaims дополнительные данные
-     * @param userDetails данные пользователя
-     * @return токен
-     */
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenExpirationHours * 3600 * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
-    /**
-     * Извлечение всех данных из токена
-     *
-     * @param token токен
-     * @return данные
-     */
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -92,13 +74,27 @@ public class JwtUtils {
                 .parseClaimsJws(token).getBody();
     }
 
-    /**
-     * Получение ключа для подписи токена
-     *
-     * @return ключ
-     */
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public RefreshToken createRefreshToken(User user) {
+        RefreshToken refreshToken = new RefreshToken();
+
+        refreshToken.setUser(user);
+        refreshToken.setExpiryDate(Instant.now().plusSeconds(refreshTokenExpirationHours * 3600));
+        refreshToken.setToken(UUID.randomUUID().toString());
+
+        refreshTokenRepo.saveAndFlush(refreshToken);
+        return refreshToken;
+    }
+
+    public void verifyExpiration(RefreshToken token) {
+        if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
+            refreshTokenRepo.delete(token);
+            throw new TokenValidationException("Refresh token "
+                    + token.getToken() +" was expired. Please make a new signin request");
+        }
     }
 }
