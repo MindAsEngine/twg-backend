@@ -16,18 +16,18 @@ public class ConfigService {
     private final String accessExpirationKey = "access_token_expiration";
 
     public ConfigService(ConfigRepo repo,
-                         @Value("${config.jwt.refresh.expiration_hours}") Integer refreshExpirationTime,
-                         @Value("${config.jwt.access.expiration_hours}") Integer accessExpirationTime) {
+                         @Value("${config.jwt.refresh.expiration_hours}") Integer refreshExpirationHours,
+                         @Value("${config.jwt.access.expiration_hours}") Integer accessExpirationHours) {
         configRepo = repo;
         if (!configRepo.existsById(refreshExpirationKey)) {
             configRepo.save(new ConfigParam(
                     refreshExpirationKey,
-                    String.valueOf(refreshExpirationTime * 3600)));
+                    String.valueOf(refreshExpirationHours)));
         }
         if (!configRepo.existsById(accessExpirationKey)) {
             configRepo.save(new ConfigParam(
                     accessExpirationKey,
-                    String.valueOf(accessExpirationTime * 3600)));
+                    String.valueOf(accessExpirationHours)));
         }
     }
 
