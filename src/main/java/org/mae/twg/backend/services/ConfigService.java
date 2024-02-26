@@ -1,5 +1,8 @@
 package org.mae.twg.backend.services;
 
+import jakarta.annotation.PostConstruct;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.ConfigParam;
 import org.mae.twg.backend.repositories.ConfigRepo;
@@ -10,15 +13,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ConfigService {
+    @NonNull
     private final ConfigRepo configRepo;
+
+    @Value("${config.jwt.refresh.expiration_hours}")
+    private Long refreshExpirationHours;
+    @Value("${config.jwt.access.expiration_hours}")
+    private Long accessExpirationHours;
     private final String refreshExpirationKey = "refresh_token_expiration";
     private final String accessExpirationKey = "access_token_expiration";
 
-    public ConfigService(ConfigRepo repo,
-                         @Value("${config.jwt.refresh.expiration_hours}") Integer refreshExpirationHours,
-                         @Value("${config.jwt.access.expiration_hours}") Integer accessExpirationHours) {
-        configRepo = repo;
+    @PostConstruct
+    public void init() {
         if (!configRepo.existsById(refreshExpirationKey)) {
             configRepo.save(new ConfigParam(
                     refreshExpirationKey,
