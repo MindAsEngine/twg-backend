@@ -8,7 +8,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.exceptions.TokenValidationException;
-import org.mae.twg.backend.models.admin.Admin;
 import org.mae.twg.backend.models.auth.RefreshToken;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
@@ -45,11 +44,6 @@ public class JwtUtils {
             claims.put("id", customUserDetails.getId());
             claims.put("email", customUserDetails.getEmail());
             claims.put("role", customUserDetails.getUserRole());
-        }
-        if (userDetails instanceof Admin customUserDetails) {
-            claims.put("id", customUserDetails.getId());
-            claims.put("email", customUserDetails.getEmail());
-            claims.put("role", customUserDetails.getAdminRole());
         }
         return generateToken(claims, userDetails);
     }

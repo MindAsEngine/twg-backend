@@ -1,14 +1,14 @@
-package org.mae.twg.backend.repositories;
+package org.mae.twg.backend.repositories.business;
 
-import org.mae.twg.backend.models.admin.Admin;
+import org.mae.twg.backend.models.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface AdminRepo extends JpaRepository<Admin, Long> {
-    Optional<Admin> findByUsername(String username);
+public interface UserRepo extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
 }

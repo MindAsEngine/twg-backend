@@ -23,14 +23,14 @@ public class ExampleController {
 
     @GetMapping("/admin")
     @Operation(summary = "Доступен только авторизованным пользователям с ролью ADMIN")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     public String exampleAdmin() {
         return "Hello, admin!";
     }
 
     @GetMapping("/moderator")
     @Operation(summary = "Доступен только авторизованным пользователям с ролью ADMIN")
-    @PreAuthorize("hasRole('ROLE_MODERATOR')")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
     public String exampleModerator() {
         return "Hello, moderator!";
     }

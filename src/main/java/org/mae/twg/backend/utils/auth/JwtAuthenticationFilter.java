@@ -8,13 +8,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.mae.twg.backend.exceptions.TokenValidationException;
-import org.mae.twg.backend.services.auth.AdminService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,7 +27,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String HEADER_NAME = "Authorization";
     private final JwtUtils jwtUtils;
     private final UserService userService;
-    private final AdminService adminService;
 
     @Override
     protected void doFilterInternal(
@@ -64,8 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        Boolean isToAdmin = request.getServletPath().startsWith("/admin");
-        UserDetails userDetails = getUserDetailsByUsername(username, isToAdmin);
+        UserDetails userDetails = userService.loadUserByUsername(username);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
@@ -88,12 +84,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException exception) {
             throw new TokenValidationException(exception.getMessage());
         }
-    }
-
-    private UserDetails getUserDetailsByUsername(String username, Boolean isToAdmin) {
-        UserDetailsService service = isToAdmin
-                ? adminService.userDetailsService()
-                : userService;
-        return service.loadUserByUsername(username);
     }
 }

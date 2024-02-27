@@ -1,6 +1,6 @@
 package org.mae.twg.backend.exceptions;
 
-import javax.naming.AuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 
 public class UserNotFound extends AuthenticationException {
     public UserNotFound(String msg) {
