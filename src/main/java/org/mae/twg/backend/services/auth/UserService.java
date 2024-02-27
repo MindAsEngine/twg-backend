@@ -4,7 +4,7 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.exceptions.UserNotFound;
 import org.mae.twg.backend.models.auth.User;
-import org.mae.twg.backend.repositories.UserRepo;
+import org.mae.twg.backend.repositories.business.UserRepo;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
