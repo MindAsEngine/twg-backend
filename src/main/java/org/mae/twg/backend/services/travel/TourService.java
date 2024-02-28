@@ -128,8 +128,8 @@ public class TourService {
         TourLocal cur_local = tour.getLocals().stream()
                 .filter(local -> local.getLocalization() == localization)
                 .findFirst()
-                .orElseThrow(() -> new ObjectNotFoundException("Tour "
-                        + localization + " localization not found"));
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        localization + " localization for tour with id=" + id + " not found"));
 
         cur_local.setTitle(tourDTO.getTitle());
         cur_local.setDescription(tourDTO.getDescription());

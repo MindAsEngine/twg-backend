@@ -98,8 +98,8 @@ public class AgencyService {
                 agency.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
                         .findFirst()
-                        .orElseThrow(() -> new ObjectNotFoundException("Agency "
-                                + localization + " localization not found"));
+                        .orElseThrow(() -> new ObjectNotFoundException(
+                                localization + " localization for agency with id=" + id + " not found"));
         cur_local.setName(agencyDTO.getName());
         cur_local.setDescription(agencyDTO.getDescription());
         cur_local.setContacts(agencyDTO.getContacts());

@@ -96,8 +96,8 @@ public class SightService {
                 sight.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
                         .findFirst()
-                        .orElseThrow(() -> new ObjectNotFoundException("Sight "
-                                + localization + " localization not found"));
+                        .orElseThrow(() -> new ObjectNotFoundException(
+                                localization + " localization for sight with id=" + id + " not found"));
         cur_local.setName(sightDTO.getName());
         cur_local.setDescription(sightDTO.getDescription());
         cur_local.setAddress(sightDTO.getAddress());

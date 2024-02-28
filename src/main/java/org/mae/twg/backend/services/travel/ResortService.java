@@ -94,8 +94,8 @@ public class ResortService {
                 resort.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
                         .findFirst()
-                        .orElseThrow(() -> new ObjectNotFoundException("Resort "
-                                + localization + " localization not found"));
+                        .orElseThrow(() -> new ObjectNotFoundException(
+                                localization + " localization for resort with id=" + id + "not found"));
         cur_local.setName(sightDTO.getName());
         cur_local.setDescription(sightDTO.getDescription());
         localRepo.saveAndFlush(cur_local);

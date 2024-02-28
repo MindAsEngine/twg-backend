@@ -89,8 +89,8 @@ public class PropertyService {
                 property.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
                         .findFirst()
-                        .orElseThrow(() -> new ObjectNotFoundException("Property "
-                                + localization + " localization not found"));
+                        .orElseThrow(() -> new ObjectNotFoundException(
+                                localization + " localization for property with id=" + id + " not found"));
         cur_local.setTitle(propertyDTO.getTitle());
         cur_local.setDescription(propertyDTO.getDescription());
         localRepo.saveAndFlush(cur_local);

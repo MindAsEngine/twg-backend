@@ -89,8 +89,8 @@ public class CountryService {
                 country.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
                         .findFirst()
-                        .orElseThrow(() -> new ObjectNotFoundException("Country "
-                                + localization + " localization not found"));
+                        .orElseThrow(() -> new ObjectNotFoundException(
+                                localization + " localization for country with id=" + id + " not found"));
         cur_local.setName(propertyDTO.getName());
         cur_local.setDescription(propertyDTO.getDescription());
         localRepo.saveAndFlush(cur_local);

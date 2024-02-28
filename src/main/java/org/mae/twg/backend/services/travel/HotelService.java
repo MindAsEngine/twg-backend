@@ -117,8 +117,8 @@ public class HotelService {
         HotelLocal cur_local = hotel.getLocals().stream()
                 .filter(local -> local.getLocalization() == localization)
                 .findFirst()
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel "
-                        + localization + " localization not found"));
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        localization + " localization for hotel with id=" + id + " not found"));
 
         cur_local.setName(hotelDTO.getName());
         cur_local.setCity(hotelDTO.getCity());
