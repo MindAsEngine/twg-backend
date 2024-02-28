@@ -33,6 +33,15 @@ public class SightService {
         return sight;
     }
 
+    private Sight findBySlug(String slug) {
+        Sight sight = sightRepo.findBySlug(slug)
+                .orElseThrow(() -> new ObjectNotFoundException("Sight with slug=" + slug + " not found"));
+        if (sight.getIsDeleted()) {
+            throw new ObjectNotFoundException("Sight with slug=" + slug + " marked as deleted");
+        }
+        return sight;
+    }
+
     public List<SightDTO> getAll(Localization localization) {
         List<Sight> sights = sightRepo.findAll();
 
@@ -49,6 +58,10 @@ public class SightService {
 
     public SightDTO getById(Long id, Localization local) {
         return new SightDTO(findById(id), local);
+    }
+
+    public SightDTO getBySlug(String slug, Localization local) {
+        return new SightDTO(findBySlug(slug), local);
     }
 
     @Transactional
