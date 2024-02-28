@@ -2,7 +2,6 @@ package org.mae.twg.backend.utils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.NotImplementedException;
 import org.mae.twg.backend.exceptions.SlugException;
 import org.mae.twg.backend.models.travel.Model;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -46,7 +45,7 @@ public class SlugUtils {
         throw new SlugException("Locals for model with id=" + model.getId() + " not found");
     }
 
-    private String slugifyEN(String string) {
+    private String slugify(String string) {
         return string
                 .replaceAll("\r\n", "")
                 .replaceAll("\n", "")
@@ -58,7 +57,7 @@ public class SlugUtils {
     private String slugFromEN(Local local) {
         assert local.getLocalization() == Localization.EN;
 
-        return slugifyEN(local.getString().strip().toLowerCase());
+        return slugify(local.getString().strip().toLowerCase());
 
     }
 
@@ -70,11 +69,12 @@ public class SlugUtils {
             String tmpLetter = String.valueOf(letter);
             result.append(RUToEN.getOrDefault(tmpLetter, tmpLetter));
         }
-        return slugifyEN(result.toString());
+        return slugify(result.toString());
     }
 
     private String slugFromUZ(Local local) {
         assert local.getLocalization() == Localization.UZ;
-        throw new NotImplementedException("UZ string slugifying not implemented");
+
+        return slugify(local.getString().strip().toLowerCase());
     }
 }
