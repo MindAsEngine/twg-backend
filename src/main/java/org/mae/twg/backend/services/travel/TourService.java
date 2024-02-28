@@ -40,6 +40,15 @@ public class TourService {
         return tour;
     }
 
+    private Tour findBySlug(String slug) {
+        Tour tour = tourRepo.findBySlug(slug)
+                .orElseThrow(() -> new ObjectNotFoundException("Tour with slug=" + slug + " not found"));
+        if (tour.getIsDeleted()) {
+            throw new ObjectNotFoundException("Tour with slug=" + slug + " marked as deleted");
+        }
+        return tour;
+    }
+
     public List<TourDTO> getAll(Localization localization) {
         List<Tour> tours = tourRepo.findAll();
         List<TourDTO> hotelDTOs = tours.stream()
@@ -55,6 +64,10 @@ public class TourService {
 
     public TourDTO getById(Long id, Localization localization) {
         return new TourDTO(findById(id), localization);
+    }
+
+    public TourDTO getBySlug(String slug, Localization localization) {
+        return new TourDTO(findBySlug(slug), localization);
     }
 
     @Transactional

@@ -1,6 +1,7 @@
 package org.mae.twg.backend.controllers.travel;
 
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.travel.TourDTO;
 import org.mae.twg.backend.dto.travel.request.TourLocalRequestDTO;
@@ -26,10 +27,17 @@ public class TourController {
         return ResponseEntity.ok(tourService.getAll(local));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id,
-                                     @PathVariable Localization local) {
-        return ResponseEntity.ok(tourService.getById(id, local));
+    @GetMapping("/get")
+    public ResponseEntity<?> get(@PathVariable Localization local,
+                                 @RequestParam(required = false) Long id,
+                                 @RequestParam(required = false) String slug) {
+        if (id == null && slug == null) {
+            throw new ValidationException("One of id or slug is required");
+        }
+        if (id != null) {
+            return ResponseEntity.ok(tourService.getById(id, local));
+        }
+        return ResponseEntity.ok(tourService.getBySlug(slug, local));
     }
 
     @DeleteMapping("/{id}/delete")
