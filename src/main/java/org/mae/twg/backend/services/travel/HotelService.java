@@ -32,9 +32,18 @@ public class HotelService {
 
     private Hotel findById(Long id) {
         Hotel hotel = hotelRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + id + " not found"));
+                .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
         if (hotel.getIsDeleted()) {
-            throw new ObjectNotFoundException("Property with id=" + id + " marked as deleted");
+            throw new ObjectNotFoundException("Hotel with id=" + id + " marked as deleted");
+        }
+        return hotel;
+    }
+
+    private Hotel findBySlug(String slug) {
+        Hotel hotel = hotelRepo.findBySlug(slug)
+                .orElseThrow(() -> new ObjectNotFoundException("Hotel with slug=" + slug + " not found"));
+        if (hotel.getIsDeleted()) {
+            throw new ObjectNotFoundException("Hotel with slug=" + slug + " marked as deleted");
         }
         return hotel;
     }
@@ -54,6 +63,10 @@ public class HotelService {
 
     public HotelDTO getById(Long id, Localization localization) {
         return new HotelDTO(findById(id), localization);
+    }
+
+    public HotelDTO getBySlug(String slug, Localization localization) {
+        return new HotelDTO(findBySlug(slug), localization);
     }
 
     @Transactional
