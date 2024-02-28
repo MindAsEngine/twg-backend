@@ -33,6 +33,15 @@ public class ResortService {
         return resort;
     }
 
+    private Resort findBySlug(String slug) {
+        Resort resort = resortRepo.findBySlug(slug)
+                .orElseThrow(() -> new ObjectNotFoundException("Resort with slug=" + slug + " not found"));
+        if (resort.getIsDeleted()) {
+            throw new ObjectNotFoundException("Resort with slug=" + slug + " marked as deleted");
+        }
+        return resort;
+    }
+
     public List<ResortDTO> getAll(Localization localization) {
         List<Resort> resorts = resortRepo.findAll();
         List<ResortDTO> resortsDTOs = resorts.stream()
@@ -48,6 +57,10 @@ public class ResortService {
 
     public ResortDTO getById(Long id, Localization local) {
         return new ResortDTO(findById(id), local);
+    }
+
+    public ResortDTO getBySlug(String slug, Localization local) {
+        return new ResortDTO(findBySlug(slug), local);
     }
 
     @Transactional
