@@ -23,7 +23,7 @@ public class SlugUtils {
             Map.entry("и", "i"), Map.entry("й", "y"), Map.entry("к", "k"),
             Map.entry("л", "l"), Map.entry("м", "m"), Map.entry("н", "n"),
             Map.entry("о", "o"), Map.entry("п", "p"), Map.entry("р", "r"),
-            Map.entry("с", "c"), Map.entry("т", "t"), Map.entry("у", "u"),
+            Map.entry("с", "s"), Map.entry("т", "t"), Map.entry("у", "u"),
             Map.entry("ф", "f"), Map.entry("х", "h"), Map.entry("ц", "c"),
             Map.entry("ч", "ch"), Map.entry("ш", "sh"), Map.entry("щ", "sch"),
             Map.entry("ъ", ""), Map.entry("ы", "y"), Map.entry("ь", ""),
