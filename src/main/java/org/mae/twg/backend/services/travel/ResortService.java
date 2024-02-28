@@ -10,6 +10,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.ResortLocal;
 import org.mae.twg.backend.repositories.travel.ResortRepo;
 import org.mae.twg.backend.repositories.travel.localization.ResortLocalRepo;
+import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class ResortService {
     private final ResortRepo resortRepo;
     private final ResortLocalRepo localRepo;
+    private final SlugUtils slugUtils;
 
     private Resort findById(Long id) {
         Resort resort = resortRepo.findById(id)
@@ -65,6 +67,9 @@ public class ResortService {
                         local, resort);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         resort.addLocal(resortLocal);
+
+        resort.setSlug(slugUtils.getSlug(resort));
+        resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, local);
     }
 
@@ -84,6 +89,9 @@ public class ResortService {
                         localization, resort);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         resort.addLocal(resortLocal);
+
+        resort.setSlug(slugUtils.getSlug(resort));
+        resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, localization);
     }
 
@@ -99,6 +107,9 @@ public class ResortService {
         cur_local.setName(sightDTO.getName());
         cur_local.setDescription(sightDTO.getDescription());
         localRepo.saveAndFlush(cur_local);
+
+        resort.setSlug(slugUtils.getSlug(resort));
+        resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, localization);
     }
 }
