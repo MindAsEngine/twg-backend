@@ -34,7 +34,7 @@ public class PropertyService {
         List<Property> properties = propertyRepo.findAll();
         List<PropertyDTO> propertyDTOs = properties.stream()
                 .filter(property -> !property.getIsDeleted())
-                .filter(property -> property.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(property -> property.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(property -> new PropertyDTO(property, localization))
                 .toList();
         if (propertyDTOs.isEmpty()) {
@@ -66,7 +66,7 @@ public class PropertyService {
     @Transactional
     public PropertyDTO addLocal(Long id, PropertyRequestDTO propertyDTO, Localization localization) {
         Property property = findById(id);
-        boolean isExists = property.getLocals().stream()
+        boolean isExists = property.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
             throw new ObjectAlreadyExistsException(

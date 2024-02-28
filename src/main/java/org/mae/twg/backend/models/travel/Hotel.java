@@ -18,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "hotels")
-public class Hotel {
+public class Hotel implements Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "hotel_id")
@@ -27,9 +27,8 @@ public class Hotel {
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private Boolean isDeleted = Boolean.FALSE;
 
-//    @Column(name = "slug", unique = true)
-//    private String slug;
-//    TODO: add slug generation
+    @Column(name = "slug", unique = true)
+    private String slug;
 
     @OneToMany(mappedBy = "hotel",
             cascade = CascadeType.ALL,
@@ -101,5 +100,15 @@ public class Hotel {
     public void removeProperty(Property property) {
         properties.remove(property);
         property.getHotels().remove(this);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public List<HotelLocal> getLocalizations() {
+        return locals;
     }
 }

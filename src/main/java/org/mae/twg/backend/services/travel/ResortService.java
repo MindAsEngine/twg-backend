@@ -10,6 +10,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.ResortLocal;
 import org.mae.twg.backend.repositories.travel.ResortRepo;
 import org.mae.twg.backend.repositories.travel.localization.ResortLocalRepo;
+import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class ResortService {
     private final ResortRepo resortRepo;
     private final ResortLocalRepo localRepo;
+    private final SlugUtils slugUtils;
 
     private Resort findById(Long id) {
         Resort resort = resortRepo.findById(id)
@@ -31,11 +33,20 @@ public class ResortService {
         return resort;
     }
 
+    private Resort findBySlug(String slug) {
+        Resort resort = resortRepo.findBySlug(slug)
+                .orElseThrow(() -> new ObjectNotFoundException("Resort with slug=" + slug + " not found"));
+        if (resort.getIsDeleted()) {
+            throw new ObjectNotFoundException("Resort with slug=" + slug + " marked as deleted");
+        }
+        return resort;
+    }
+
     public List<ResortDTO> getAll(Localization localization) {
         List<Resort> resorts = resortRepo.findAll();
         List<ResortDTO> resortsDTOs = resorts.stream()
                 .filter(resort -> !resort.getIsDeleted())
-                .filter(resort -> resort.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(resort -> resort.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(resort -> new ResortDTO(resort, localization))
                 .toList();
         if (resortsDTOs.isEmpty()) {
@@ -46,6 +57,10 @@ public class ResortService {
 
     public ResortDTO getById(Long id, Localization local) {
         return new ResortDTO(findById(id), local);
+    }
+
+    public ResortDTO getBySlug(String slug, Localization local) {
+        return new ResortDTO(findBySlug(slug), local);
     }
 
     @Transactional
@@ -65,13 +80,16 @@ public class ResortService {
                         local, resort);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         resort.addLocal(resortLocal);
+
+        resort.setSlug(slugUtils.getSlug(resort));
+        resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, local);
     }
 
     @Transactional
     public ResortDTO addLocal(Long id, ResortRequestDTO sightDTO, Localization localization) {
         Resort resort = findById(id);
-        boolean isExists = resort.getLocals().stream()
+        boolean isExists = resort.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
             throw new ObjectAlreadyExistsException(
@@ -84,6 +102,9 @@ public class ResortService {
                         localization, resort);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         resort.addLocal(resortLocal);
+
+        resort.setSlug(slugUtils.getSlug(resort));
+        resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, localization);
     }
 
@@ -99,6 +120,9 @@ public class ResortService {
         cur_local.setName(sightDTO.getName());
         cur_local.setDescription(sightDTO.getDescription());
         localRepo.saveAndFlush(cur_local);
+
+        resort.setSlug(slugUtils.getSlug(resort));
+        resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, localization);
     }
 }

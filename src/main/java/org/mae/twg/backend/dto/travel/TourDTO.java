@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TourDTO implements Serializable {
     private Long id;
+    private String slug;
     private String title;
     private TourType type;
     private String description;
@@ -35,6 +36,7 @@ public class TourDTO implements Serializable {
 
     public TourDTO(Tour tour, Localization localization) {
         this.id = tour.getId();
+        this.slug = tour.getSlug();
         TourLocal cur_local =
                 tour.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)

@@ -15,6 +15,7 @@ import org.mae.twg.backend.repositories.travel.HotelRepo;
 import org.mae.twg.backend.repositories.travel.PropertyRepo;
 import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
+import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +28,22 @@ public class HotelService {
     private final HotelLocalRepo localRepo;
     private final PropertyRepo propertyRepo;
     private final SightRepo sightRepo;
+    private final SlugUtils slugUtils;
 
     private Hotel findById(Long id) {
         Hotel hotel = hotelRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + id + " not found"));
+                .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
         if (hotel.getIsDeleted()) {
-            throw new ObjectNotFoundException("Property with id=" + id + " marked as deleted");
+            throw new ObjectNotFoundException("Hotel with id=" + id + " marked as deleted");
+        }
+        return hotel;
+    }
+
+    private Hotel findBySlug(String slug) {
+        Hotel hotel = hotelRepo.findBySlug(slug)
+                .orElseThrow(() -> new ObjectNotFoundException("Hotel with slug=" + slug + " not found"));
+        if (hotel.getIsDeleted()) {
+            throw new ObjectNotFoundException("Hotel with slug=" + slug + " marked as deleted");
         }
         return hotel;
     }
@@ -41,7 +52,7 @@ public class HotelService {
         List<Hotel> hotels = hotelRepo.findAll();
         List<HotelDTO> hotelDTOs = hotels.stream()
                 .filter(hotel -> !hotel.getIsDeleted())
-                .filter(hotel -> hotel.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(hotel -> hotel.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(hotel -> new HotelDTO(hotel, localization))
                 .toList();
         if (hotelDTOs.isEmpty()) {
@@ -52,6 +63,10 @@ public class HotelService {
 
     public HotelDTO getById(Long id, Localization localization) {
         return new HotelDTO(findById(id), localization);
+    }
+
+    public HotelDTO getBySlug(String slug, Localization localization) {
+        return new HotelDTO(findBySlug(slug), localization);
     }
 
     @Transactional
@@ -87,13 +102,16 @@ public class HotelService {
                 localization, hotel);
         localRepo.saveAndFlush(local);
         hotel.addLocal(local);
+
+        hotel.setSlug(slugUtils.getSlug(hotel));
+        hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
     }
 
     @Transactional
     public HotelDTO addLocal(Long id, HotelLocalRequestDTO hotelDTO, Localization localization) {
         Hotel hotel = findById(id);
-        boolean isExists = hotel.getLocals().stream()
+        boolean isExists = hotel.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
             throw new ObjectAlreadyExistsException(
@@ -108,6 +126,9 @@ public class HotelService {
                         localization, hotel);
         hotelLocal = localRepo.saveAndFlush(hotelLocal);
         hotel.addLocal(hotelLocal);
+
+        hotel.setSlug(slugUtils.getSlug(hotel));
+        hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
     }
 
@@ -125,6 +146,9 @@ public class HotelService {
         cur_local.setDescription(hotelDTO.getDescription());
         cur_local.setAddress(hotelDTO.getAddress());
         localRepo.saveAndFlush(cur_local);
+
+        hotel.setSlug(slugUtils.getSlug(hotel));
+        hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
     }
 

@@ -14,6 +14,7 @@ import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.repositories.business.AgencyRepo;
 import org.mae.twg.backend.repositories.travel.*;
 import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
+import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ public class TourService {
     private final ResortRepo resortRepo;
     private final CountryRepo countryRepo;
     private final AgencyRepo agencyRepo;
+    private final SlugUtils slugUtils;
 
     private Tour findById(Long id) {
         Tour tour = tourRepo.findById(id)
@@ -38,11 +40,20 @@ public class TourService {
         return tour;
     }
 
+    private Tour findBySlug(String slug) {
+        Tour tour = tourRepo.findBySlug(slug)
+                .orElseThrow(() -> new ObjectNotFoundException("Tour with slug=" + slug + " not found"));
+        if (tour.getIsDeleted()) {
+            throw new ObjectNotFoundException("Tour with slug=" + slug + " marked as deleted");
+        }
+        return tour;
+    }
+
     public List<TourDTO> getAll(Localization localization) {
         List<Tour> tours = tourRepo.findAll();
         List<TourDTO> hotelDTOs = tours.stream()
                 .filter(tour -> !tour.getIsDeleted())
-                .filter(tour -> tour.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(tour -> tour.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(tour -> new TourDTO(tour, localization))
                 .toList();
         if (hotelDTOs.isEmpty()) {
@@ -53,6 +64,10 @@ public class TourService {
 
     public TourDTO getById(Long id, Localization localization) {
         return new TourDTO(findById(id), localization);
+    }
+
+    public TourDTO getBySlug(String slug, Localization localization) {
+        return new TourDTO(findBySlug(slug), localization);
     }
 
     @Transactional
@@ -100,13 +115,16 @@ public class TourService {
                 tour, localization);
         localRepo.saveAndFlush(local);
         tour.addLocal(local);
+
+        tour.setSlug(slugUtils.getSlug(tour));
+        tourRepo.saveAndFlush(tour);
         return new TourDTO(tour, localization);
     }
 
     @Transactional
     public TourDTO addLocal(Long id, TourLocalRequestDTO tourDTO, Localization localization) {
         Tour tour = findById(id);
-        boolean isExists = tour.getLocals().stream()
+        boolean isExists = tour.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
             throw new ObjectAlreadyExistsException(
@@ -119,6 +137,9 @@ public class TourService {
                         tour, localization);
         tourLocal = localRepo.saveAndFlush(tourLocal);
         tour.addLocal(tourLocal);
+
+        tour.setSlug(slugUtils.getSlug(tour));
+        tourRepo.saveAndFlush(tour);
         return new TourDTO(tour, localization);
     }
 
@@ -134,6 +155,9 @@ public class TourService {
         cur_local.setTitle(tourDTO.getTitle());
         cur_local.setDescription(tourDTO.getDescription());
         localRepo.saveAndFlush(cur_local);
+
+        tour.setSlug(slugUtils.getSlug(tour));
+        tourRepo.saveAndFlush(tour);
         return new TourDTO(tour, localization);
     }
 

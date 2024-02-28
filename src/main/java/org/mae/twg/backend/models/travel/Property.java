@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "properties")
-public class Property {
+public class Property implements Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "property_id")
@@ -41,5 +41,15 @@ public class Property {
     public void removeLocal(PropertyLocal local) {
         locals.remove(local);
         local.setProperty(this);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public List<PropertyLocal> getLocalizations() {
+        return locals;
     }
 }

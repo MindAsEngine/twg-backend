@@ -13,6 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class SightLightDTO implements Serializable {
     private Long id;
+    private String slug;
     private String name;
 //    private String description;
 //    private String address;
@@ -21,6 +22,7 @@ public class SightLightDTO implements Serializable {
 
     public SightLightDTO(Sight sight, Localization localization) {
         this.id = sight.getId();
+        this.slug = sight.getSlug();
         SightLocal cur_local =
                 sight.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)

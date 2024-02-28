@@ -1,13 +1,12 @@
 package org.mae.twg.backend.controllers.travel;
 
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.travel.SightDTO;
 import org.mae.twg.backend.dto.travel.request.SightRequestDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.SightService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,18 +18,23 @@ import java.net.URISyntaxException;
 @RequestMapping("/travel/{local}/sights")
 public class SightController {
     private final SightService sightService;
-//    private final Logger log = LoggerFactory.getLogger(SightController.class);
 
     @GetMapping
     public ResponseEntity<?> getAll(@PathVariable Localization local) {
         return ResponseEntity.ok(sightService.getAll(local));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getSightById(@PathVariable Long id,
-                                          @PathVariable Localization local) {
-        SightDTO sightDTO = sightService.getById(id, local);
-        return ResponseEntity.ok(sightDTO);
+    @GetMapping("/get")
+    public ResponseEntity<?> get(@PathVariable Localization local,
+                                 @RequestParam(required = false) Long id,
+                                 @RequestParam(required = false) String slug) {
+        if (id == null && slug == null) {
+            throw new ValidationException("One of id or slug is required");
+        }
+        if (id != null) {
+            return ResponseEntity.ok(sightService.getById(id, local));
+        }
+        return ResponseEntity.ok(sightService.getBySlug(slug, local));
     }
 
     @DeleteMapping("/{id}/delete")
