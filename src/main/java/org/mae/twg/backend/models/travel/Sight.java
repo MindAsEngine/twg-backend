@@ -28,7 +28,6 @@ public class Sight implements Model {
 
     @Column(name = "slug", unique = true)
     private String slug;
-//    TODO: add slug generation
 
     @OneToMany(mappedBy = "sight",
             cascade = CascadeType.ALL,
