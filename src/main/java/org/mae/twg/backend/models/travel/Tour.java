@@ -17,7 +17,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tours")
-public class Tour {
+public class Tour implements Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "tour_id")
@@ -124,5 +124,15 @@ public class Tour {
     public void removeResort(Resort resort) {
         resorts.remove(resort);
         resort.getTours().remove(this);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public List<TourLocal> getLocalizations() {
+        return locals;
     }
 }

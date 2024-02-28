@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "countries")
-public class Country {
+public class Country implements Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "country_id")
@@ -45,5 +45,15 @@ public class Country {
     public void removeLocal(CountryLocal local) {
         locals.remove(local);
         local.setCountry(this);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public List<CountryLocal> getLocalizations() {
+        return locals;
     }
 }

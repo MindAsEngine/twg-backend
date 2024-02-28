@@ -35,7 +35,7 @@ public class ResortService {
         List<Resort> resorts = resortRepo.findAll();
         List<ResortDTO> resortsDTOs = resorts.stream()
                 .filter(resort -> !resort.getIsDeleted())
-                .filter(resort -> resort.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(resort -> resort.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(resort -> new ResortDTO(resort, localization))
                 .toList();
         if (resortsDTOs.isEmpty()) {
@@ -71,7 +71,7 @@ public class ResortService {
     @Transactional
     public ResortDTO addLocal(Long id, ResortRequestDTO sightDTO, Localization localization) {
         Resort resort = findById(id);
-        boolean isExists = resort.getLocals().stream()
+        boolean isExists = resort.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
             throw new ObjectAlreadyExistsException(

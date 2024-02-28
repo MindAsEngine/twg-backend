@@ -17,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "sights")
-public class Sight {
+public class Sight implements Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "sight_id")
@@ -63,5 +63,15 @@ public class Sight {
     public void removeMedia(SightMedia media) {
         medias.remove(media);
         media.setSight(null);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public List<SightLocal> getLocalizations() {
+        return locals;
     }
 }

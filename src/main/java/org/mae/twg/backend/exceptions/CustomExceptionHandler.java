@@ -37,7 +37,8 @@ public class CustomExceptionHandler {
         return new ResponseErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
     @ExceptionHandler(value = {
-            RuntimeException.class
+            RuntimeException.class,
+            SlugException.class
     })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseErrorDTO responseUnhandledException(RuntimeException exception) {

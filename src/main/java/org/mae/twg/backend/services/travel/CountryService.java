@@ -34,7 +34,7 @@ public class CountryService {
         List<Country> countries = countryRepo.findAll();
         List<CountryDTO> countryDTOs = countries.stream()
                 .filter(country -> !country.getIsDeleted())
-                .filter(country -> country.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(country -> country.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(country -> new CountryDTO(country, localization))
                 .toList();
         if (countryDTOs.isEmpty()) {
@@ -66,7 +66,7 @@ public class CountryService {
     @Transactional
     public CountryDTO addLocal(Long id, CountryRequestDTO propertyDTO, Localization localization) {
         Country country = findById(id);
-        boolean isExists = country.getLocals().stream()
+        boolean isExists = country.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
             throw new ObjectAlreadyExistsException(

@@ -3,6 +3,7 @@ package org.mae.twg.backend.models.travel.localization;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.travel.Country;
+import org.mae.twg.backend.models.travel.Model;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
@@ -12,7 +13,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "country_local")
-public class CountryLocal {
+public class CountryLocal implements Local{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,5 +43,15 @@ public class CountryLocal {
         this.description = description;
         this.localization = localization;
         this.country = country;
+    }
+
+    @Override
+    public String getString() {
+        return name;
+    }
+
+    @Override
+    public Model getModel() {
+        return country;
     }
 }

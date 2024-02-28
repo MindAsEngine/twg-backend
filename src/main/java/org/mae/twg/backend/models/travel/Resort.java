@@ -17,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "resorts")
-public class Resort {
+public class Resort implements Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "resort_id")
@@ -62,5 +62,15 @@ public class Resort {
     public void removeMedia(ResortMedia media) {
         medias.remove(media);
         media.setResort(null);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public List<ResortLocal> getLocalizations() {
+        return locals;
     }
 }

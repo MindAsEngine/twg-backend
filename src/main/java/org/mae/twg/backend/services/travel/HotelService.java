@@ -41,7 +41,7 @@ public class HotelService {
         List<Hotel> hotels = hotelRepo.findAll();
         List<HotelDTO> hotelDTOs = hotels.stream()
                 .filter(hotel -> !hotel.getIsDeleted())
-                .filter(hotel -> hotel.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(hotel -> hotel.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(hotel -> new HotelDTO(hotel, localization))
                 .toList();
         if (hotelDTOs.isEmpty()) {
@@ -93,7 +93,7 @@ public class HotelService {
     @Transactional
     public HotelDTO addLocal(Long id, HotelLocalRequestDTO hotelDTO, Localization localization) {
         Hotel hotel = findById(id);
-        boolean isExists = hotel.getLocals().stream()
+        boolean isExists = hotel.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
             throw new ObjectAlreadyExistsException(

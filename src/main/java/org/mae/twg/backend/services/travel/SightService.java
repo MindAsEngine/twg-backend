@@ -35,7 +35,7 @@ public class SightService {
         List<Sight> sights = sightRepo.findAll();
         List<SightDTO> sightDTOs = sights.stream()
                 .filter(sight -> !sight.getIsDeleted())
-                .filter(sight -> sight.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
+                .filter(sight -> sight.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(sight -> new SightDTO(sight, localization))
                 .toList();
         if (sightDTOs.isEmpty()) {
