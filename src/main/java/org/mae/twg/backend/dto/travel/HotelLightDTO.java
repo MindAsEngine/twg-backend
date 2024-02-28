@@ -13,6 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class HotelLightDTO implements Serializable {
     private Long id;
+    private String slug;
     private String name;
 //    private String city;
 //    private String description;
@@ -24,6 +25,7 @@ public class HotelLightDTO implements Serializable {
 
     public HotelLightDTO(Hotel hotel, Localization localization) {
         this.id = hotel.getId();
+        this.slug = hotel.getSlug();
         HotelLocal cur_local =
                 hotel.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)

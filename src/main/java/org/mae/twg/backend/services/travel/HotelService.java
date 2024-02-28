@@ -15,6 +15,7 @@ import org.mae.twg.backend.repositories.travel.HotelRepo;
 import org.mae.twg.backend.repositories.travel.PropertyRepo;
 import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
+import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class HotelService {
     private final HotelLocalRepo localRepo;
     private final PropertyRepo propertyRepo;
     private final SightRepo sightRepo;
+    private final SlugUtils slugUtils;
 
     private Hotel findById(Long id) {
         Hotel hotel = hotelRepo.findById(id)
@@ -87,6 +89,9 @@ public class HotelService {
                 localization, hotel);
         localRepo.saveAndFlush(local);
         hotel.addLocal(local);
+
+        hotel.setSlug(slugUtils.getSlug(hotel));
+        hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
     }
 
@@ -108,6 +113,9 @@ public class HotelService {
                         localization, hotel);
         hotelLocal = localRepo.saveAndFlush(hotelLocal);
         hotel.addLocal(hotelLocal);
+
+        hotel.setSlug(slugUtils.getSlug(hotel));
+        hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
     }
 
@@ -125,6 +133,9 @@ public class HotelService {
         cur_local.setDescription(hotelDTO.getDescription());
         cur_local.setAddress(hotelDTO.getAddress());
         localRepo.saveAndFlush(cur_local);
+
+        hotel.setSlug(slugUtils.getSlug(hotel));
+        hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
     }
 

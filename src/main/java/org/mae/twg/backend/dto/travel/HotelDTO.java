@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Hotel;
-import org.mae.twg.backend.models.travel.Property;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
@@ -17,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class HotelDTO implements Serializable {
     private Long id;
+    private String slug;
     private String name;
     private String city;
     private Stars stars;
@@ -29,6 +29,7 @@ public class HotelDTO implements Serializable {
 
     public HotelDTO(Hotel hotel, Localization localization) {
         this.id = hotel.getId();
+        this.slug = hotel.getSlug();
         HotelLocal cur_local =
                 hotel.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
