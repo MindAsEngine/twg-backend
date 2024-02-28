@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -73,6 +70,8 @@ public class JwtUtils {
     }
 
     public RefreshToken createRefreshToken(User user) {
+        refreshTokenRepo.findByUser(user).ifPresent(refreshTokenRepo::delete);
+
         RefreshToken refreshToken = new RefreshToken();
 
         refreshToken.setUser(user);
