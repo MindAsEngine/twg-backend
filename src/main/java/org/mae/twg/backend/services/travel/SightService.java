@@ -10,6 +10,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.localization.SightLocalRepo;
+import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class SightService {
     private final SightRepo sightRepo;
     private final SightLocalRepo localRepo;
+    private final SlugUtils slugUtils;
 
     private Sight findById(Long id) {
         Sight sight = sightRepo.findById(id)
@@ -33,6 +35,7 @@ public class SightService {
 
     public List<SightDTO> getAll(Localization localization) {
         List<Sight> sights = sightRepo.findAll();
+
         List<SightDTO> sightDTOs = sights.stream()
                 .filter(sight -> !sight.getIsDeleted())
                 .filter(sight -> sight.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
@@ -66,13 +69,16 @@ public class SightService {
                         sight, local);
         sightLocal = localRepo.saveAndFlush(sightLocal);
         sight.addLocal(sightLocal);
+
+        sight.setSlug(slugUtils.getSlug(sight));
+        sightRepo.saveAndFlush(sight);
         return new SightDTO(sight, local);
     }
 
     @Transactional
     public SightDTO addLocal(Long id, SightRequestDTO sightDTO, Localization localization) {
         Sight sight = findById(id);
-        boolean isExists = sight.getLocals().stream()
+        boolean isExists = sight.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
             throw new ObjectAlreadyExistsException(
@@ -86,6 +92,9 @@ public class SightService {
                         sight, localization);
         sightLocal = localRepo.saveAndFlush(sightLocal);
         sight.addLocal(sightLocal);
+
+        sight.setSlug(slugUtils.getSlug(sight));
+        sightRepo.saveAndFlush(sight);
         return new SightDTO(sight, localization);
     }
 
@@ -102,6 +111,9 @@ public class SightService {
         cur_local.setDescription(sightDTO.getDescription());
         cur_local.setAddress(sightDTO.getAddress());
         localRepo.saveAndFlush(cur_local);
+
+        sight.setSlug(slugUtils.getSlug(sight));
+        sightRepo.saveAndFlush(sight);
         return new SightDTO(sight, localization);
     }
 }

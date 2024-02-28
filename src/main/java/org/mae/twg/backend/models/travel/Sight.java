@@ -26,8 +26,8 @@ public class Sight implements Model {
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private Boolean isDeleted = Boolean.FALSE;
 
-//    @Column(name = "slug", unique = true)
-//    private String slug;
+    @Column(name = "slug", unique = true)
+    private String slug;
 //    TODO: add slug generation
 
     @OneToMany(mappedBy = "sight",
