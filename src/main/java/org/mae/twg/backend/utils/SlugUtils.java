@@ -3,9 +3,9 @@ package org.mae.twg.backend.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.mae.twg.backend.exceptions.SlugException;
-import org.mae.twg.backend.models.travel.Model;
+import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.enums.Localization;
-import org.mae.twg.backend.models.travel.localization.Local;
+import org.mae.twg.backend.models.Local;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
