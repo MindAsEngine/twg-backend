@@ -11,7 +11,7 @@ import org.mae.twg.backend.exceptions.TokenValidationException;
 import org.mae.twg.backend.models.auth.RefreshToken;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
-import org.mae.twg.backend.utils.config.ConfigService;
+import org.mae.twg.backend.services.ConfigService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
