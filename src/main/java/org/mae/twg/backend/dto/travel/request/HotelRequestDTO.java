@@ -2,7 +2,6 @@ package org.mae.twg.backend.dto.travel.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.enums.Stars;
 
 import java.io.Serializable;
@@ -16,7 +15,6 @@ public class HotelRequestDTO implements Serializable {
     private Stars stars;
     private String description;
     private String address;
-    private Localization localization;
     private List<Long> propertyIds;
     private List<Long> sightIds;
 }

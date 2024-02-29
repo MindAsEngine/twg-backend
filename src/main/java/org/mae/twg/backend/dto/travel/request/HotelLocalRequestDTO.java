@@ -2,7 +2,6 @@ package org.mae.twg.backend.dto.travel.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.mae.twg.backend.models.travel.enums.Localization;
 
 import java.io.Serializable;
 
@@ -13,5 +12,4 @@ public class HotelLocalRequestDTO implements Serializable {
     private String city;
     private String description;
     private String address;
-    private Localization localization;
 }
