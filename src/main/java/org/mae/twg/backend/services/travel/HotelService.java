@@ -15,6 +15,7 @@ import org.mae.twg.backend.repositories.travel.HotelRepo;
 import org.mae.twg.backend.repositories.travel.PropertyRepo;
 import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
+import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class HotelService {
+public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRequestDTO> {
     private final HotelRepo hotelRepo;
     private final HotelLocalRepo localRepo;
     private final PropertyRepo propertyRepo;

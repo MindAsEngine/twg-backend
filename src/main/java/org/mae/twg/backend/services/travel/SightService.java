@@ -10,6 +10,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.localization.SightLocalRepo;
+import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SightService {
+public class SightService implements TravelService<SightRequestDTO, SightRequestDTO> {
     private final SightRepo sightRepo;
     private final SightLocalRepo localRepo;
     private final SlugUtils slugUtils;

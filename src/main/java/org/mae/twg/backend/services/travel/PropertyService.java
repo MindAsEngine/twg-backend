@@ -10,6 +10,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.PropertyLocal;
 import org.mae.twg.backend.repositories.travel.PropertyRepo;
 import org.mae.twg.backend.repositories.travel.localization.PropertyLocalRepo;
+import org.mae.twg.backend.services.TravelService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PropertyService {
+public class PropertyService implements TravelService<PropertyRequestDTO, PropertyRequestDTO> {
     private final PropertyRepo propertyRepo;
     private final PropertyLocalRepo localRepo;
 

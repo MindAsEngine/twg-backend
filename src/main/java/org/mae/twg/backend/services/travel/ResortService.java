@@ -10,6 +10,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.ResortLocal;
 import org.mae.twg.backend.repositories.travel.ResortRepo;
 import org.mae.twg.backend.repositories.travel.localization.ResortLocalRepo;
+import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ResortService {
+public class ResortService implements TravelService<ResortRequestDTO, ResortRequestDTO> {
     private final ResortRepo resortRepo;
     private final ResortLocalRepo localRepo;
     private final SlugUtils slugUtils;
