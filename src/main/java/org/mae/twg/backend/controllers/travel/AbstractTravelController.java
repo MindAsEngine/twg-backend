@@ -2,7 +2,6 @@ package org.mae.twg.backend.controllers.travel;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.RequestDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.TravelService;
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-public abstract class AbstractTravelController<ServiceType extends TravelService, ModelReqDTO, LocalReqDTO>
+public abstract class AbstractTravelController<
+        ServiceType extends TravelService<ModelReqDTO, LocalReqDTO>,
+        ModelReqDTO, LocalReqDTO>
         implements TravelController<ModelReqDTO, LocalReqDTO> {
 
     private final ServiceType service;

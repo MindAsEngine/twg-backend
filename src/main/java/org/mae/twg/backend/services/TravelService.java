@@ -1,7 +1,6 @@
 package org.mae.twg.backend.services;
 
 import org.mae.twg.backend.dto.ModelDTO;
-import org.mae.twg.backend.dto.RequestDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 import java.util.List;

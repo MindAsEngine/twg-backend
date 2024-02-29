@@ -1,17 +1,11 @@
 package org.mae.twg.backend.controllers.travel;
 
-import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
-import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.ResortDTO;
 import org.mae.twg.backend.dto.travel.request.ResortRequestDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.ResortService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping("/travel/{local}/resorts")

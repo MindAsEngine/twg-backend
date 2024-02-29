@@ -2,8 +2,6 @@ package org.mae.twg.backend.controllers.travel;
 
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
-import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.HotelDTO;
 import org.mae.twg.backend.dto.travel.request.HotelLocalRequestDTO;
 import org.mae.twg.backend.dto.travel.request.HotelRequestDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -11,8 +9,6 @@ import org.mae.twg.backend.services.travel.HotelService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
