@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.dto.business.AgencyDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Tour;
@@ -10,13 +11,12 @@ import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class TourDTO implements Serializable {
+public class TourDTO implements ModelDTO {
     private Long id;
     private String slug;
     private String title;

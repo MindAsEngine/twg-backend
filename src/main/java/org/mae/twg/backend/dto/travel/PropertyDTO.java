@@ -2,16 +2,15 @@ package org.mae.twg.backend.dto.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Property;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.PropertyLocal;
 
-import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
-public class PropertyDTO implements Serializable {
+public class PropertyDTO implements ModelDTO {
     private Long id;
     private String title;
     private String description;
