@@ -38,15 +38,23 @@ public class ConfigService {
     }
 
     public Integer getRefreshExpiration() {
-        return Integer.valueOf(
-                get(refreshExpirationKey)
-                        .getValue());
+        try {
+            return Integer.valueOf(
+                    get(refreshExpirationKey)
+                            .getValue());
+        } catch (ObjectNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public Integer getAccessExpiration() {
-        return Integer.valueOf(
-                get(accessExpirationKey)
-                        .getValue());
+        try {
+            return Integer.valueOf(
+                    get(accessExpirationKey)
+                            .getValue());
+        } catch (ObjectNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public ConfigDTO put(String key, String value) {

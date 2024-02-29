@@ -43,7 +43,7 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseErrorDTO responseUnhandledException(RuntimeException exception) {
         log.error(exception.getMessage());
-        return new ResponseErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return new ResponseErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 
 }
