@@ -2,6 +2,7 @@ package org.mae.twg.backend.models.travel;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.localization.CountryLocal;
 
 import java.util.ArrayList;
