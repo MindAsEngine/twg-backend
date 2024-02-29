@@ -55,7 +55,7 @@ public class ConfigService {
     }
 
     public ConfigDTO get(String key) {
-        if (configRepo.exists(key)) {
+        if (!configRepo.exists(key)) {
             throw new ObjectNotFoundException("Config " + key + " not found");
         }
         return new ConfigDTO(key, configRepo.find(key));
