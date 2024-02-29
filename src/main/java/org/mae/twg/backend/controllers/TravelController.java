@@ -1,4 +1,4 @@
-package org.mae.twg.backend.controllers.travel;
+package org.mae.twg.backend.controllers;
 
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.springframework.http.ResponseEntity;

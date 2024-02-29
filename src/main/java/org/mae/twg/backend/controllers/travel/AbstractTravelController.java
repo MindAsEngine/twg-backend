@@ -2,6 +2,7 @@ package org.mae.twg.backend.controllers.travel;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.mae.twg.backend.controllers.TravelController;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.TravelService;
 import org.springframework.http.HttpStatus;
