@@ -5,7 +5,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.admin.ConfigDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
-import org.mae.twg.backend.repositories.admin.RedisConfigRepo;
+import org.mae.twg.backend.repositories.admin.RedisRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ConfigService {
     @NonNull
-    private final RedisConfigRepo configRepo;
+    private final RedisRepo<String, String> configRepo;
 
     @Value("${config.jwt.refresh.expiration_hours}")
     private Long refreshExpirationHours;

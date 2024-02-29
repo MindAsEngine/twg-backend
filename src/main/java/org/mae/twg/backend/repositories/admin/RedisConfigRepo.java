@@ -18,7 +18,7 @@ public class RedisConfigRepo implements RedisRepo<String, String> {
     }
 
     @PostConstruct
-    private void inti() {
+    private void init() {
         hashOperations = redisTemplate.opsForHash();
     }
 
