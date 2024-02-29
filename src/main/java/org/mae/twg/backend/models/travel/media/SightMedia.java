@@ -2,6 +2,8 @@ package org.mae.twg.backend.models.travel.media;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.mae.twg.backend.models.Media;
+import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.Sight;
 
 @Entity
@@ -11,7 +13,7 @@ import org.mae.twg.backend.models.travel.Sight;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "sight_medias")
-public class SightMedia {
+public class SightMedia implements Media {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "sight_media_id")
@@ -25,4 +27,9 @@ public class SightMedia {
     @NonNull
     @Column(name = "media_path")
     private String mediaPath;
+
+    @Override
+    public Model getModel() {
+        return sight;
+    }
 }
