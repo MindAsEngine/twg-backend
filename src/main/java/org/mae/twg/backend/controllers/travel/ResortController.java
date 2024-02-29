@@ -13,15 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/travel/{local}/resorts")
-public class ResortController {
-    private final ResortService resortService;
+public class ResortController extends AbstractTravelController<ResortService, ResortRequestDTO, ResortRequestDTO>{
 
-    @GetMapping
-    public ResponseEntity<?> getAll(@PathVariable Localization local) {
-        return ResponseEntity.ok(resortService.getAll(local));
+    public ResortController(ResortService service) {
+        super(service);
     }
 
     @GetMapping("/get")
@@ -32,41 +29,8 @@ public class ResortController {
             throw new ValidationException("One of id or slug is required");
         }
         if (id != null) {
-            return ResponseEntity.ok(resortService.getById(id, local));
+            return ResponseEntity.ok(getService().getById(id, local));
         }
-        return ResponseEntity.ok(resortService.getBySlug(slug, local));
-    }
-
-    @DeleteMapping("/{id}/delete")
-    public ResponseEntity<?> deleteById(@PathVariable Long id,
-                                        @PathVariable Localization local) {
-        resortService.deleteById(id);
-        return ResponseEntity.ok("Marked as deleted");
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@PathVariable Localization local,
-                                    @Valid @RequestBody ResortRequestDTO resortDTO) throws URISyntaxException {
-        ResortDTO hotel = resortService.create(resortDTO, local);
-        return ResponseEntity
-                .created(new URI("travel/" + local + "/resorts/" + hotel.getId()))
-                .body(hotel);
-    }
-
-    @PatchMapping("/{id}/locals/add")
-    public ResponseEntity<?> addLocal(@PathVariable Long id,
-                                      @PathVariable Localization local,
-                                      @Valid @RequestBody ResortRequestDTO resortDTO) throws URISyntaxException {
-        ResortDTO hotel = resortService.addLocal(id, resortDTO, local);
-        return ResponseEntity
-                .created(new URI("travel/" + local + "/resorts/" + hotel.getId()))
-                .body(hotel);
-    }
-
-    @PutMapping("/{id}/locals/update")
-    public ResponseEntity<?> updateLocal(@PathVariable Long id,
-                                         @PathVariable Localization local,
-                                         @Valid @RequestBody ResortRequestDTO resortDTO) {
-        return ResponseEntity.ok(resortService.updateLocal(id, resortDTO, local));
+        return ResponseEntity.ok(getService().getBySlug(slug, local));
     }
 }

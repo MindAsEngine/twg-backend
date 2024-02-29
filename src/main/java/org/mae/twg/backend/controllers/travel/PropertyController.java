@@ -10,42 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/travel/{local}/properties")
-public class PropertyController {
-    private final PropertyService propertyService;
-
-    @GetMapping
-    public ResponseEntity<?> getAll(@PathVariable Localization local) {
-        return ResponseEntity.ok(propertyService.getAll(local));
-    }
-
-    @DeleteMapping("/{id}/delete")
-    public ResponseEntity<?> deleteById(@PathVariable Long id,
-                                        @PathVariable Localization local) {
-        propertyService.deleteById(id);
-        return ResponseEntity.ok("Marked as deleted");
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@PathVariable Localization local,
-                                    @Valid @RequestBody PropertyRequestDTO propertyDTO) {
-        return new ResponseEntity<>(propertyService.create(propertyDTO, local),
-                HttpStatus.CREATED);
-    }
-
-    @PatchMapping("/{id}/locals/add")
-    public ResponseEntity<?> addLocal(@PathVariable Long id,
-                                    @PathVariable Localization local,
-                                    @Valid @RequestBody PropertyRequestDTO propertyDTO) {
-        return new ResponseEntity<>(propertyService.addLocal(id, propertyDTO, local),
-                HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}/locals/update")
-    public ResponseEntity<?> updateLocal(@PathVariable Long id,
-                                    @PathVariable Localization local,
-                                    @Valid @RequestBody PropertyRequestDTO propertyDTO) {
-        return ResponseEntity.ok(propertyService.updateLocal(id, propertyDTO, local));
+public class PropertyController extends AbstractTravelController<PropertyService, PropertyRequestDTO, PropertyRequestDTO>{
+    public PropertyController(PropertyService service) {
+        super(service);
     }
 }

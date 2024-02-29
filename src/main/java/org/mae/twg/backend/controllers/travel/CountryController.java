@@ -10,42 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/travel/{local}/countries")
-public class CountryController {
-    private final CountryService propertyService;
-
-    @GetMapping
-    public ResponseEntity<?> getAll(@PathVariable Localization local) {
-        return ResponseEntity.ok(propertyService.getAll(local));
-    }
-
-    @DeleteMapping("/{id}/delete")
-    public ResponseEntity<?> deleteById(@PathVariable Long id,
-                                        @PathVariable Localization local) {
-        propertyService.deleteById(id);
-        return ResponseEntity.ok("Marked as deleted");
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@PathVariable Localization local,
-                                    @Valid @RequestBody CountryRequestDTO countryDTO) {
-        return new ResponseEntity<>(propertyService.create(countryDTO, local),
-                HttpStatus.CREATED);
-    }
-
-    @PatchMapping("/{id}/locals/add")
-    public ResponseEntity<?> addLocal(@PathVariable Long id,
-                                    @PathVariable Localization local,
-                                    @Valid @RequestBody CountryRequestDTO countryDTO) {
-        return new ResponseEntity<>(propertyService.addLocal(id, countryDTO, local),
-                HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}/locals/update")
-    public ResponseEntity<?> updateLocal(@PathVariable Long id,
-                                    @PathVariable Localization local,
-                                    @Valid @RequestBody CountryRequestDTO countryDTO) {
-        return ResponseEntity.ok(propertyService.updateLocal(id, countryDTO, local));
+public class CountryController extends AbstractTravelController<CountryService, CountryRequestDTO, CountryRequestDTO>{
+    public CountryController(CountryService service) {
+        super(service);
     }
 }
