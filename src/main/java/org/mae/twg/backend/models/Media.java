@@ -1,6 +1,6 @@
 package org.mae.twg.backend.models;
 
-public interface Media {
-    Model getModel();
+public interface Media<T extends Model> {
+    T getModel();
     String getMediaPath();
 }

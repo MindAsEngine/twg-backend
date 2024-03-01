@@ -3,7 +3,6 @@ package org.mae.twg.backend.models.travel.media;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Media;
-import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.Tour;
 
 @Entity
@@ -13,7 +12,7 @@ import org.mae.twg.backend.models.travel.Tour;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tour_medias")
-public class TourMedia implements Media {
+public class TourMedia implements Media<Tour> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "tour_media_id")
@@ -29,7 +28,7 @@ public class TourMedia implements Media {
     private String mediaPath;
 
     @Override
-    public Model getModel() {
+    public Tour getModel() {
         return tour;
     }
 }
