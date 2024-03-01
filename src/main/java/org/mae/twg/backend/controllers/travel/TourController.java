@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/travel/{local}/tours")
-public class TourController extends AbstractTravelController<TourService, TourRequestDTO, TourLocalRequestDTO>{
+public class TourController extends BaseTravelController<TourService, TourRequestDTO, TourLocalRequestDTO> {
     public TourController(TourService service) {
         super(service);
     }

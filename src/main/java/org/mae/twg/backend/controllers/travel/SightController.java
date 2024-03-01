@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/travel/{local}/sights")
-public class SightController extends AbstractTravelController<SightService, SightRequestDTO, SightRequestDTO> {
+public class SightController extends BaseTravelController<SightService, SightRequestDTO, SightRequestDTO> {
 
     public SightController(SightService service) {
         super(service);

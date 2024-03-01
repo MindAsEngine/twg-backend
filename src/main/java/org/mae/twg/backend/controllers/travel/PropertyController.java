@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/travel/{local}/properties")
-public class PropertyController extends AbstractTravelController<PropertyService, PropertyRequestDTO, PropertyRequestDTO>{
+public class PropertyController extends BaseTravelController<PropertyService, PropertyRequestDTO, PropertyRequestDTO> {
     public PropertyController(PropertyService service) {
         super(service);
     }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/travel/{local}/countries")
-public class CountryController extends AbstractTravelController<CountryService, CountryRequestDTO, CountryRequestDTO>{
+public class CountryController extends BaseTravelController<CountryService, CountryRequestDTO, CountryRequestDTO> {
     public CountryController(CountryService service) {
         super(service);
     }

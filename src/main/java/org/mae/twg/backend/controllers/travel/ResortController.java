@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/travel/{local}/resorts")
-public class ResortController extends AbstractTravelController<ResortService, ResortRequestDTO, ResortRequestDTO>{
+public class ResortController extends BaseTravelController<ResortService, ResortRequestDTO, ResortRequestDTO> {
 
     public ResortController(ResortService service) {
         super(service);
