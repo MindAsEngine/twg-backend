@@ -10,6 +10,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.CountryLocal;
 import org.mae.twg.backend.repositories.travel.CountryRepo;
 import org.mae.twg.backend.repositories.travel.localization.CountryLocalRepo;
+import org.mae.twg.backend.services.TravelService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService {
+public class CountryService implements TravelService<CountryRequestDTO, CountryRequestDTO> {
     private final CountryRepo countryRepo;
     private final CountryLocalRepo localRepo;
 

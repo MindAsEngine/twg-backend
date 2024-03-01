@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Hotel;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -9,12 +10,11 @@ import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class HotelDTO implements Serializable {
+public class HotelDTO implements ModelDTO {
     private Long id;
     private String slug;
     private String name;

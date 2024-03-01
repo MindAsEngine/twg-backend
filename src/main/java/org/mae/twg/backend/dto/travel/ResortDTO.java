@@ -2,18 +2,18 @@ package org.mae.twg.backend.dto.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Resort;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.ResortLocal;
 import org.mae.twg.backend.models.travel.media.ResortMedia;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ResortDTO implements Serializable {
+public class ResortDTO implements ModelDTO {
     private Long id;
     private String slug;
     private String name;
