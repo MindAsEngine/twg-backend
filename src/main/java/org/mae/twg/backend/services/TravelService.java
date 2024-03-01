@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface TravelService<ModelReqDTO, LocalReqDTO> {
     List<? extends ModelDTO> getAll(Localization localization);
+    List<? extends ModelDTO> getAllPaged(Localization localization, int page, int size);
     void deleteById(Long id);
     ModelDTO create(ModelReqDTO requestDTO, Localization localization);
     ModelDTO addLocal(Long id, LocalReqDTO requestDTO, Localization localization);

@@ -1,6 +1,7 @@
 package org.mae.twg.backend.controllers.travel;
 
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.controllers.TravelController;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -23,8 +24,16 @@ public abstract class BaseTravelController<
 
     @Override
     @GetMapping
-    public ResponseEntity<?> getAll(@PathVariable Localization local) {
-        return ResponseEntity.ok(service.getAll(local));
+    public ResponseEntity<?> getAll(@PathVariable Localization local,
+                                    @RequestParam(required = false) Integer page,
+                                    @RequestParam(required = false) Integer size) {
+        if (page == null && size == null) {
+            return ResponseEntity.ok(service.getAll(local));
+        }
+        if (page != null && size != null) {
+            return ResponseEntity.ok(service.getAllPaged(local, page, size));
+        }
+        throw new ValidationException("Only both 'page' and 'size' params are required");
     }
 
     @Override

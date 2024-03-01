@@ -11,10 +11,14 @@ import org.mae.twg.backend.models.travel.localization.CountryLocal;
 import org.mae.twg.backend.repositories.travel.CountryRepo;
 import org.mae.twg.backend.repositories.travel.localization.CountryLocalRepo;
 import org.mae.twg.backend.services.TravelService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -31,17 +35,27 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
         return country;
     }
 
-    public List<CountryDTO> getAll(Localization localization) {
-        List<Country> countries = countryRepo.findAll();
-        List<CountryDTO> countryDTOs = countries.stream()
+    private List<CountryDTO> modelsToDTOs(Stream<Country> hotels, Localization localization) {
+        List<CountryDTO> countryDTOS = hotels
                 .filter(country -> !country.getIsDeleted())
                 .filter(country -> country.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(country -> new CountryDTO(country, localization))
                 .toList();
-        if (countryDTOs.isEmpty()) {
-            throw new ObjectNotFoundException("Countries with " + localization + " localization not found");
+        if (countryDTOS.isEmpty()) {
+            throw new ObjectNotFoundException("Countries with " + localization + " with localization not found");
         }
-        return countryDTOs;
+        return countryDTOS;
+    }
+
+    public List<CountryDTO> getAll(Localization localization) {
+        List<Country> countries = countryRepo.findAll();
+        return modelsToDTOs(countries.stream(), localization);
+    }
+
+    public List<CountryDTO> getAllPaged(Localization localization, int page, int size) {
+        Pageable countryPage = PageRequest.of(page, size);
+        Page<Country> countries = countryRepo.findAll(countryPage);
+        return modelsToDTOs(countries.stream(), localization);
     }
 
     @Transactional

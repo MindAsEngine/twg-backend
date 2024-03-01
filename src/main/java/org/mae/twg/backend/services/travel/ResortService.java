@@ -12,10 +12,14 @@ import org.mae.twg.backend.repositories.travel.ResortRepo;
 import org.mae.twg.backend.repositories.travel.localization.ResortLocalRepo;
 import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @Service
@@ -43,9 +47,8 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
         return resort;
     }
 
-    public List<ResortDTO> getAll(Localization localization) {
-        List<Resort> resorts = resortRepo.findAll();
-        List<ResortDTO> resortsDTOs = resorts.stream()
+    private List<ResortDTO> modelsToDTOs(Stream<Resort> resorts, Localization localization) {
+        List<ResortDTO> resortsDTOs = resorts
                 .filter(resort -> !resort.getIsDeleted())
                 .filter(resort -> resort.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(resort -> new ResortDTO(resort, localization))
@@ -54,6 +57,17 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
             throw new ObjectNotFoundException("Resorts with " + localization + " not found");
         }
         return resortsDTOs;
+    }
+
+    public List<ResortDTO> getAll(Localization localization) {
+        List<Resort> resorts = resortRepo.findAll();
+        return modelsToDTOs(resorts.stream(), localization);
+    }
+
+    public List<ResortDTO> getAllPaged(Localization localization, int page, int size) {
+        Pageable resortPage = PageRequest.of(page, size);
+        Page<Resort> resorts = resortRepo.findAll(resortPage);
+        return modelsToDTOs(resorts.stream(), localization);
     }
 
     public ResortDTO getById(Long id, Localization local) {
