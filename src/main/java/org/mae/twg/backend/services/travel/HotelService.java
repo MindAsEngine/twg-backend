@@ -17,10 +17,14 @@ import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
 import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -49,9 +53,8 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
         return hotel;
     }
 
-    public List<HotelDTO> getAll(Localization localization) {
-        List<Hotel> hotels = hotelRepo.findAll();
-        List<HotelDTO> hotelDTOs = hotels.stream()
+    private List<HotelDTO> modelsToDTOs(Stream<Hotel> hotels, Localization localization) {
+        List<HotelDTO> hotelDTOs = hotels
                 .filter(hotel -> !hotel.getIsDeleted())
                 .filter(hotel -> hotel.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(hotel -> new HotelDTO(hotel, localization))
@@ -60,6 +63,17 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
             throw new ObjectNotFoundException("Hotels with " + localization + " with localization not found");
         }
         return hotelDTOs;
+    }
+
+    public List<HotelDTO> getAll(Localization localization) {
+        List<Hotel> hotels = hotelRepo.findAll();
+        return modelsToDTOs(hotels.stream(), localization);
+    }
+
+    public List<HotelDTO> getAllPaged(Localization localization, int page, int size) {
+        Pageable hotelPage = PageRequest.of(page, size);
+        Page<Hotel> hotels = hotelRepo.findAll(hotelPage);
+        return modelsToDTOs(hotels.stream(), localization);
     }
 
     public HotelDTO getById(Long id, Localization localization) {
@@ -186,6 +200,4 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
         hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);
     }
-
-
 }

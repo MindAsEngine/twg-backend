@@ -12,10 +12,14 @@ import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.localization.SightLocalRepo;
 import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @Service
@@ -43,10 +47,8 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
         return sight;
     }
 
-    public List<SightDTO> getAll(Localization localization) {
-        List<Sight> sights = sightRepo.findAll();
-
-        List<SightDTO> sightDTOs = sights.stream()
+    private List<SightDTO> modelsToDTOs(Stream<Sight> sights, Localization localization) {
+        List<SightDTO> sightDTOs = sights
                 .filter(sight -> !sight.getIsDeleted())
                 .filter(sight -> sight.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(sight -> new SightDTO(sight, localization))
@@ -55,6 +57,17 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
             throw new ObjectNotFoundException("Sights with " + localization + " not found");
         }
         return sightDTOs;
+    }
+
+    public List<SightDTO> getAll(Localization localization) {
+        List<Sight> sights = sightRepo.findAll();
+        return modelsToDTOs(sights.stream(), localization);
+    }
+
+    public List<SightDTO> getAllPaged(Localization localization, int page, int size) {
+        Pageable sightsPage = PageRequest.of(page, size);
+        Page<Sight> sights = sightRepo.findAll(sightsPage);
+        return modelsToDTOs(sights.stream(), localization);
     }
 
     public SightDTO getById(Long id, Localization local) {

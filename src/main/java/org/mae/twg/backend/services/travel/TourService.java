@@ -16,10 +16,14 @@ import org.mae.twg.backend.repositories.travel.*;
 import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
 import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -50,17 +54,27 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
         return tour;
     }
 
-    public List<TourDTO> getAll(Localization localization) {
-        List<Tour> tours = tourRepo.findAll();
-        List<TourDTO> hotelDTOs = tours.stream()
+    private List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
+        List<TourDTO> tourDTOs = tours
                 .filter(tour -> !tour.getIsDeleted())
                 .filter(tour -> tour.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(tour -> new TourDTO(tour, localization))
                 .toList();
-        if (hotelDTOs.isEmpty()) {
+        if (tourDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
         }
-        return hotelDTOs;
+        return tourDTOs;
+    }
+
+    public List<TourDTO> getAll(Localization localization) {
+        List<Tour> tours = tourRepo.findAll();
+        return modelsToDTOs(tours.stream(), localization);
+    }
+
+    public List<TourDTO> getAllPaged(Localization localization, int page, int size) {
+        Pageable toursPage = PageRequest.of(page, size);
+        Page<Tour> tours = tourRepo.findAll(toursPage);
+        return modelsToDTOs(tours.stream(), localization);
     }
 
     public TourDTO getById(Long id, Localization localization) {

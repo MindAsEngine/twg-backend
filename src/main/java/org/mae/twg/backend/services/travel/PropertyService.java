@@ -11,10 +11,14 @@ import org.mae.twg.backend.models.travel.localization.PropertyLocal;
 import org.mae.twg.backend.repositories.travel.PropertyRepo;
 import org.mae.twg.backend.repositories.travel.localization.PropertyLocalRepo;
 import org.mae.twg.backend.services.TravelService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -31,9 +35,8 @@ public class PropertyService implements TravelService<PropertyRequestDTO, Proper
         return property;
     }
 
-    public List<PropertyDTO> getAll(Localization localization) {
-        List<Property> properties = propertyRepo.findAll();
-        List<PropertyDTO> propertyDTOs = properties.stream()
+    private List<PropertyDTO> modelsToDTOs(Stream<Property> properties, Localization localization) {
+        List<PropertyDTO> propertyDTOs = properties
                 .filter(property -> !property.getIsDeleted())
                 .filter(property -> property.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(property -> new PropertyDTO(property, localization))
@@ -42,6 +45,17 @@ public class PropertyService implements TravelService<PropertyRequestDTO, Proper
             throw new ObjectNotFoundException("Properties with " + localization + " localization not found");
         }
         return propertyDTOs;
+    }
+
+    public List<PropertyDTO> getAll(Localization localization) {
+        List<Property> properties = propertyRepo.findAll();
+        return modelsToDTOs(properties.stream(), localization);
+    }
+
+    public List<PropertyDTO> getAllPaged(Localization localization, int page, int size) {
+        Pageable propertyPage = PageRequest.of(page, size);
+        Page<Property> properties = propertyRepo.findAll(propertyPage);
+        return modelsToDTOs(properties.stream(), localization);
     }
 
     @Transactional
