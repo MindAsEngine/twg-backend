@@ -27,14 +27,14 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
-public class TourService implements TravelService<TourRequestDTO, TourLocalRequestDTO> {
+public class TourService implements TravelService<Tour, TourRequestDTO, TourLocalRequestDTO> {
     private final TourRepo tourRepo;
     private final TourLocalRepo localRepo;
     private final HotelRepo hotelRepo;
     private final ResortRepo resortRepo;
     private final CountryRepo countryRepo;
     private final AgencyRepo agencyRepo;
-    private final SlugUtils slugUtils;
+    private final SlugUtils<Tour> slugUtils;
 
     private Tour findById(Long id) {
         Tour tour = tourRepo.findById(id)

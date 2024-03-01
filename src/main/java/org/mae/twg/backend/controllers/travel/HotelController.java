@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import org.mae.twg.backend.dto.travel.request.HotelLocalRequestDTO;
 import org.mae.twg.backend.dto.travel.request.HotelRequestDTO;
+import org.mae.twg.backend.models.travel.Hotel;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.HotelService;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/travel/{local}/hotels")
-public class HotelController extends BaseTravelController<HotelService, HotelRequestDTO, HotelLocalRequestDTO> {
+public class HotelController extends BaseTravelController<Hotel, HotelRequestDTO, HotelLocalRequestDTO> {
     public HotelController(HotelService service) {
         super(service);
+    }
+
+    @Override
+    protected HotelService getService() {
+        return (HotelService) super.getService();
     }
 
     @GetMapping("/get")

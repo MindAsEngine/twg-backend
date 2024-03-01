@@ -2,6 +2,7 @@ package org.mae.twg.backend.controllers.travel;
 
 import jakarta.validation.ValidationException;
 import org.mae.twg.backend.dto.travel.request.SightRequestDTO;
+import org.mae.twg.backend.models.travel.Sight;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.SightService;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +10,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/travel/{local}/sights")
-public class SightController extends BaseTravelController<SightService, SightRequestDTO, SightRequestDTO> {
+public class SightController extends BaseTravelController<Sight, SightRequestDTO, SightRequestDTO> {
 
     public SightController(SightService service) {
         super(service);
+    }
+
+    @Override
+    protected SightService getService() {
+        return (SightService) super.getService();
     }
 
     @GetMapping("/get")

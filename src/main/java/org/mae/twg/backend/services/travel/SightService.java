@@ -24,10 +24,10 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class SightService implements TravelService<SightRequestDTO, SightRequestDTO> {
+public class SightService implements TravelService<Sight, SightRequestDTO, SightRequestDTO> {
     private final SightRepo sightRepo;
     private final SightLocalRepo localRepo;
-    private final SlugUtils slugUtils;
+    private final SlugUtils<Sight> slugUtils;
 
     private Sight findById(Long id) {
         Sight sight = sightRepo.findById(id)

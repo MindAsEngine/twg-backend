@@ -24,10 +24,10 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class ResortService implements TravelService<ResortRequestDTO, ResortRequestDTO> {
+public class ResortService implements TravelService<Resort, ResortRequestDTO, ResortRequestDTO> {
     private final ResortRepo resortRepo;
     private final ResortLocalRepo localRepo;
-    private final SlugUtils slugUtils;
+    private final SlugUtils<Resort> slugUtils;
 
     private Resort findById(Long id) {
         Resort resort = resortRepo.findById(id)

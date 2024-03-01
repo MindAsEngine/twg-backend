@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.controllers.TravelController;
+import org.mae.twg.backend.dto.LocalRequestDTO;
+import org.mae.twg.backend.dto.ModelRequestDTO;
+import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.TravelService;
 import org.springframework.http.HttpStatus;
@@ -12,13 +15,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 public abstract class BaseTravelController<
-        ServiceType extends TravelService<ModelReqDTO, LocalReqDTO>,
-        ModelReqDTO, LocalReqDTO>
+        T extends Model,
+        ModelReqDTO extends ModelRequestDTO<T>,
+        LocalReqDTO extends LocalRequestDTO<T>>
         implements TravelController<ModelReqDTO, LocalReqDTO> {
 
-    private final ServiceType service;
+    private final TravelService<T, ModelReqDTO, LocalReqDTO> service;
 
-    protected ServiceType getService() {
+    protected TravelService<T, ModelReqDTO, LocalReqDTO> getService() {
         return service;
     }
 

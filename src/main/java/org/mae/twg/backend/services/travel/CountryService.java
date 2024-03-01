@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService implements TravelService<CountryRequestDTO, CountryRequestDTO> {
+public class CountryService implements TravelService<Country, CountryRequestDTO, CountryRequestDTO> {
     private final CountryRepo countryRepo;
     private final CountryLocalRepo localRepo;
 

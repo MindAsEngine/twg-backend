@@ -5,6 +5,7 @@ import jakarta.validation.ValidationException;
 import org.mae.twg.backend.dto.travel.request.TourLocalRequestDTO;
 import org.mae.twg.backend.dto.travel.request.TourRequestDTO;
 import org.mae.twg.backend.dto.travel.request.TourUpdateDTO;
+import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.TourService;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/travel/{local}/tours")
-public class TourController extends BaseTravelController<TourService, TourRequestDTO, TourLocalRequestDTO> {
+public class TourController extends BaseTravelController<Tour, TourRequestDTO, TourLocalRequestDTO> {
     public TourController(TourService service) {
         super(service);
+    }
+
+    @Override
+    protected TourService getService() {
+        return (TourService) super.getService();
     }
 
     @GetMapping("/get")

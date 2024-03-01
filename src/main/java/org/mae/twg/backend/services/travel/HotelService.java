@@ -28,12 +28,12 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
-public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRequestDTO> {
+public class HotelService implements TravelService<Hotel, HotelRequestDTO, HotelLocalRequestDTO> {
     private final HotelRepo hotelRepo;
     private final HotelLocalRepo localRepo;
     private final PropertyRepo propertyRepo;
     private final SightRepo sightRepo;
-    private final SlugUtils slugUtils;
+    private final SlugUtils<Hotel> slugUtils;
 
     private Hotel findById(Long id) {
         Hotel hotel = hotelRepo.findById(id)

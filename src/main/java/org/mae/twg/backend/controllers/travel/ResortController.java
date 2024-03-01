@@ -2,6 +2,7 @@ package org.mae.twg.backend.controllers.travel;
 
 import jakarta.validation.ValidationException;
 import org.mae.twg.backend.dto.travel.request.ResortRequestDTO;
+import org.mae.twg.backend.models.travel.Resort;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.ResortService;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +10,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/travel/{local}/resorts")
-public class ResortController extends BaseTravelController<ResortService, ResortRequestDTO, ResortRequestDTO> {
+public class ResortController extends BaseTravelController<Resort, ResortRequestDTO, ResortRequestDTO> {
 
     public ResortController(ResortService service) {
         super(service);
+    }
+
+    @Override
+    protected ResortService getService() {
+        return (ResortService) super.getService();
     }
 
     @GetMapping("/get")
