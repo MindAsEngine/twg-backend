@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Local;
 import org.mae.twg.backend.models.travel.Sight;
-import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
@@ -14,7 +13,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "sight_local")
-public class SightLocal implements Local {
+public class SightLocal implements Local<Sight> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,7 +57,7 @@ public class SightLocal implements Local {
     }
 
     @Override
-    public Model getModel() {
+    public Sight getModel() {
         return sight;
     }
 }

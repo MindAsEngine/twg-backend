@@ -2,9 +2,8 @@ package org.mae.twg.backend.models;
 
 import org.mae.twg.backend.models.travel.enums.Localization;
 
-public interface Local {
+public interface Local<T extends Model> {
     String getString();
     Localization getLocalization();
-
-    Model getModel();
+    T getModel();
 }

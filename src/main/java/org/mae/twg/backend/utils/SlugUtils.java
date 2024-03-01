@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class SlugUtils {
+public class SlugUtils<T extends Model> {
 
     private static final Map<String, String> RUToEN = Map.ofEntries(
             Map.entry("а", "a"), Map.entry("б", "b"), Map.entry("в", "v"),
@@ -30,8 +30,8 @@ public class SlugUtils {
     );
 
     @SneakyThrows
-    public String getSlug(Model model) {
-        List<? extends Local> locals = model.getLocalizations();
+    public String getSlug(T model) {
+        List<? extends Local<T>> locals = model.getLocalizations();
         List<Localization> localizations = locals.stream().map(Local::getLocalization).toList();
         if (localizations.contains(Localization.EN)) {
             return slugFromEN(locals.get(localizations.indexOf(Localization.EN)));
@@ -54,14 +54,14 @@ public class SlugUtils {
                 .replaceAll("\\s+", "-");
     }
 
-    private String slugFromEN(Local local) {
+    private String slugFromEN(Local<T> local) {
         assert local.getLocalization() == Localization.EN;
 
         return slugify(local.getString().strip().toLowerCase());
 
     }
 
-    private String slugFromRU(Local local) {
+    private String slugFromRU(Local<T> local) {
         assert local.getLocalization() == Localization.RU;
 
         StringBuilder result = new StringBuilder();
@@ -72,7 +72,7 @@ public class SlugUtils {
         return slugify(result.toString());
     }
 
-    private String slugFromUZ(Local local) {
+    private String slugFromUZ(Local<T> local) {
         assert local.getLocalization() == Localization.UZ;
 
         return slugify(local.getString().strip().toLowerCase());

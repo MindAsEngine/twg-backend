@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface Model {
     Long getId();
-    List<? extends Local> getLocalizations();
+    <T extends Model> List<? extends Local<T>> getLocalizations();
 }
