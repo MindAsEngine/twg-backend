@@ -10,7 +10,7 @@ import org.mae.twg.backend.models.travel.localization.PropertyLocal;
 
 @Data
 @AllArgsConstructor
-public class PropertyDTO implements ModelDTO {
+public class PropertyDTO implements ModelDTO<Property> {
     private Long id;
     private String title;
     private String description;

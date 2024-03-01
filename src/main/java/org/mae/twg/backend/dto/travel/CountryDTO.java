@@ -2,7 +2,7 @@ package org.mae.twg.backend.dto.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.mae.twg.backend.dto.ModelDTO;
+import org.mae.twg.backend.dto.ModelLightDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Country;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -10,7 +10,7 @@ import org.mae.twg.backend.models.travel.localization.CountryLocal;
 
 @Data
 @AllArgsConstructor
-public class CountryDTO implements ModelDTO {
+public class CountryDTO implements ModelLightDTO<Country> {
     private Long id;
     private String title;
     private String description;

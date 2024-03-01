@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class SightDTO implements ModelDTO {
+public class SightDTO implements ModelDTO<Sight> {
     private Long id;
     private String slug;
     private String name;

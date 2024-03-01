@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ResortDTO implements ModelDTO {
+public class ResortDTO implements ModelDTO<Resort> {
     private Long id;
     private String slug;
     private String name;

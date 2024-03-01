@@ -16,7 +16,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class TourDTO implements ModelDTO {
+public class TourDTO implements ModelDTO<Tour> {
     private Long id;
     private String slug;
     private String title;

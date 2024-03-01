@@ -14,7 +14,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class HotelDTO implements ModelDTO {
+public class HotelDTO implements ModelDTO<Hotel> {
     private Long id;
     private String slug;
     private String name;

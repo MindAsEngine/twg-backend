@@ -2,7 +2,8 @@ package org.mae.twg.backend.dto.travel.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.mae.twg.backend.dto.RequestDTO;
+import org.mae.twg.backend.dto.ModelRequestDTO;
+import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.TourType;
 
 import java.time.LocalDate;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class TourRequestDTO implements RequestDTO {
+public class TourRequestDTO implements ModelRequestDTO<Tour> {
     String title;
     TourType type;
     String description;
