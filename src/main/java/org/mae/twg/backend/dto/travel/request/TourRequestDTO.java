@@ -11,9 +11,8 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class TourRequestDTO implements RequestDTO {
 @Schema(description = "Запрос на тур")
-public class TourRequestDTO {
+public class TourRequestDTO implements RequestDTO {
     @Schema(description = "Название", example = "Какое-то название")
     String title;
     @Schema(description = "Тип тура", example = "TOURISM")

@@ -10,9 +10,8 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-public class TourUpdateDTO implements RequestDTO {
 @Schema(description = "Запрос на обновление тура")
-public class TourUpdateDTO {
+public class TourUpdateDTO implements RequestDTO {
     @Schema(description = "Тип тура", example = "Какой-то тип")
     TourType type;
     @Schema(description = "Страна", example = "1")
