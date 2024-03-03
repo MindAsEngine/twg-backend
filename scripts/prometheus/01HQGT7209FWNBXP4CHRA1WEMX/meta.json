@@ -1,0 +1,17 @@
+{
+	"ulid": "01HQGT7209FWNBXP4CHRA1WEMX",
+	"minTime": 1708876802243,
+	"maxTime": 1708884000000,
+	"stats": {
+		"numSamples": 639360,
+		"numSeries": 444,
+		"numChunks": 5335
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01HQGT7209FWNBXP4CHRA1WEMX"
+		]
+	},
+	"version": 1
+}

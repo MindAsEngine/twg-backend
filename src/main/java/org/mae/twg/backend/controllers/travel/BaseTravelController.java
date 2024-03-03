@@ -1,5 +1,8 @@
 package org.mae.twg.backend.controllers.travel;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,9 @@ public abstract class BaseTravelController<
 
     @Override
     @GetMapping
+    @Operation(summary = "Отдать все сущности",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
     public ResponseEntity<?> getAll(@PathVariable Localization local,
                                     @RequestParam(required = false) Integer page,
                                     @RequestParam(required = false) Integer size) {
@@ -38,6 +44,9 @@ public abstract class BaseTravelController<
 
     @Override
     @DeleteMapping("/{id}/delete")
+    @Operation(summary = "Удалить сущность",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
     public ResponseEntity<?> deleteById(@PathVariable Localization local, @PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.ok("Marked as deleted");
@@ -45,6 +54,9 @@ public abstract class BaseTravelController<
 
     @Override
     @PostMapping("/create")
+    @Operation(summary = "Создать сущность",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
     public ResponseEntity<?> create(@PathVariable Localization local,
                                     @Valid @RequestBody ModelReqDTO modelDTO) {
         return new ResponseEntity<>(service.create(modelDTO, local),
@@ -53,6 +65,9 @@ public abstract class BaseTravelController<
 
     @Override
     @PatchMapping("/{id}/locals/add")
+    @Operation(summary = "Добавить локаль",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
     public ResponseEntity<?> addLocal(@PathVariable Localization local,
                                       @PathVariable Long id,
                                       @Valid @RequestBody LocalReqDTO localDTO) {
@@ -62,6 +77,9 @@ public abstract class BaseTravelController<
 
     @Override
     @PutMapping("/{id}/locals/update")
+    @Operation(summary = "Обновить локаль",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
     public ResponseEntity<?> updateLocal(@PathVariable Localization local,
                                          @PathVariable Long id,
                                          @Valid @RequestBody LocalReqDTO localDTO) {
