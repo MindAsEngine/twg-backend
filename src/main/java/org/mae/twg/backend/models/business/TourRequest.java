@@ -34,6 +34,14 @@ public class TourRequest {
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
+    private Integer adults;
+
+    private Integer children;
+
+    @Column(name = "transfer_notes",
+            columnDefinition = "TEXT")
+    private String transferNotes;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

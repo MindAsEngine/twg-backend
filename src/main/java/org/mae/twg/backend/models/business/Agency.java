@@ -2,7 +2,6 @@ package org.mae.twg.backend.models.business;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.mae.twg.backend.models.travel.Tour;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +27,6 @@ public class Agency {
     @OneToMany(mappedBy = "agency",
             cascade = CascadeType.ALL)
     private List<AgencyLocal> locals = new ArrayList<>();
-
-    @OneToMany(mappedBy = "agency",
-            cascade = CascadeType.DETACH)
-    private List<Manager> managers = new ArrayList<>();
 
     public void addLocal(AgencyLocal local) {
         locals.add(local);
