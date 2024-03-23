@@ -12,6 +12,7 @@ import org.mae.twg.backend.models.travel.Hotel;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "hotel_medias")
 public class HotelMedia implements Media {
     @Id
@@ -31,4 +32,5 @@ public class HotelMedia implements Media {
     public Model getModel() {
         return hotel;
     }
+
 }

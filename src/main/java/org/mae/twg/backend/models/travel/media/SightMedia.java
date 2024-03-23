@@ -12,6 +12,7 @@ import org.mae.twg.backend.models.travel.Sight;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "sight_medias")
 public class SightMedia implements Media {
     @Id
