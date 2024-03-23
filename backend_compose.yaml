@@ -1,0 +1,25 @@
+  mind-as-engine-backend:
+    container_name: mind-as-engine-backend
+    image: mind-as-engine-backend
+    build:
+      context: ./backend
+    depends_on:
+      - mind-as-engine-database
+    env_file: environment.env
+    volumes:
+      - type: bind
+        source: /home/twg/res
+        target: /home/twg/images
+        create_host_path: true
+    ports:
+      - '1337:1337'
+    networks:
+      - backend
+      - database
+
+networks:
+  backend:
+    name: backend_network
+  database:
+    name: database_network
+    external: true
