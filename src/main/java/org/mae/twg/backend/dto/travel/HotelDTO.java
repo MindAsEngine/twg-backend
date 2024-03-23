@@ -20,6 +20,7 @@ public class HotelDTO implements ModelDTO {
     private String name;
     private String city;
     private Stars stars;
+    private String introduction;
     private String description;
     private String address;
     private Localization localization;
@@ -39,6 +40,7 @@ public class HotelDTO implements ModelDTO {
         this.name = cur_local.getName();
         this.city = cur_local.getCity();
         this.stars = hotel.getStars();
+        this.introduction = cur_local.getIntroduction();
         this.description = cur_local.getDescription();
         this.address = cur_local.getAddress();
         this.medias = hotel.getMedias().stream().map(HotelMedia::getMediaPath).toList();

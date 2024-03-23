@@ -113,6 +113,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
         HotelLocal local = new HotelLocal(hotelDTO.getName(),
                 hotelDTO.getCity(),
                 hotelDTO.getDescription(),
+                hotelDTO.getDescription(),
                 hotelDTO.getAddress(),
                 localization, hotel);
         localRepo.saveAndFlush(local);
@@ -136,6 +137,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
         HotelLocal hotelLocal =
                 new HotelLocal(hotelDTO.getName(),
                         hotelDTO.getCity(),
+                        hotelDTO.getDescription(),
                         hotelDTO.getDescription(),
                         hotelDTO.getAddress(),
                         localization, hotel);

@@ -18,6 +18,8 @@ public class HotelRequestDTO implements RequestDTO {
     private String city;
     @Schema(description = "Звезды", example = "Без звезд")
     private Stars stars;
+    @Schema(description = "Введение", example = "Какое-то описание")
+    private String introduction;
     @Schema(description = "Описание", example = "Какое-то описание")
     private String description;
     @Schema(description = "Адрес", example = "Какой-то адрес")

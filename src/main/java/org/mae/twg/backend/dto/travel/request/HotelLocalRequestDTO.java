@@ -13,6 +13,8 @@ public class HotelLocalRequestDTO implements RequestDTO {
     private String name;
     @Schema(description = "Город", example = "Какой-то город")
     private String city;
+    @Schema(description = "Введение", example = "Какое-то описание")
+    private String introduction;
     @Schema(description = "Описание", example = "Какое-то описание")
     private String description;
     @Schema(description = "Адрес", example = "Какой-то адрес")
