@@ -23,6 +23,7 @@ import java.util.Set;
 public class Tag implements Model {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "tag_id")
     private Long id;
 
     @Column(name = "icon")
