@@ -1,14 +1,15 @@
-  mind-as-engine-backend:
-    container_name: mind-as-engine-backend
-    image: mind-as-engine-backend
+version: '3.8'
+
+services:
+  twg-backend:
+    container_name: twg-backend
+    image: twg-backend
     build:
       context: ./backend
-    depends_on:
-      - mind-as-engine-database
     env_file: environment.env
     volumes:
       - type: bind
-        source: /home/twg/res
+        source: ../resources/images #/home/twg/resources/images
         target: /home/twg/images
         create_host_path: true
     ports:
