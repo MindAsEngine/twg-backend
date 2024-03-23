@@ -1,14 +1,15 @@
 version: '3.8'
+
 services:
+
   postgres:
     image: postgres:alpine
     env_file: - ./.env
     volumes:
       - type: bind
-        source: /home/twg/postgresql/data
+        source: ../postgresql/data #/home/twg/postgresql/data
         target: /var/lib/postgresql/data
         create_host_path: true
-
     ports:
       - "5435:5432"
     networks:
@@ -20,32 +21,36 @@ services:
     command: redis-server
     volumes:
       - type: bind
-        source: /home/twg/postgresql/data
-        target: /var/lib/postgresql/data
-        create_host_path: true
-      - type: bind
-        source: /home/twg/redis
+        source: ../redis #/home/twg/redis
         target: /var/lib/redis
         create_host_path: true
       - type: bind
-        source: /home/twg/redis.conf
+        source: ../redis.conf #/home/twg/redis.conf
         target: /usr/local/etc/redis/redis.conf
         create_host_path: false
     ports:
       - "6379:6379"
-    depends_on: - redis
     networks:
       - backend
       - database
 
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    env_file: - ./.env
-    ports: - "8081:8081"
-    depends_on: - redis
-    networks:
-      - backend
-      - database
+  # pgweb:
+  #   image: sosedoff/pgweb
+  #   depends_on:
+  #     - postgres
+  #   env_file: - ./.env
+  #   ports:
+  #     - "8085:8081"
+  #   restart: on-failure:3
+  #
+  # redis-commander:
+  #   image: rediscommander/redis-commander:latest
+  #   env_file: - ./.env
+  #   ports: - "8081:8081"
+  #   depends_on: - redis
+  #   networks:
+  #     - backend
+  #     - database
 
 networks:
   database:
@@ -55,11 +60,3 @@ networks:
     name: backend_network
     external: true
 
-# pgweb:
-#   image: sosedoff/pgweb
-#   depends_on:
-#     - postgres
-#   env_file: - ./.env
-#   ports:
-#     - "8085:8081"
-#   restart: on-failure:3
