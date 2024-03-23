@@ -12,6 +12,7 @@ import org.mae.twg.backend.models.travel.Hotel;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "hotel_medias")
 public class HotelMedia implements Media {
     @Id
@@ -19,8 +20,7 @@ public class HotelMedia implements Media {
     @Column(name = "hotel_media_id")
     private Long id;
 
-    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
     private Hotel hotel;
 
@@ -32,4 +32,5 @@ public class HotelMedia implements Media {
     public Model getModel() {
         return hotel;
     }
+
 }

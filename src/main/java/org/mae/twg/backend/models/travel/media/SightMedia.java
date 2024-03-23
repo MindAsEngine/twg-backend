@@ -12,6 +12,7 @@ import org.mae.twg.backend.models.travel.Sight;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "sight_medias")
 public class SightMedia implements Media {
     @Id
@@ -19,8 +20,7 @@ public class SightMedia implements Media {
     @Column(name = "sight_media_id")
     private Long id;
 
-    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sight_id", nullable = false)
     private Sight sight;
 

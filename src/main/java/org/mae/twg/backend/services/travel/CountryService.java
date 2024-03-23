@@ -2,21 +2,28 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.travel.CountryDTO;
+import org.mae.twg.backend.dto.travel.HotelDTO;
 import org.mae.twg.backend.dto.travel.request.CountryRequestDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Country;
+import org.mae.twg.backend.models.travel.Hotel;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.CountryLocal;
+import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.repositories.travel.CountryRepo;
 import org.mae.twg.backend.repositories.travel.localization.CountryLocalRepo;
+import org.mae.twg.backend.services.ImageService;
+import org.mae.twg.backend.services.ModelType;
 import org.mae.twg.backend.services.TravelService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -25,6 +32,7 @@ import java.util.stream.Stream;
 public class CountryService implements TravelService<CountryRequestDTO, CountryRequestDTO> {
     private final CountryRepo countryRepo;
     private final CountryLocalRepo localRepo;
+    private final ImageService imageService;
 
     private Country findById(Long id) {
         Country country = countryRepo.findById(id)
@@ -45,6 +53,23 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
             throw new ObjectNotFoundException("Countries with " + localization + " with localization not found");
         }
         return countryDTOS;
+    }
+
+    @Transactional
+    public CountryDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
+        List<String> urls = imageService.saveImages(ModelType.COUNTRY, images);
+        Country country = findById(id);
+        country.setMediaPath(urls.get(0));
+        countryRepo.saveAndFlush(country);
+        return new CountryDTO(country, local);
+    }
+
+    public CountryDTO deleteImages(Long id, Localization local, List<String> images) {
+        imageService.deleteImages(images);
+        Country country = findById(id);
+        country.setMediaPath(null);
+        countryRepo.save(country);
+        return new CountryDTO(findById(id), local);
     }
 
     public List<CountryDTO> getAll(Localization localization) {

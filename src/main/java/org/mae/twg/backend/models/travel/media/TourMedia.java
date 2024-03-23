@@ -12,6 +12,7 @@ import org.mae.twg.backend.models.travel.Tour;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "tour_medias")
 public class TourMedia implements Media {
     @Id
@@ -19,8 +20,7 @@ public class TourMedia implements Media {
     @Column(name = "tour_media_id")
     private Long id;
 
-    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id", nullable = false)
     private Tour tour;
 
