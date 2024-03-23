@@ -26,11 +26,6 @@ public class Agency {
 //    TODO: add field for map data
 
     @OneToMany(mappedBy = "agency",
-            cascade = CascadeType.DETACH,
-            orphanRemoval = true)
-    private List<Tour> tours = new ArrayList<>();
-
-    @OneToMany(mappedBy = "agency",
             cascade = CascadeType.ALL)
     private List<AgencyLocal> locals = new ArrayList<>();
 

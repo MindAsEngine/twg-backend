@@ -17,8 +17,12 @@ public class TourRequestDTO implements RequestDTO {
     String title;
     @Schema(description = "Тип тура", example = "TOURISM")
     TourType type;
+    @Schema(description = "Введение", example = "Какое-то описание")
+    String introduction;
     @Schema(description = "Описание", example = "Какое-то описание")
     String description;
+    @Schema(description = "Дополнительная информация", example = "Какое-то описание")
+    String additional;
     @Schema(description = "Страна", example = "1")
     Long countryId;
     @Schema(description = "Агенство", example = "1")

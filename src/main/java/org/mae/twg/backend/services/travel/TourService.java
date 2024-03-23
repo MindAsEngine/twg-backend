@@ -96,15 +96,7 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
     public TourDTO create(TourRequestDTO tourDTO, Localization localization) {
         Tour tour = new Tour();
         tour.setIsActive(tourDTO.getIsActive());
-        tour.setIsCustom(tourDTO.getIsCustom());
-        tour.setIsBurning(tourDTO.getIsBurning());
-        tour.setStartDate(tourDTO.getStartDate());
-        tour.setEndDate(tourDTO.getEndDate());
         tour.setType(tourDTO.getType());
-        Agency agency = agencyRepo.findById(tourDTO.getAgencyId())
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        "Agency with id=" + tourDTO.getAgencyId() + " not found"));
-        tour.setAgency(agency);
         Country country = countryRepo.findById(tourDTO.getCountryId())
                 .orElseThrow(() -> new ObjectNotFoundException(
                         "Country with id=" + tourDTO.getCountryId() + " not found"));
@@ -117,16 +109,12 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
             tour.addHotel(hotel);
         }
 
-        for (Long id : tourDTO.getResortIds()) {
-            Resort resort = resortRepo.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("Resort with id=" + id + " not found"));
-            tour.addResort(resort);
-        }
-
         tourRepo.saveAndFlush(tour);
 
         TourLocal local = new TourLocal(tourDTO.getTitle(),
+                tourDTO.getIntroduction(),
                 tourDTO.getDescription(),
+                tourDTO.getAdditional(),
                 tour, localization);
         localRepo.saveAndFlush(local);
         tour.addLocal(local);
@@ -148,7 +136,9 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
 
         TourLocal tourLocal =
                 new TourLocal(tourDTO.getTitle(),
+                        tourDTO.getIntroduction(),
                         tourDTO.getDescription(),
+                        tourDTO.getAdditional(),
                         tour, localization);
         tourLocal = localRepo.saveAndFlush(tourLocal);
         tour.addLocal(tourLocal);
@@ -177,27 +167,10 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
     }
 
     @Transactional
-    public TourDTO updateResorts(Long id, List<Long> resortIds, Localization localization) {
-        Tour tour = findById(id);
-        for (Resort resort : tour.getResorts().stream().toList()) {
-            tour.removeResort(resort);
-        }
-
-        for (Long resortId : resortIds) {
-            Resort resort = resortRepo.findById(resortId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Resort with id=" + resortId + " not found"));
-            tour.addResort(resort);
-        }
-
-        tourRepo.saveAndFlush(tour);
-        return new TourDTO(tour, localization);
-    }
-
-    @Transactional
     public TourDTO updateHotels(Long id, List<Long> hotelIds, Localization localization) {
         Tour tour = findById(id);
-        for (Resort resort : tour.getResorts().stream().toList()) {
-            tour.removeResort(resort);
+        for (Hotel hotel : tour.getHotels().stream().toList()) {
+            tour.removeHotel(hotel);
         }
 
         for (Long hotelId : hotelIds) {
@@ -221,20 +194,8 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
         } else {
             tour.setCountry(null);
         }
-        if (tourDTO.getAgencyId() != null) {
-            Agency agency = agencyRepo.findById(tourDTO.getAgencyId())
-                    .orElseThrow(() -> new ObjectNotFoundException(
-                            "Agency with id=" + tourDTO.getAgencyId() + " not found"));
-            tour.setAgency(agency);
-        } else {
-            tour.setAgency(null);
-        }
         tour.setType(tourDTO.getType());
-        tour.setIsBurning(tourDTO.getIsBurning());
         tour.setIsActive(tourDTO.getIsActive());
-        tour.setIsCustom(tourDTO.getIsCustom());
-        tour.setStartDate(tourDTO.getStartDate());
-        tour.setEndDate(tourDTO.getEndDate());
         tourRepo.saveAndFlush(tour);
         return new TourDTO(tour, localization);
     }

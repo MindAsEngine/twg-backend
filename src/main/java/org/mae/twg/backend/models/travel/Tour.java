@@ -3,16 +3,13 @@ package org.mae.twg.backend.models.travel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Model;
-import org.mae.twg.backend.models.business.Agency;
 import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -30,10 +27,22 @@ public class Tour implements Model {
     @Column(name = "slug", unique = true)
     private String slug;
 
+    @Column(name = "route",
+            columnDefinition = "TEXT")
+    private String route;
+
+    @Column(name = "price")
+    private Long price;
+
     @OneToMany(mappedBy = "tour",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<TourLocal> locals = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<TourPeriod> periods = new ArrayList<>();
 
     @NonNull
     @Enumerated(EnumType.STRING)
@@ -45,8 +54,16 @@ public class Tour implements Model {
     private Country country;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "agency_id")
-    private Agency agency;
+    @JoinColumn(name = "hospital_id")
+    private Sight hospital;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "header_img_id")
+    private TourMedia header;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "illustration_img_id")
+    private TourMedia illustration;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tour_hotels",
@@ -55,28 +72,13 @@ public class Tour implements Model {
     private Set<Hotel> hotels = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "tour_resorts",
+    @JoinTable(name = "tour_tags",
             joinColumns = @JoinColumn(name = "tour_id"),
-            inverseJoinColumns = @JoinColumn(name = "resort_id"))
-    private Set<Resort> resorts = new HashSet<>();
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
 
-    @NonNull
-    @Column(name = "is_burning")
-    private Boolean isBurning;
-
-    @NonNull
-    @Column(name = "is_custom")
-    private Boolean isCustom;
-
-    @NonNull
-    @Column(name = "start_date")
-    @Temporal(TemporalType.DATE)
-    private LocalDate startDate;
-
-    @NonNull
-    @Column(name = "end_date")
-    @Temporal(TemporalType.DATE)
-    private LocalDate endDate;
+    @Column(name = "duration")
+    private Integer duration;
 
     @NonNull
     @Column(name = "is_active")
@@ -116,14 +118,14 @@ public class Tour implements Model {
         hotel.getTours().remove(this);
     }
 
-    public void addResort(Resort resort) {
-        resorts.add(resort);
-        resort.getTours().add(this);
+    public void addTag(Tag tag) {
+        tags.add(tag);
+        tag.getTours().add(this);
     }
 
-    public void removeResort(Resort resort) {
-        resorts.remove(resort);
-        resort.getTours().remove(this);
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
+        tag.getTours().remove(this);
     }
 
     @Override

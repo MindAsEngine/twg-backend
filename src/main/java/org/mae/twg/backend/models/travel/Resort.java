@@ -40,10 +40,6 @@ public class Resort implements Model {
             orphanRemoval = true)
     private List<ResortMedia> medias = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY,
-            mappedBy = "resorts")
-    private Set<Tour> tours = new HashSet<>();
-
     public void addLocal(ResortLocal local) {
         locals.add(local);
         local.setResort(this);

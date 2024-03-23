@@ -25,24 +25,35 @@ public class TourLocal implements Local {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "introduction",
+            columnDefinition = "TEXT")
+    private String introduction;
+
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "additional",
+            columnDefinition = "TEXT")
+    private String additional;
+
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
     public TourLocal(@NonNull String title,
+                     String introduction,
                      String description,
+                     String additional,
                      Tour tour,
                      Localization localization) {
         this.title = title;
+        this.introduction = introduction;
         this.description = description;
+        this.additional = additional;
         this.tour = tour;
         this.localization = localization;
     }

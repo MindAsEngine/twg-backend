@@ -11,6 +11,10 @@ import org.mae.twg.backend.dto.RequestDTO;
 public class TourLocalRequestDTO implements RequestDTO {
     @Schema(description = "Название", example = "Какой-то название")
     String title;
-    @Schema(description = "Описание", example = "Какой-то описание")
+    @Schema(description = "Введение", example = "Какое-то описание")
+    String introduction;
+    @Schema(description = "Описание", example = "Какое-то описание")
     String description;
+    @Schema(description = "Дополнительная информация", example = "Какое-то описание")
+    String additional;
 }

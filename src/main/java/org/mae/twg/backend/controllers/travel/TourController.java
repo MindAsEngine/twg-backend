@@ -46,17 +46,6 @@ public class TourController extends BaseTravelController<TourService, TourReques
         return ResponseEntity.ok(getService().getBySlug(slug, local));
     }
 
-    @PutMapping("/{id}/resorts/update")
-    @Operation(summary = "Обновить курорт",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
-    public ResponseEntity<?> updateResorts(@PathVariable Long id,
-                                           @PathVariable Localization local,
-                                           @Valid @RequestBody List<Long> resortIds) {
-        log.info("Обновить курорт");
-        return ResponseEntity.ok(getService().updateResorts(id, resortIds, local));
-    }
-
     @PutMapping("/{id}/hotels/update")
     @Operation(summary = "Обновить отель",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
