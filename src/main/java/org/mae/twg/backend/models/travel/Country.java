@@ -29,7 +29,6 @@ public class Country implements Model {
             orphanRemoval = true)
     private List<CountryLocal> locals = new ArrayList<>();
 
-    @NonNull
     @Column(name = "media_path")
     private String mediaPath;
 
