@@ -3,6 +3,7 @@ package org.mae.twg.backend.models.travel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Model;
+import org.mae.twg.backend.models.travel.comments.TourComment;
 import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.TourMedia;
@@ -38,6 +39,11 @@ public class Tour implements Model {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<TourLocal> locals = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<TourComment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "tour",
             cascade = CascadeType.ALL,
@@ -87,6 +93,16 @@ public class Tour implements Model {
     @OneToMany(mappedBy = "tour",
             cascade = CascadeType.ALL)
     private List<TourMedia> medias = new ArrayList<>();
+
+    public void addComment(TourComment comment) {
+        comments.add(comment);
+        comment.setTour(this);
+    }
+
+    public void removeComment(TourComment comment) {
+        comments.remove(comment);
+        comment.setTour(null);
+    }
 
     public void addLocal(TourLocal local) {
         locals.add(local);

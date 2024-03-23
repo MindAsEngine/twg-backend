@@ -3,6 +3,7 @@ package org.mae.twg.backend.models.travel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Model;
+import org.mae.twg.backend.models.travel.comments.SightComment;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.models.travel.media.SightMedia;
 
@@ -39,6 +40,11 @@ public class Sight implements Model {
             orphanRemoval = true)
     private List<SightLocal> locals = new ArrayList<>();
 
+    @OneToMany(mappedBy = "sight",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<SightComment> comments = new ArrayList<>();
+
     private Double latitude;
     private Double longitude;
 
@@ -50,6 +56,16 @@ public class Sight implements Model {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<SightMedia> medias = new ArrayList<>();
+
+    public void addComment(SightComment comment) {
+        comments.add(comment);
+        comment.setSight(this);
+    }
+
+    public void removeComment(SightComment comment) {
+        comments.remove(comment);
+        comment.setSight(null);
+    }
 
     public void addLocal(SightLocal local) {
         locals.add(local);

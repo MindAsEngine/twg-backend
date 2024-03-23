@@ -3,6 +3,7 @@ package org.mae.twg.backend.models.travel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Model;
+import org.mae.twg.backend.models.travel.comments.HotelComment;
 import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
@@ -34,6 +35,11 @@ public class Hotel implements Model {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<HotelLocal> locals = new ArrayList<>();
+
+    @OneToMany(mappedBy = "hotel",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<HotelComment> comments = new ArrayList<>();
 
     @NonNull
     @Enumerated(EnumType.STRING)
@@ -67,6 +73,16 @@ public class Hotel implements Model {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<HotelMedia> medias = new ArrayList<>();
+
+    public void addComment(HotelComment comment) {
+        comments.add(comment);
+        comment.setHotel(this);
+    }
+
+    public void removeComment(HotelComment comment) {
+        comments.remove(comment);
+        comment.setHotel(null);
+    }
 
     public void addLocal(HotelLocal local) {
         locals.add(local);
