@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.services.ConfigEnum;
 import org.mae.twg.backend.services.ConfigService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,20 +25,20 @@ public class ConfigController {
 
     @Operation(summary = "Получить конфиг по ключу")
     @GetMapping("/{key}")
-    public ResponseEntity<?> get(@PathVariable String key) {
+    public ResponseEntity<?> get(@PathVariable ConfigEnum key) {
         return ResponseEntity.ok(configService.get(key));
     }
 
     @Operation(summary = "Получить конфиг по ключу")
     @PostMapping("/{key}/put")
-    public ResponseEntity<?> put(@PathVariable String key,
+    public ResponseEntity<?> put(@PathVariable ConfigEnum key,
                                  @RequestBody String value) {
         return ResponseEntity.ok(configService.put(key, value));
     }
 
     @Operation(summary = "Удалить конфиг по ключу")
     @DeleteMapping("/{key}/delete")
-    public ResponseEntity<?> delete(@PathVariable String key) {
+    public ResponseEntity<?> delete(@PathVariable ConfigEnum key) {
         configService.delete(key);
         return ResponseEntity.ok().body("Config was deleted");
     }
