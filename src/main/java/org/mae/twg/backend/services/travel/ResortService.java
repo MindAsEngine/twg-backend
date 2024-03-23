@@ -11,7 +11,6 @@ import org.mae.twg.backend.models.travel.localization.ResortLocal;
 import org.mae.twg.backend.repositories.travel.ResortRepo;
 import org.mae.twg.backend.repositories.travel.localization.ResortLocalRepo;
 import org.mae.twg.backend.services.TravelService;
-import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,22 +26,12 @@ import java.util.stream.Stream;
 public class ResortService implements TravelService<ResortRequestDTO, ResortRequestDTO> {
     private final ResortRepo resortRepo;
     private final ResortLocalRepo localRepo;
-    private final SlugUtils slugUtils;
 
     private Resort findById(Long id) {
         Resort resort = resortRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Resort with id=" + id + " not found"));
         if (resort.getIsDeleted()) {
             throw new ObjectNotFoundException("Resort with id=" + id + " marked as deleted");
-        }
-        return resort;
-    }
-
-    private Resort findBySlug(String slug) {
-        Resort resort = resortRepo.findBySlug(slug)
-                .orElseThrow(() -> new ObjectNotFoundException("Resort with slug=" + slug + " not found"));
-        if (resort.getIsDeleted()) {
-            throw new ObjectNotFoundException("Resort with slug=" + slug + " marked as deleted");
         }
         return resort;
     }
@@ -74,10 +63,6 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
         return new ResortDTO(findById(id), local);
     }
 
-    public ResortDTO getBySlug(String slug, Localization local) {
-        return new ResortDTO(findBySlug(slug), local);
-    }
-
     @Transactional
     public void deleteById(Long id) {
         Resort resort = findById(id);
@@ -91,12 +76,10 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
         resortRepo.saveAndFlush(resort);
         ResortLocal resortLocal =
                 new ResortLocal(sightDTO.getName(),
-                        sightDTO.getDescription(),
                         local, resort);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         resort.addLocal(resortLocal);
 
-        resort.setSlug(slugUtils.getSlug(resort));
         resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, local);
     }
@@ -113,12 +96,10 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
 
         ResortLocal resortLocal =
                 new ResortLocal(sightDTO.getName(),
-                        sightDTO.getDescription(),
                         localization, resort);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         resort.addLocal(resortLocal);
 
-        resort.setSlug(slugUtils.getSlug(resort));
         resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, localization);
     }
@@ -133,10 +114,8 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
                         .orElseThrow(() -> new ObjectNotFoundException(
                                 localization + " localization for resort with id=" + id + "not found"));
         cur_local.setName(sightDTO.getName());
-        cur_local.setDescription(sightDTO.getDescription());
         localRepo.saveAndFlush(cur_local);
 
-        resort.setSlug(slugUtils.getSlug(resort));
         resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, localization);
     }

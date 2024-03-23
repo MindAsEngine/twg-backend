@@ -12,15 +12,11 @@ import org.mae.twg.backend.models.travel.localization.ResortLocal;
 @AllArgsConstructor
 public class ResortLightDTO implements ModelDTO {
     private Long id;
-    private String slug;
     private String name;
-//    private String description;
     private Localization localization;
-//    private List<String> medias;
 
     public ResortLightDTO(Resort resort, Localization localization) {
         this.id = resort.getId();
-        this.slug = resort.getSlug();
         ResortLocal cur_local =
                 resort.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
@@ -28,8 +24,6 @@ public class ResortLightDTO implements ModelDTO {
                         .orElseThrow(() -> new ObjectNotFoundException("Resort "
                                 + localization.name() + " localization not found"));
         this.name = cur_local.getName();
-//        this.description = cur_local.getDescription();
-//        this.medias = resort.getMedias().stream().map(ResortMedia::getMediaPath).toList();
         this.localization = localization;
     }
 

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -57,6 +56,10 @@ public class Hotel implements Model {
     @ManyToMany(fetch = FetchType.LAZY,
             mappedBy = "hotels")
     private Set<Tour> tours = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resort_id")
+    private Resort resort;
 
     @OneToMany(mappedBy = "hotel",
             cascade = CascadeType.ALL,
