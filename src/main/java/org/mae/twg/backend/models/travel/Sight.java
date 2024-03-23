@@ -30,6 +30,10 @@ public class Sight implements Model {
     @Column(name = "slug", unique = true)
     private String slug;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sight_type_id")
+    private SightType sightType;
+
     @OneToMany(mappedBy = "sight",
             cascade = CascadeType.ALL,
             orphanRemoval = true)

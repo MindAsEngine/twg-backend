@@ -91,6 +91,7 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
         sightRepo.saveAndFlush(sight);
         SightLocal sightLocal =
                 new SightLocal(sightDTO.getName(),
+                        sightDTO.getIntroduction(),
                         sightDTO.getDescription(),
                         sightDTO.getAddress(),
                         sight, local);
@@ -114,6 +115,7 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
 
         SightLocal sightLocal =
                 new SightLocal(sightDTO.getName(),
+                        sightDTO.getIntroduction(),
                         sightDTO.getDescription(),
                         sightDTO.getAddress(),
                         sight, localization);
