@@ -9,10 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.mae</groupId>
-    <artifactId>backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>twg-backend</name>
-    <description>twg-backend</description>
+    <artifactId>twg</artifactId>
+    <version>alfa</version>
+    <name>TravelWorldGroup</name>
     <properties>
         <java.version>21</java.version>
     </properties>
