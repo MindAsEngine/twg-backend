@@ -3,6 +3,7 @@ package org.mae.twg.backend.services;
 import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.admin.ConfigDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.repositories.admin.RedisRepo;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class ConfigService {
     @NonNull
     private final RedisRepo<String, String> configRepo;
@@ -22,17 +24,17 @@ public class ConfigService {
     private Long refreshExpirationHours;
     @Value("${config.jwt.access.expiration_hours}")
     private Long accessExpirationHours;
-    private final String refreshExpirationKey = "refresh_token_expiration";
-    private final String accessExpirationKey = "access_token_expiration";
 
     @PostConstruct
     public void init() {
-        if (!configRepo.exists(refreshExpirationKey)) {
-            configRepo.add(refreshExpirationKey,
+        if (!configRepo.exists(ConfigEnum.REFRESH_EXPIRATION_KEY.name())) {
+            log.info("Init REFRESH EXPIRATION CONFIG: " + refreshExpirationHours + " hours");
+            configRepo.add(ConfigEnum.REFRESH_EXPIRATION_KEY.name(),
                     String.valueOf(refreshExpirationHours));
         }
-        if (!configRepo.exists(accessExpirationKey)) {
-            configRepo.add(accessExpirationKey,
+        if (!configRepo.exists(ConfigEnum.ACCESS_EXPIRATION_KEY.name())) {
+            log.info("Init ACCESS EXPIRATION CONFIG: " + accessExpirationHours + " hours");
+            configRepo.add(ConfigEnum.ACCESS_EXPIRATION_KEY.name(),
                     String.valueOf(accessExpirationHours));
         }
     }
@@ -40,7 +42,7 @@ public class ConfigService {
     public Integer getRefreshExpiration() {
         try {
             return Integer.valueOf(
-                    get(refreshExpirationKey)
+                    get(ConfigEnum.REFRESH_EXPIRATION_KEY)
                             .getValue());
         } catch (ObjectNotFoundException e) {
             throw new RuntimeException(e.getMessage());
@@ -50,23 +52,23 @@ public class ConfigService {
     public Integer getAccessExpiration() {
         try {
             return Integer.valueOf(
-                    get(accessExpirationKey)
+                    get(ConfigEnum.ACCESS_EXPIRATION_KEY)
                             .getValue());
         } catch (ObjectNotFoundException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    public ConfigDTO put(String key, String value) {
-        configRepo.add(key, value);
-        return new ConfigDTO(key, value);
+    public ConfigDTO put(ConfigEnum key, String value) {
+        configRepo.add(key.name(), value);
+        return new ConfigDTO(key.name(), value);
     }
 
-    public ConfigDTO get(String key) {
-        if (!configRepo.exists(key)) {
+    public ConfigDTO get(ConfigEnum key) {
+        if (!configRepo.exists(key.name())) {
             throw new ObjectNotFoundException("Config " + key + " not found");
         }
-        return new ConfigDTO(key, configRepo.find(key));
+        return new ConfigDTO(key.name(), configRepo.find(key.name()));
     }
 
     public List<ConfigDTO> getAll() {
@@ -76,7 +78,7 @@ public class ConfigService {
                 .toList();
     }
 
-    public void delete(String key) {
-        configRepo.delete(key);
+    public void delete(ConfigEnum key) {
+        configRepo.delete(key.name());
     }
 }
