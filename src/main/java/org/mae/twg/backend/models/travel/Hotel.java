@@ -39,7 +39,9 @@ public class Hotel implements Model {
     @Enumerated(EnumType.STRING)
     @Column(name = "stars")
     private Stars stars;
-//    TODO: add field for map data
+
+    private Double latitude;
+    private Double longitude;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "hotel_properties",

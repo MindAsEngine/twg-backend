@@ -38,7 +38,9 @@ public class Sight implements Model {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<SightLocal> locals = new ArrayList<>();
-//    TODO: add field for map data
+
+    private Double latitude;
+    private Double longitude;
 
     @ManyToMany(fetch = FetchType.LAZY,
             mappedBy = "sights")

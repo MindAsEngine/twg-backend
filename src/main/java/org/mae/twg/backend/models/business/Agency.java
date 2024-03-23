@@ -22,7 +22,9 @@ public class Agency {
 
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private Boolean isDeleted = Boolean.FALSE;
-//    TODO: add field for map data
+
+    private Double latitude;
+    private Double longitude;
 
     @OneToMany(mappedBy = "agency",
             cascade = CascadeType.ALL)
