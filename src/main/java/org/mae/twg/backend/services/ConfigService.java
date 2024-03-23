@@ -1,6 +1,7 @@
 package org.mae.twg.backend.services;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.ValidationException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +20,8 @@ import java.util.Map;
 public class ConfigService {
     @NonNull
     private final RedisRepo<String, String> configRepo;
+    @NonNull
+    private final CurrencyService currencyService;
 
     @Value("${config.jwt.refresh.expiration_hours}")
     private Long refreshExpirationHours;
@@ -36,6 +39,14 @@ public class ConfigService {
             log.info("Init ACCESS EXPIRATION CONFIG: " + accessExpirationHours + " hours");
             configRepo.add(ConfigEnum.ACCESS_EXPIRATION_KEY.name(),
                     String.valueOf(accessExpirationHours));
+        }
+        if (!configRepo.exists(ConfigEnum.USD_TO_UZS.name())) {
+            log.info("Init USD TO UZS: 0.00008");
+            configRepo.add(ConfigEnum.USD_TO_UZS.name(), "0.00008");
+        }
+        if (!configRepo.exists(ConfigEnum.USD_TO_RUB.name())) {
+            log.info("Init USD TO RUB: 90");
+            configRepo.add(ConfigEnum.USD_TO_RUB.name(), "90.0");
         }
     }
 
@@ -60,11 +71,20 @@ public class ConfigService {
     }
 
     public ConfigDTO put(ConfigEnum key, String value) {
+        if (key == ConfigEnum.USD_TO_USD) {
+            throw new ValidationException("Ты дурачок?");
+        }
+        if (key == ConfigEnum.USD_TO_UZS || key == ConfigEnum.USD_TO_RUB) {
+            currencyService.putCurrency(key, value);
+        }
         configRepo.add(key.name(), value);
         return new ConfigDTO(key.name(), value);
     }
 
     public ConfigDTO get(ConfigEnum key) {
+        if (key == ConfigEnum.USD_TO_USD) {
+            return new ConfigDTO(key.name(), "1.0");
+        }
         if (!configRepo.exists(key.name())) {
             throw new ObjectNotFoundException("Config " + key + " not found");
         }
