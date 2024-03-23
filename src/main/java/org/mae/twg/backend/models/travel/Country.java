@@ -45,7 +45,7 @@ public class Country implements Model {
 
     public void removeLocal(CountryLocal local) {
         locals.remove(local);
-        local.setCountry(this);
+        local.setCountry(null);
     }
 
     @Override

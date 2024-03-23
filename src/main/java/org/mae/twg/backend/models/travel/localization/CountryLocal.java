@@ -31,19 +31,16 @@ public class CountryLocal implements Local {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private Country country;
 
     public CountryLocal(@NonNull String name,
                         String description,
-                        Localization localization,
-                        Country country) {
+                        Localization localization) {
         this.name = name;
         this.description = description;
         this.localization = localization;
-        this.country = country;
     }
 
     @Override
