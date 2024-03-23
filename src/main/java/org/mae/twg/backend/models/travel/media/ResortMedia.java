@@ -19,8 +19,7 @@ public class ResortMedia implements Media {
     @Column(name = "resort_media_id")
     private Long id;
 
-    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resort_id", nullable = false)
     private Resort resort;
 

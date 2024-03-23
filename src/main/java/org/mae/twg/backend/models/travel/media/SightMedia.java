@@ -19,8 +19,7 @@ public class SightMedia implements Media {
     @Column(name = "sight_media_id")
     private Long id;
 
-    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sight_id", nullable = false)
     private Sight sight;
 
