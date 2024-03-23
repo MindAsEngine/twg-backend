@@ -5,15 +5,15 @@ services:
     container_name: twg-backend
     image: twg-backend
     build:
-      context: ./backend
-    env_file: environment.env
+      context: ../
+    env_file:
+      - ../environment.env
     volumes:
       - type: bind
         source: ../resources/images #/home/twg/resources/images
         target: /home/twg/images
-        create_host_path: true
     ports:
-      - '1337:1337'
+      - "1337:1337"
     networks:
       - backend
       - database
