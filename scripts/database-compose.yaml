@@ -4,59 +4,34 @@ services:
 
   postgres:
     image: postgres:alpine
-    env_file: - ./.env
+    env_file:
+      - ../environment.env
     volumes:
       - type: bind
         source: ../postgresql/data #/home/twg/postgresql/data
         target: /var/lib/postgresql/data
-        create_host_path: true
     ports:
       - "5435:5432"
     networks:
-      - backend
       - database
 
   redis:
     image: redis:latest
     command: redis-server
+    env_file:
+      - ../environment.env
     volumes:
       - type: bind
         source: ../redis #/home/twg/redis
         target: /var/lib/redis
-        create_host_path: true
       - type: bind
         source: ../redis.conf #/home/twg/redis.conf
         target: /usr/local/etc/redis/redis.conf
-        create_host_path: false
     ports:
       - "6379:6379"
     networks:
-      - backend
       - database
-
-  # pgweb:
-  #   image: sosedoff/pgweb
-  #   depends_on:
-  #     - postgres
-  #   env_file: - ./.env
-  #   ports:
-  #     - "8085:8081"
-  #   restart: on-failure:3
-  #
-  # redis-commander:
-  #   image: rediscommander/redis-commander:latest
-  #   env_file: - ./.env
-  #   ports: - "8081:8081"
-  #   depends_on: - redis
-  #   networks:
-  #     - backend
-  #     - database
 
 networks:
   database:
-    driver: databases_driver 
     name: database_network
-  backend:
-    name: backend_network
-    external: true
-
