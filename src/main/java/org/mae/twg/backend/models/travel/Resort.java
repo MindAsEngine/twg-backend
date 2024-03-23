@@ -7,9 +7,7 @@ import org.mae.twg.backend.models.travel.localization.ResortLocal;
 import org.mae.twg.backend.models.travel.media.ResortMedia;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 //@Data
@@ -29,6 +27,10 @@ public class Resort implements Model {
 
     @Column(name = "slug", unique = true)
     private String slug;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
 
     @OneToMany(mappedBy = "resort",
             cascade = CascadeType.ALL,
