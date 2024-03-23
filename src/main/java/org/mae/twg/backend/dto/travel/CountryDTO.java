@@ -26,7 +26,6 @@ public class CountryDTO implements ModelDTO {
                         .orElseThrow(() -> new ObjectNotFoundException("Country '"
                                 + localization.name() + "' localization not found"));
         this.title = cur_local.getName();
-        this.description = cur_local.getDescription();
         this.localization = localization;
         this.media = country.getMediaPath();
     }

@@ -3,19 +3,17 @@ package org.mae.twg.backend.models.travel.localization;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Local;
-import org.mae.twg.backend.models.travel.Country;
 import org.mae.twg.backend.models.Model;
+import org.mae.twg.backend.models.travel.SightType;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "country_local")
-public class CountryLocal implements Local {
-
+@Table(name = "tag_local")
+public class SightTypeLocal implements Local {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "local_id")
@@ -29,11 +27,11 @@ public class CountryLocal implements Local {
     private Localization localization;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id")
-    private Country country;
+    @JoinColumn(name = "sight_type_id")
+    private SightType sightType;
 
-    public CountryLocal(@NonNull String name,
-                        Localization localization) {
+    public SightTypeLocal(@NonNull String name,
+                          Localization localization) {
         this.name = name;
         this.localization = localization;
     }
@@ -45,6 +43,6 @@ public class CountryLocal implements Local {
 
     @Override
     public Model getModel() {
-        return country;
+        return sightType;
     }
 }

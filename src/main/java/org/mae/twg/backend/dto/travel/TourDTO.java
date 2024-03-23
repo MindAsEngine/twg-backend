@@ -26,13 +26,7 @@ public class TourDTO implements ModelDTO {
     private Localization localization;
     private List<String> medias;
     private List<HotelLightDTO> hotels;
-    private List<ResortLightDTO> resorts;
-    private AgencyDTO agency;
-    private Boolean isBurning;
-    private Boolean isCustom;
     private Boolean isActive;
-    private LocalDate startDate;
-    private LocalDate endDate;
 
     public TourDTO(Tour tour, Localization localization) {
         this.id = tour.getId();
@@ -45,21 +39,13 @@ public class TourDTO implements ModelDTO {
                                 + localization.name() + " localization not found"));
         this.title = cur_local.getTitle();
         this.type = tour.getType();
-        this.isBurning = tour.getIsBurning();
-        this.isCustom = tour.getIsCustom();
         this.isActive = tour.getIsActive();
-        this.startDate = tour.getStartDate();
-        this.endDate = tour.getEndDate();
         this.description = cur_local.getDescription();
         this.medias = tour.getMedias().stream().map(TourMedia::getMediaPath).toList();
         this.hotels = tour.getHotels().stream()
                 .map(hotel -> HotelLightDTO.getDTO(hotel, localization))
                 .toList();
-        this.resorts = tour.getResorts().stream()
-                .map(resort -> ResortLightDTO.getDTO(resort, localization))
-                .toList();
         this.country = CountryDTO.getDTO(tour.getCountry(), localization);
-        this.agency = AgencyDTO.getDTO(tour.getAgency(), localization);
         this.localization = localization;
     }
 

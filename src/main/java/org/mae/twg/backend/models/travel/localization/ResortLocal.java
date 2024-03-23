@@ -8,7 +8,6 @@ import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,10 +24,6 @@ public class ResortLocal implements Local {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description",
-            columnDefinition = "TEXT")
-    private String description;
-
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
@@ -38,11 +33,9 @@ public class ResortLocal implements Local {
     private Resort resort;
 
     public ResortLocal(@NonNull String name,
-                       String description,
                        Localization localization,
                        Resort resort) {
         this.name = name;
-        this.description = description;
         this.localization = localization;
         this.resort = resort;
     }

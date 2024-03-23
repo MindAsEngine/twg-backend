@@ -3,6 +3,7 @@ package org.mae.twg.backend.models.travel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Model;
+import org.mae.twg.backend.models.travel.comments.HotelComment;
 import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -36,11 +36,18 @@ public class Hotel implements Model {
             orphanRemoval = true)
     private List<HotelLocal> locals = new ArrayList<>();
 
+    @OneToMany(mappedBy = "hotel",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<HotelComment> comments = new ArrayList<>();
+
     @NonNull
     @Enumerated(EnumType.STRING)
     @Column(name = "stars")
     private Stars stars;
-//    TODO: add field for map data
+
+    private Double latitude;
+    private Double longitude;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "hotel_properties",
@@ -58,10 +65,24 @@ public class Hotel implements Model {
             mappedBy = "hotels")
     private Set<Tour> tours = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resort_id")
+    private Resort resort;
+
     @OneToMany(mappedBy = "hotel",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<HotelMedia> medias = new ArrayList<>();
+
+    public void addComment(HotelComment comment) {
+        comments.add(comment);
+        comment.setHotel(this);
+    }
+
+    public void removeComment(HotelComment comment) {
+        comments.remove(comment);
+        comment.setHotel(null);
+    }
 
     public void addLocal(HotelLocal local) {
         locals.add(local);

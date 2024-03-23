@@ -25,6 +25,10 @@ public class SightLocal implements Local {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "introduction",
+            columnDefinition = "TEXT")
+    private String introduction;
+
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
@@ -41,11 +45,13 @@ public class SightLocal implements Local {
     private Sight sight;
 
     public SightLocal(@NonNull String name,
+                      String introduction,
                       String description,
                       String address,
                       Sight sight,
                       Localization local) {
         this.name = name;
+        this.introduction = introduction;
         this.description = description;
         this.address = address;
         this.sight = sight;

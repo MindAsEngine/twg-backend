@@ -72,6 +72,23 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
         return new CountryDTO(findById(id), local);
     }
 
+    private CountryLocal createLocal(CountryRequestDTO requestDTO, Localization localization) {
+        CountryLocal local = new CountryLocal(
+                requestDTO.getName(),
+                localization);
+        localRepo.saveAndFlush(local);
+        return local;
+    }
+
+    private Country createModel(CountryRequestDTO requestDTO, Localization localization) {
+        Country model = new Country();
+        countryRepo.saveAndFlush(model);
+
+        CountryLocal local = createLocal(requestDTO, localization);
+        model.addLocal(local);
+        return model;
+    }
+
     public List<CountryDTO> getAll(Localization localization) {
         List<Country> countries = countryRepo.findAll();
         return modelsToDTOs(countries.stream(), localization);
@@ -92,19 +109,12 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
 
     @Transactional
     public CountryDTO create(CountryRequestDTO countryDTO, Localization localization) {
-        Country country = new Country();
-        countryRepo.saveAndFlush(country);
-
-        CountryLocal local = new CountryLocal(countryDTO.getName(),
-                countryDTO.getDescription(),
-                localization, country);
-        local = localRepo.saveAndFlush(local);
-        country.addLocal(local);
+        Country country = createModel(countryDTO, localization);
         return new CountryDTO(country, localization);
     }
 
     @Transactional
-    public CountryDTO addLocal(Long id, CountryRequestDTO propertyDTO, Localization localization) {
+    public CountryDTO addLocal(Long id, CountryRequestDTO countryDTO, Localization localization) {
         Country country = findById(id);
         boolean isExists = country.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
@@ -113,12 +123,9 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
                     localization + " localization for country with id=" + id + " already exists");
         }
 
-        CountryLocal countryLocal =
-                new CountryLocal(propertyDTO.getName(),
-                        propertyDTO.getDescription(),
-                        localization, country);
-        countryLocal = localRepo.saveAndFlush(countryLocal);
-        country.addLocal(countryLocal);
+        CountryLocal local = createLocal(countryDTO, localization);
+        country.addLocal(local);
+
         return new CountryDTO(country, localization);
     }
 
@@ -132,7 +139,6 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
                         .orElseThrow(() -> new ObjectNotFoundException(
                                 localization + " localization for country with id=" + id + " not found"));
         cur_local.setName(propertyDTO.getName());
-        cur_local.setDescription(propertyDTO.getDescription());
         localRepo.saveAndFlush(cur_local);
         return new CountryDTO(country, localization);
     }
