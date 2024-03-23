@@ -25,9 +25,6 @@ public class CountryLocal implements Local {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
-
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
@@ -36,10 +33,8 @@ public class CountryLocal implements Local {
     private Country country;
 
     public CountryLocal(@NonNull String name,
-                        String description,
                         Localization localization) {
         this.name = name;
-        this.description = description;
         this.localization = localization;
     }
 

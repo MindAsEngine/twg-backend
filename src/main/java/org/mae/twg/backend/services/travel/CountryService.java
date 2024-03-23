@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 public class CountryService implements TravelService<CountryRequestDTO, CountryRequestDTO> {
     private final CountryRepo countryRepo;
     private final CountryLocalRepo localRepo;
+
     private Country findById(Long id) {
         Country country = countryRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Country with id=" + id + " not found"));
@@ -53,7 +54,6 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
     private CountryLocal createLocal(CountryRequestDTO requestDTO, Localization localization) {
         CountryLocal local = new CountryLocal(
                 requestDTO.getName(),
-                requestDTO.getDescription(),
                 localization);
         localRepo.saveAndFlush(local);
         return local;
@@ -118,7 +118,6 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
                         .orElseThrow(() -> new ObjectNotFoundException(
                                 localization + " localization for country with id=" + id + " not found"));
         cur_local.setName(propertyDTO.getName());
-        cur_local.setDescription(propertyDTO.getDescription());
         localRepo.saveAndFlush(cur_local);
         return new CountryDTO(country, localization);
     }
