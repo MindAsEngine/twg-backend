@@ -20,6 +20,8 @@ public class SightDTO implements ModelDTO {
     private String introduction;
     private String description;
     private String address;
+    private Double latitude;
+    private Double longitude;
     private Localization localization;
     private List<String> medias;
 
@@ -36,6 +38,8 @@ public class SightDTO implements ModelDTO {
         this.introduction = cur_local.getIntroduction();
         this.description = cur_local.getDescription();
         this.address = cur_local.getAddress();
+        this.latitude = sight.getLatitude();
+        this.longitude = sight.getLongitude();
         this.medias = sight.getMedias().stream().map(SightMedia::getMediaPath).toList();
         this.localization = localization;
     }

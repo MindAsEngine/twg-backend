@@ -1,16 +1,16 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.HotelDTO;
 import org.mae.twg.backend.dto.travel.SightDTO;
-import org.mae.twg.backend.dto.travel.request.SightRequestDTO;
+import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
+import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
+import org.mae.twg.backend.dto.travel.request.logic.SightLogicDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
-import org.mae.twg.backend.models.travel.Hotel;
 import org.mae.twg.backend.models.travel.Sight;
+import org.mae.twg.backend.models.travel.SightType;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
-import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.models.travel.media.SightMedia;
 import org.mae.twg.backend.repositories.travel.SightRepo;
 import org.mae.twg.backend.repositories.travel.images.SightMediaRepo;
@@ -33,12 +33,13 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class SightService implements TravelService<SightRequestDTO, SightRequestDTO> {
+public class SightService implements TravelService<SightLocalDTO, SightLocalDTO> {
     private final SightRepo sightRepo;
     private final SightLocalRepo localRepo;
     private final SlugUtils slugUtils;
     private final ImageService imageService;
     private final SightMediaRepo sightMediaRepo;
+    private final SightTypeService sightTypeService;
 
     private Sight findById(Long id) {
         Sight sight = sightRepo.findById(id)
@@ -120,7 +121,7 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
     }
 
     @Transactional
-    public SightDTO create(SightRequestDTO sightDTO, Localization local) {
+    public SightDTO create(SightLocalDTO sightDTO, Localization local) {
         Sight sight = new Sight();
         sightRepo.saveAndFlush(sight);
         SightLocal sightLocal =
@@ -138,7 +139,7 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
     }
 
     @Transactional
-    public SightDTO addLocal(Long id, SightRequestDTO sightDTO, Localization localization) {
+    public SightDTO addLocal(Long id, SightLocalDTO sightDTO, Localization localization) {
         Sight sight = findById(id);
         boolean isExists = sight.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
@@ -162,7 +163,7 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
     }
 
     @Transactional
-    public SightDTO updateLocal(Long id, SightRequestDTO sightDTO, Localization localization) {
+    public SightDTO updateLocal(Long id, SightLocalDTO sightDTO, Localization localization) {
         Sight sight = findById(id);
         SightLocal cur_local =
                 sight.getLocals().stream()
@@ -176,6 +177,30 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
         localRepo.saveAndFlush(cur_local);
 
         sight.setSlug(slugUtils.getSlug(sight));
+        sightRepo.saveAndFlush(sight);
+        return new SightDTO(sight, localization);
+    }
+
+    @Transactional
+    public SightDTO updateGeoData(Long id, SightGeoDTO sightDTO, Localization localization) {
+        Sight sight = findById(id);
+        sight.setLatitude(sightDTO.getLatitude());
+        sight.setLongitude(sightDTO.getLongitude());
+        sightRepo.saveAndFlush(sight);
+        return new SightDTO(sight, localization);
+    }
+
+    @Transactional
+    public SightDTO updateLogicData(Long id, SightLogicDTO sightDTO, Localization localization) {
+        Sight sight = findById(id);
+        SightType oldType = sight.getSightType();
+        if (oldType != null) {
+            oldType.removeSight(sight);
+        }
+
+        SightType newType = sightTypeService.findById(sightDTO.getSightTypeId());
+        newType.addSight(sight);
+
         sightRepo.saveAndFlush(sight);
         return new SightDTO(sight, localization);
     }

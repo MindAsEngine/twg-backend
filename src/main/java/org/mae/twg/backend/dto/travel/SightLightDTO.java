@@ -14,10 +14,7 @@ public class SightLightDTO implements ModelDTO {
     private Long id;
     private String slug;
     private String name;
-//    private String description;
-//    private String address;
     private Localization localization;
-//    private List<String> medias;
 
     public SightLightDTO(Sight sight, Localization localization) {
         this.id = sight.getId();
@@ -29,9 +26,6 @@ public class SightLightDTO implements ModelDTO {
                         .orElseThrow(() -> new ObjectNotFoundException("Sight "
                                 + localization.name() + " localization not found"));
         this.name = cur_local.getName();
-//        this.description = cur_local.getDescription();
-//        this.address = cur_local.getAddress();
-//        this.medias = sight.getMedias().stream().map(SightMedia::getMediaPath).toList();
         this.localization = localization;
     }
 
