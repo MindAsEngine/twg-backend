@@ -1,7 +1,7 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.CountryDTO;
+import org.mae.twg.backend.dto.travel.response.CountryDTO;
 import org.mae.twg.backend.dto.travel.request.geo.CountryGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.CountryLocalDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;

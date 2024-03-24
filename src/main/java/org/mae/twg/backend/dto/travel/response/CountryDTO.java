@@ -1,4 +1,4 @@
-package org.mae.twg.backend.dto.travel;
+package org.mae.twg.backend.dto.travel.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,7 @@ import org.mae.twg.backend.models.travel.localization.CountryLocal;
 public class CountryDTO implements ModelDTO {
     private Long id;
     private String title;
-    private String description;
+    private String geoData;
     private String media;
     private Localization localization;
 
@@ -26,6 +26,7 @@ public class CountryDTO implements ModelDTO {
                         .orElseThrow(() -> new ObjectNotFoundException("Country '"
                                 + localization.name() + "' localization not found"));
         this.title = cur_local.getName();
+        this.geoData = country.getGeoData();
         this.localization = localization;
         this.media = country.getMediaPath();
     }
