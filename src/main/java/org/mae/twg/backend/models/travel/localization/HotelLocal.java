@@ -42,8 +42,7 @@ public class HotelLocal implements Local {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 

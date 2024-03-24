@@ -27,8 +27,7 @@ public class ResortLocal implements Local {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resort_id")
     private Resort resort;
 

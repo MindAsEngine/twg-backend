@@ -1,8 +1,6 @@
 package org.mae.twg.backend.controllers.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 public class AuthController {
     private final AuthService authService;
-
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequest request) {
@@ -32,10 +29,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.signUp(request));
     }
 
-    @Operation(
-            summary = "Вход пользователя",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
+    @Operation(summary = "Вход пользователя")
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody @Valid SignInRequest request) {
         log.info("Вход пользователя");

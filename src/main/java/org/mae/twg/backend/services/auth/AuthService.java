@@ -1,16 +1,14 @@
 package org.mae.twg.backend.services.auth;
 
 import lombok.AllArgsConstructor;
-import org.mae.twg.backend.dto.auth.JwtAuthenticationResponse;
-import org.mae.twg.backend.dto.auth.SignInRequest;
-import org.mae.twg.backend.dto.auth.SignUpRequest;
-import org.mae.twg.backend.dto.auth.TokenRefreshRequest;
+import org.mae.twg.backend.dto.auth.*;
 import org.mae.twg.backend.exceptions.TokenValidationException;
 import org.mae.twg.backend.models.auth.*;
 import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
 import org.mae.twg.backend.utils.auth.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +21,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepo refreshTokenRepo;
+
+    public UserDTO getCurrentUserProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication.getName();
+        User user = (User) authentication.getDetails();
+        return new UserDTO(user);
+    }
 
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
 
