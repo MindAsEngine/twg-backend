@@ -38,6 +38,7 @@ public class ResortController extends BaseTravelController<ResortService, Resort
     public ResponseEntity<?> updateLogicData(@PathVariable Localization local,
                                              @RequestParam Long id,
                                              @RequestBody ResortLogicDTO resortDTO) {
+        log.info("Установка курорту с id = " + id + " страны с id = " + resortDTO.getCountryId());
         return ResponseEntity.ok(getService().updateLogicData(id, resortDTO, local));
     }
 }
