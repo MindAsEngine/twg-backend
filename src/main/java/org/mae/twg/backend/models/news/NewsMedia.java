@@ -10,6 +10,7 @@ import org.mae.twg.backend.models.Model;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "news_medias")
 public class NewsMedia implements Media {
     @Id
