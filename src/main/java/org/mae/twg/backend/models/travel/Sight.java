@@ -34,6 +34,10 @@ public class Sight implements Model {
     @JoinColumn(name = "sight_type_id")
     private SightType sightType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "header_img_id")
+    private SightMedia header;
+
     @OneToMany(mappedBy = "sight",
             cascade = CascadeType.ALL,
             orphanRemoval = true)

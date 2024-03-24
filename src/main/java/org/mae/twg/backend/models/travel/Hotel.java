@@ -31,6 +31,10 @@ public class Hotel implements Model {
     @Column(name = "slug", unique = true)
     private String slug;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "header_img_id")
+    private HotelMedia header;
+
     @OneToMany(mappedBy = "hotel",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
