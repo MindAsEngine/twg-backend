@@ -5,6 +5,7 @@ import org.mae.twg.backend.dto.travel.TourDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
+import org.mae.twg.backend.dto.travel.request.logic.TourPeriodDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.*;
@@ -34,10 +35,11 @@ import java.util.stream.Stream;
 public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
     private final TourRepo tourRepo;
     private final TourLocalRepo localRepo;
-    private final HotelRepo hotelRepo;
+    private final TourMediaRepo tourMediaRepo;
+    private final TourPeriodRepo tourPeriodRepo;
     private final SlugUtils slugUtils;
     private final ImageService imageService;
-    private final TourMediaRepo tourMediaRepo;
+    private final HotelService hotelService;
     private final CountryService countryService;
     private final SightService sightService;
     private final TagService tagService;
@@ -189,8 +191,7 @@ public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
             tour.removeHotel(hotel);
         }
         for (Long hotelId : tourDTO.getHotelIds()) {
-            Hotel hotel = hotelRepo.findById(hotelId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + hotelId + " not found"));
+            Hotel hotel = hotelService.findById(hotelId);
             tour.addHotel(hotel);
         }
 
@@ -228,6 +229,19 @@ public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
     public TourDTO updateGeoData(Long id, TourGeoDTO tourDTO, Localization localization) {
         Tour tour = findById(id);
         tour.setRoute(tourDTO.getGeoData());
+        return new TourDTO(tour, localization);
+    }
+
+    @Transactional
+    public TourDTO createNewPeriod(Long id, TourPeriodDTO tourPeriodDTO, Localization localization) {
+        Tour tour = findById(id);
+
+        TourPeriod period = new TourPeriod(
+                tourPeriodDTO.getStartDate(),
+                tourPeriodDTO.getEndDate());
+        tourPeriodRepo.saveAndFlush(period);
+        tour.addPeriod(period);
+        tourRepo.saveAndFlush(tour);
         return new TourDTO(tour, localization);
     }
 }

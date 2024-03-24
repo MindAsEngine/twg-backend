@@ -44,7 +44,7 @@ public class HotelService implements TravelService<HotelLocalDTO, HotelLocalDTO>
     private final ImageService imageService;
     private final HotelMediaRepo hotelMediaRepo;
 
-    private Hotel findById(Long id) {
+    public Hotel findById(Long id) {
         Hotel hotel = hotelRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
         if (hotel.getIsDeleted()) {

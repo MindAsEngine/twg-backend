@@ -104,6 +104,16 @@ public class Tour implements Model {
         comment.setTour(null);
     }
 
+    public void addPeriod(TourPeriod period) {
+        periods.add(period);
+        period.setTour(this);
+    }
+
+    public void removePeriod(TourPeriod period) {
+        periods.remove(period);
+        period.setTour(null);
+    }
+
     public void addLocal(TourLocal local) {
         locals.add(local);
         local.setTour(this);
