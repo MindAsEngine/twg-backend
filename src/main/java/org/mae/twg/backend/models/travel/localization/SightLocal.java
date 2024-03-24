@@ -39,8 +39,7 @@ public class SightLocal implements Local {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sight_id")
     private Sight sight;
 

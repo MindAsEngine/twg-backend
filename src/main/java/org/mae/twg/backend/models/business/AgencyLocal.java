@@ -37,8 +37,7 @@ public class AgencyLocal {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
