@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/travel/{local}/tags")
-@Tag(name = "Курорты")
+@Tag(name = "Теги туров")
 @Log4j2
 public class TagController extends BaseTravelController<TagService, TagLocalDTO, TagLocalDTO> {
 
