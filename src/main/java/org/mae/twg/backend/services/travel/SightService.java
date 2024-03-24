@@ -1,7 +1,7 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.SightDTO;
+import org.mae.twg.backend.dto.travel.response.SightDTO;
 import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.SightLogicDTO;

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.dto.travel.response.CountryDTO;
+import org.mae.twg.backend.dto.travel.response.HotelLightDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;

@@ -7,8 +7,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
-import org.mae.twg.backend.dto.travel.request.HotelLocalRequestDTO;
-import org.mae.twg.backend.dto.travel.request.HotelRequestDTO;
+import org.mae.twg.backend.dto.travel.request.geo.HotelGeoDTO;
+import org.mae.twg.backend.dto.travel.request.locals.HotelLocalDTO;
+import org.mae.twg.backend.dto.travel.request.logic.HotelLogicDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.HotelService;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import java.util.List;
 @RequestMapping("/travel/{local}/hotels")
 @Tag(name = "Отели")
 @Log4j2
-public class HotelController extends BaseTravelController<HotelService, HotelRequestDTO, HotelLocalRequestDTO> {
+public class HotelController extends BaseTravelController<HotelService, HotelLocalDTO, HotelLocalDTO> {
 
     public HotelController(HotelService service) {
         super(service);
@@ -73,25 +74,25 @@ public class HotelController extends BaseTravelController<HotelService, HotelReq
         return ResponseEntity.ok(getService().getBySlug(slug, local));
     }
 
-    @PutMapping("/{id}/properties/update")
-    @Operation(summary = "Обновить свойства отеля",
+    @PutMapping("/{id}/logic/update")
+    @Operation(summary = "Обновить логических данных отеля",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<?> updateProperties(@PathVariable Long id,
                                               @PathVariable Localization local,
-                                              @Valid @RequestBody List<Long> propertyIds) {
-        log.info("Обновить свойства отеля");
-        return ResponseEntity.ok(getService().updateProperties(id, propertyIds, local));
+                                              @Valid @RequestBody HotelLogicDTO hotelDTO) {
+        log.info("Обновление логических данных отелю с id = " + id);
+        return ResponseEntity.ok(getService().updateLogicData(id, hotelDTO, local));
     }
 
-    @PutMapping("/{id}/sights/update")
-    @Operation(summary = "Обновить точки интереса",
+    @PutMapping("/{id}/geo/update")
+    @Operation(summary = "Обновить геоданных отеля",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<?> updateSights(@PathVariable Long id,
                                           @PathVariable Localization local,
-                                          @Valid @RequestBody List<Long> sightIds) {
-        log.info("Обновить точки интереса");
-        return ResponseEntity.ok(getService().updateSights(id, sightIds, local));
+                                          @Valid @RequestBody HotelGeoDTO hotelDTO) {
+        log.info("Обновление геоданных данных отелю с id = " + id);
+        return ResponseEntity.ok(getService().updateGeoData(id, hotelDTO, local));
     }
 }

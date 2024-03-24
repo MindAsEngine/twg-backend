@@ -1,4 +1,4 @@
-package org.mae.twg.backend.dto.travel;
+package org.mae.twg.backend.dto.travel.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +14,8 @@ public class HotelLightDTO implements ModelDTO {
     private Long id;
     private String slug;
     private String name;
+    private Double latitude;
+    private Double longitude;
     private Localization localization;
 
     public HotelLightDTO(Hotel hotel, Localization localization) {
@@ -26,16 +28,8 @@ public class HotelLightDTO implements ModelDTO {
                         .orElseThrow(() -> new ObjectNotFoundException("Hotel "
                                 + localization.name() + " localization not found"));
         this.name = cur_local.getName();
-//        this.city = cur_local.getCity();
-//        this.description = cur_local.getDescription();
-//        this.address = cur_local.getAddress();
-//        this.medias = hotel.getMedias().stream().map(HotelMedia::getMediaPath).toList();
-//        this.properties = hotel.getProperties().stream()
-//                .map(property -> new PropertyDTO(property, localization))
-//                .toList();
-//        this.sights = hotel.getSights().stream()
-//                .map(sight -> new SightDTO(sight, localization))
-//                .toList();
+        this.latitude = hotel.getLatitude();
+        this.longitude = hotel.getLongitude();
         this.localization = localization;
     }
 

@@ -1,20 +1,16 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.HotelDTO;
 import org.mae.twg.backend.dto.travel.TourDTO;
 import org.mae.twg.backend.dto.travel.request.TourLocalRequestDTO;
 import org.mae.twg.backend.dto.travel.request.TourRequestDTO;
 import org.mae.twg.backend.dto.travel.request.TourUpdateDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
-import org.mae.twg.backend.models.business.Agency;
 import org.mae.twg.backend.models.travel.*;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
-import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.models.travel.media.TourMedia;
-import org.mae.twg.backend.repositories.business.AgencyRepo;
 import org.mae.twg.backend.repositories.travel.*;
 import org.mae.twg.backend.repositories.travel.images.TourMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
@@ -39,9 +35,7 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
     private final TourRepo tourRepo;
     private final TourLocalRepo localRepo;
     private final HotelRepo hotelRepo;
-    private final ResortRepo resortRepo;
     private final CountryRepo countryRepo;
-    private final AgencyRepo agencyRepo;
     private final SlugUtils slugUtils;
     private final ImageService imageService;
     private final TourMediaRepo tourMediaRepo;
