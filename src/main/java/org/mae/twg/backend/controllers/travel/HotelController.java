@@ -29,6 +29,20 @@ public class HotelController extends BaseTravelController<HotelService, HotelLoc
         super(service);
     }
 
+    @PostMapping("/{id}/image/upload")
+    @Operation(summary = "Добавить обложку",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<?> uploadImage(@PathVariable Localization local,
+                                          @PathVariable Long id,
+                                          MultipartFile image) throws IOException {
+        log.info("Добавление обложки к отелю");
+        if (image == null) {
+            throw new ValidationException("Нет фотографии");
+        }
+        return ResponseEntity.ok(getService().uploadImage(id, local, image));
+    }
+
     @PostMapping("/{id}/images/upload")
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
@@ -42,6 +56,7 @@ public class HotelController extends BaseTravelController<HotelService, HotelLoc
         }
         return ResponseEntity.ok(getService().uploadImages(id, local, images));
     }
+
 
     @DeleteMapping("/{id}/images/delete")
     @Operation(summary = "Удалить фотографии",

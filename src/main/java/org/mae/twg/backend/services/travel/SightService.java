@@ -1,10 +1,10 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.response.SightDTO;
 import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.SightLogicDTO;
+import org.mae.twg.backend.dto.travel.response.SightDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Sight;
@@ -69,6 +69,16 @@ public class SightService implements TravelService<SightLocalDTO, SightLocalDTO>
             throw new ObjectNotFoundException("Sights with " + localization + " not found");
         }
         return sightDTOs;
+    }
+
+    @Transactional
+    public SightDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
+        String url = imageService.saveImage(ModelType.HOTEL, image);
+        SightMedia sightMedia = new SightMedia(url);
+        Sight sight = findById(id);
+        sight.setHeader(sightMedia);
+        sightRepo.saveAndFlush(sight);
+        return new SightDTO(sight, local);
     }
 
     @Transactional
