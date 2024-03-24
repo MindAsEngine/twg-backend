@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.models.Currency;
 import org.mae.twg.backend.services.ConfigEnum;
 import org.mae.twg.backend.services.ConfigService;
+import org.mae.twg.backend.services.CurrencyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,15 @@ import org.springframework.web.bind.annotation.*;
 @Log4j2
 public class ConfigController {
     private final ConfigService configService;
+    private final CurrencyService currencyService;
+    @GetMapping("/currency/history")
+    @Operation(summary = "Получить всю историю валют")
+    public ResponseEntity<?> getHistory(@RequestParam(required = false) Currency currency) {
+        if (currency == null) {
+            return ResponseEntity.ok(currencyService.getAllCurrencyHistory());
+        }
+        return ResponseEntity.ok(currencyService.getAllCurrencyHistoryByCurrency(currency));
+    }
 
     @Operation(summary = "Получить всю конфигурацию")
     @GetMapping()
