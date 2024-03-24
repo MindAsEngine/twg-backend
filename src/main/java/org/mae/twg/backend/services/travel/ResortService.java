@@ -126,8 +126,14 @@ public class ResortService implements TravelService<ResortLocalDTO, ResortLocalD
     @Transactional
     public ResortDTO updateLogicData(Long id, ResortLogicDTO resortDTO, Localization localization) {
         Resort resort = findById(id);
-        Country country = countryService.findById(resortDTO.getCountryId());
-        country.addResort(resort);
+        Country oldCountry = resort.getCountry();
+        if (oldCountry != null) {
+            oldCountry.removeResort(resort);
+        }
+
+        Country newCountry = countryService.findById(resortDTO.getCountryId());
+        newCountry.addResort(resort);
+
         resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, localization);
     }
