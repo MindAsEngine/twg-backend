@@ -79,7 +79,7 @@ public class ResortService implements TravelService<ResortLocalDTO, ResortLocalD
         resortRepo.saveAndFlush(resort);
         ResortLocal resortLocal =
                 new ResortLocal(sightDTO.getName(),
-                        local, resort);
+                        local);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         resort.addLocal(resortLocal);
 
@@ -99,7 +99,7 @@ public class ResortService implements TravelService<ResortLocalDTO, ResortLocalD
 
         ResortLocal resortLocal =
                 new ResortLocal(sightDTO.getName(),
-                        localization, resort);
+                        localization);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         resort.addLocal(resortLocal);
 

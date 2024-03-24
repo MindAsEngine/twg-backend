@@ -37,8 +37,7 @@ public class AgencyLocal {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
@@ -46,13 +45,11 @@ public class AgencyLocal {
                        String description,
                        String contacts,
                        String address,
-                       Agency agency,
                        Localization localization) {
         this.name = name;
         this.description = description;
         this.contacts = contacts;
         this.address = address;
-        this.agency = agency;
         this.localization = localization;
     }
 }

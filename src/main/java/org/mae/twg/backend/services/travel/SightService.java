@@ -41,7 +41,7 @@ public class SightService implements TravelService<SightLocalDTO, SightLocalDTO>
     private final SightMediaRepo sightMediaRepo;
     private final SightTypeService sightTypeService;
 
-    private Sight findById(Long id) {
+    public Sight findById(Long id) {
         Sight sight = sightRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + id + " not found"));
         if (sight.getIsDeleted()) {
@@ -129,7 +129,7 @@ public class SightService implements TravelService<SightLocalDTO, SightLocalDTO>
                         sightDTO.getIntroduction(),
                         sightDTO.getDescription(),
                         sightDTO.getAddress(),
-                        sight, local);
+                        local);
         sightLocal = localRepo.saveAndFlush(sightLocal);
         sight.addLocal(sightLocal);
 
@@ -153,7 +153,7 @@ public class SightService implements TravelService<SightLocalDTO, SightLocalDTO>
                         sightDTO.getIntroduction(),
                         sightDTO.getDescription(),
                         sightDTO.getAddress(),
-                        sight, localization);
+                        localization);
         sightLocal = localRepo.saveAndFlush(sightLocal);
         sight.addLocal(sightLocal);
 

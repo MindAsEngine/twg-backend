@@ -2,9 +2,9 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.travel.TourDTO;
-import org.mae.twg.backend.dto.travel.request.TourLocalRequestDTO;
-import org.mae.twg.backend.dto.travel.request.TourRequestDTO;
-import org.mae.twg.backend.dto.travel.request.TourUpdateDTO;
+import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
+import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
+import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.*;
@@ -31,16 +31,18 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
-public class TourService implements TravelService<TourRequestDTO, TourLocalRequestDTO> {
+public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
     private final TourRepo tourRepo;
     private final TourLocalRepo localRepo;
     private final HotelRepo hotelRepo;
-    private final CountryRepo countryRepo;
     private final SlugUtils slugUtils;
     private final ImageService imageService;
     private final TourMediaRepo tourMediaRepo;
+    private final CountryService countryService;
+    private final SightService sightService;
+    private final TagService tagService;
 
-    private Tour findById(Long id) {
+    public Tour findById(Long id) {
         Tour tour = tourRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Tour with id=" + id + " not found"));
         if (tour.getIsDeleted()) {
@@ -120,29 +122,15 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
     }
 
     @Transactional
-    public TourDTO create(TourRequestDTO tourDTO, Localization localization) {
+    public TourDTO create(TourLocalDTO tourDTO, Localization localization) {
         Tour tour = new Tour();
-        tour.setIsActive(tourDTO.getIsActive());
-        tour.setType(tourDTO.getType());
-        Country country = countryRepo.findById(tourDTO.getCountryId())
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        "Country with id=" + tourDTO.getCountryId() + " not found"));
-        tour.setCountry(country);
-        tourRepo.saveAndFlush(tour);
-
-        for (Long id : tourDTO.getHotelIds()) {
-            Hotel hotel = hotelRepo.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
-            tour.addHotel(hotel);
-        }
-
         tourRepo.saveAndFlush(tour);
 
         TourLocal local = new TourLocal(tourDTO.getTitle(),
                 tourDTO.getIntroduction(),
                 tourDTO.getDescription(),
                 tourDTO.getAdditional(),
-                tour, localization);
+                localization);
         localRepo.saveAndFlush(local);
         tour.addLocal(local);
 
@@ -152,7 +140,7 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
     }
 
     @Transactional
-    public TourDTO addLocal(Long id, TourLocalRequestDTO tourDTO, Localization localization) {
+    public TourDTO addLocal(Long id, TourLocalDTO tourDTO, Localization localization) {
         Tour tour = findById(id);
         boolean isExists = tour.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
@@ -166,7 +154,7 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
                         tourDTO.getIntroduction(),
                         tourDTO.getDescription(),
                         tourDTO.getAdditional(),
-                        tour, localization);
+                        localization);
         tourLocal = localRepo.saveAndFlush(tourLocal);
         tour.addLocal(tourLocal);
 
@@ -176,7 +164,7 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
     }
 
     @Transactional
-    public TourDTO updateLocal(Long id, TourLocalRequestDTO tourDTO, Localization localization) {
+    public TourDTO updateLocal(Long id, TourLocalDTO tourDTO, Localization localization) {
         Tour tour = findById(id);
         TourLocal cur_local = tour.getLocals().stream()
                 .filter(local -> local.getLocalization() == localization)
@@ -194,36 +182,52 @@ public class TourService implements TravelService<TourRequestDTO, TourLocalReque
     }
 
     @Transactional
-    public TourDTO updateHotels(Long id, List<Long> hotelIds, Localization localization) {
+    public TourDTO updateLogicData(Long id, TourLogicDTO tourDTO, Localization localization) {
         Tour tour = findById(id);
+
         for (Hotel hotel : tour.getHotels().stream().toList()) {
             tour.removeHotel(hotel);
         }
-
-        for (Long hotelId : hotelIds) {
+        for (Long hotelId : tourDTO.getHotelIds()) {
             Hotel hotel = hotelRepo.findById(hotelId)
                     .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + hotelId + " not found"));
             tour.addHotel(hotel);
         }
+
+        for (Tag tag : tour.getTags().stream().toList()) {
+            tour.removeTag(tag);
+        }
+        for (Long tagId : tourDTO.getTagIds()) {
+            Tag tag = tagService.findById(tagId);
+            tour.addTag(tag);
+        }
+
+        Country oldCountry = tour.getCountry();
+        if (oldCountry != null) {
+            oldCountry.removeTour(tour);
+        }
+        Country newCountry = countryService.findById(tourDTO.getCountryId());
+        newCountry.addTour(tour);
+
+        Sight newHospital = null;
+        if (tourDTO.getHospitalId() != null) {
+            newHospital = sightService.findById(tourDTO.getHospitalId());
+        }
+        tour.setHospital(newHospital);
+
+        tour.setType(tourDTO.getType());
+        tour.setIsActive(tourDTO.getIsActive());
+        tour.setDuration(tour.getDuration());
+        tour.setPrice(tourDTO.getPrice());
 
         tourRepo.saveAndFlush(tour);
         return new TourDTO(tour, localization);
     }
 
     @Transactional
-    public TourDTO update(Long id, TourUpdateDTO tourDTO, Localization localization) {
+    public TourDTO updateGeoData(Long id, TourGeoDTO tourDTO, Localization localization) {
         Tour tour = findById(id);
-        if (tourDTO.getCountryId() != null) {
-            Country country = countryRepo.findById(tourDTO.getCountryId())
-                    .orElseThrow(() -> new ObjectNotFoundException(
-                            "Country with id=" + tourDTO.getCountryId() + " not found"));
-            tour.setCountry(country);
-        } else {
-            tour.setCountry(null);
-        }
-        tour.setType(tourDTO.getType());
-        tour.setIsActive(tourDTO.getIsActive());
-        tourRepo.saveAndFlush(tour);
+        tour.setRoute(tourDTO.getGeoData());
         return new TourDTO(tour, localization);
     }
 }

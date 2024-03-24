@@ -39,8 +39,7 @@ public class SightLocal implements Local {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sight_id")
     private Sight sight;
 
@@ -48,13 +47,11 @@ public class SightLocal implements Local {
                       String introduction,
                       String description,
                       String address,
-                      Sight sight,
                       Localization local) {
         this.name = name;
         this.introduction = introduction;
         this.description = description;
         this.address = address;
-        this.sight = sight;
         this.localization = local;
     }
 

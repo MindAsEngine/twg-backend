@@ -63,8 +63,7 @@ public class AgencyService {
                 new AgencyLocal(agencyDTO.getName(),
                         agencyDTO.getDescription(),
                         agencyDTO.getContacts(),
-                        agencyDTO.getAddress(),
-                        agency, local);
+                        agencyDTO.getAddress(), local);
         agencyLocal = localRepo.saveAndFlush(agencyLocal);
         agency.addLocal(agencyLocal);
         return new AgencyDTO(agency, local);
@@ -85,7 +84,7 @@ public class AgencyService {
                         agencyDTO.getDescription(),
                         agencyDTO.getContacts(),
                         agencyDTO.getAddress(),
-                        agency, localization);
+                        localization);
         resortLocal = localRepo.saveAndFlush(resortLocal);
         agency.addLocal(resortLocal);
         return new AgencyDTO(agency, localization);

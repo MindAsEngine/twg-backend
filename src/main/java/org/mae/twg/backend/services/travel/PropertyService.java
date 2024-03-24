@@ -72,7 +72,7 @@ public class PropertyService implements TravelService<PropertyLocalDTO, Property
 
         PropertyLocal local = new PropertyLocal(propertyDTO.getTitle(),
                 propertyDTO.getDescription(),
-                property, localization);
+                localization);
         local = localRepo.saveAndFlush(local);
         property.addLocal(local);
         return new PropertyDTO(property, localization);
@@ -91,7 +91,7 @@ public class PropertyService implements TravelService<PropertyLocalDTO, Property
         PropertyLocal propertyLocal =
                 new PropertyLocal(propertyDTO.getTitle(),
                         propertyDTO.getDescription(),
-                        property, localization);
+                        localization);
         propertyLocal = localRepo.saveAndFlush(propertyLocal);
         property.addLocal(propertyLocal);
         return new PropertyDTO(property, localization);

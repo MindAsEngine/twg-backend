@@ -27,7 +27,7 @@ public class TagService implements TravelService<TagLocalDTO, TagLocalDTO> {
     private final TagRepo tagRepo;
     private final TagLocalRepo localRepo;
 
-    private Tag findById(Long id) {
+    public Tag findById(Long id) {
         Tag tag = tagRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Tag with id=" + id + " not found"));
         if (tag.getIsDeleted()) {

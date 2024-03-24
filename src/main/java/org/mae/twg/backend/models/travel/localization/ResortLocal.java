@@ -27,17 +27,14 @@ public class ResortLocal implements Local {
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resort_id")
     private Resort resort;
 
     public ResortLocal(@NonNull String name,
-                       Localization localization,
-                       Resort resort) {
+                       Localization localization) {
         this.name = name;
         this.localization = localization;
-        this.resort = resort;
     }
 
     @Override
