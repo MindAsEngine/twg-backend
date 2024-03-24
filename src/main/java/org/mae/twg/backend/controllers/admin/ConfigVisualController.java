@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin/configs/visual")
 @RequiredArgsConstructor
-@Tag(name = "Динамический конфиг по визуалу сайта")
+@Tag(name = "Динамический конфиг визуала сайта")
 @Log4j2
 public class ConfigVisualController {
     private final ConfigVisualService configVisualService;
@@ -25,7 +25,7 @@ public class ConfigVisualController {
     }
     @Operation(summary = "Обновить конфиг визуала")
     @PutMapping("/put")
-    public ResponseEntity<?> putAll(@RequestBody Map<ConfigDisplayEnum, String> config) {
+    public ResponseEntity<?> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
         return ResponseEntity.ok(configVisualService.put(config));
     }
 }

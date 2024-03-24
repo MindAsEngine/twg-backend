@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/configs/business")
 @RequiredArgsConstructor
-@Tag(name = "Динамический конфиг по бизнес логике")
+@Tag(name = "Динамический конфиг бизнес логики")
 @Log4j2
 public class ConfigBusinessController {
     private final ConfigBusinessService configBusinessService;

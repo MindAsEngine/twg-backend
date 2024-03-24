@@ -43,10 +43,10 @@ public class ConfigVisualService {
                     String.valueOf(true));
         }
     }
-    public Map<String, String> put(Map<ConfigDisplayEnum, String> config) {
-        for (Map.Entry<ConfigDisplayEnum, String> entry : config.entrySet()) {
+    public Map<String, String> put(Map<ConfigDisplayEnum, Boolean> config) {
+        for (Map.Entry<ConfigDisplayEnum, Boolean> entry : config.entrySet()) {
             String key = entry.getKey().name();
-            String value = entry.getValue();
+            String value = entry.getValue().toString();
             configRepo.add(key, value);
         }
         return getAll();
