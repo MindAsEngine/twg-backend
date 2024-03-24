@@ -31,4 +31,10 @@ public class TourPeriod {
     @Column(name = "end_date")
     @Temporal(TemporalType.DATE)
     private LocalDate endDate;
+
+    public TourPeriod(@NonNull LocalDate startDate,
+                      @NonNull LocalDate endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }

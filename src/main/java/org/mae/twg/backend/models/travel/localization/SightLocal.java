@@ -47,13 +47,11 @@ public class SightLocal implements Local {
                       String introduction,
                       String description,
                       String address,
-                      Sight sight,
                       Localization local) {
         this.name = name;
         this.introduction = introduction;
         this.description = description;
         this.address = address;
-        this.sight = sight;
         this.localization = local;
     }
 

@@ -48,13 +48,11 @@ public class TourLocal implements Local {
                      String introduction,
                      String description,
                      String additional,
-                     Tour tour,
                      Localization localization) {
         this.title = title;
         this.introduction = introduction;
         this.description = description;
         this.additional = additional;
-        this.tour = tour;
         this.localization = localization;
     }
 

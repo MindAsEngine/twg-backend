@@ -1,9 +1,10 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.HotelDTO;
-import org.mae.twg.backend.dto.travel.request.HotelLocalRequestDTO;
-import org.mae.twg.backend.dto.travel.request.HotelRequestDTO;
+import org.mae.twg.backend.dto.travel.response.HotelDTO;
+import org.mae.twg.backend.dto.travel.request.geo.HotelGeoDTO;
+import org.mae.twg.backend.dto.travel.request.locals.HotelLocalDTO;
+import org.mae.twg.backend.dto.travel.request.logic.HotelLogicDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Hotel;
@@ -28,14 +29,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
-public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRequestDTO> {
+public class HotelService implements TravelService<HotelLocalDTO, HotelLocalDTO> {
     private final HotelRepo hotelRepo;
     private final HotelLocalRepo localRepo;
     private final PropertyRepo propertyRepo;
@@ -44,7 +44,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
     private final ImageService imageService;
     private final HotelMediaRepo hotelMediaRepo;
 
-    private Hotel findById(Long id) {
+    public Hotel findById(Long id) {
         Hotel hotel = hotelRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
         if (hotel.getIsDeleted()) {
@@ -123,22 +123,8 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
     }
 
     @Transactional
-    public HotelDTO create(HotelRequestDTO hotelDTO, Localization localization) {
+    public HotelDTO create(HotelLocalDTO hotelDTO, Localization localization) {
         Hotel hotel = new Hotel();
-        hotel.setStars(hotelDTO.getStars());
-        hotelRepo.saveAndFlush(hotel);
-        for (Long id : hotelDTO.getPropertyIds()) {
-            Property property = propertyRepo.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + id + " not found"));
-            hotel.addProperty(property);
-        }
-
-        for (Long id : hotelDTO.getSightIds()) {
-            Sight sight = sightRepo.findById(id)
-                    .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + id + " not found"));
-            hotel.addSight(sight);
-        }
-
         hotelRepo.saveAndFlush(hotel);
 
         HotelLocal local = new HotelLocal(hotelDTO.getName(),
@@ -146,7 +132,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
                 hotelDTO.getDescription(),
                 hotelDTO.getDescription(),
                 hotelDTO.getAddress(),
-                localization, hotel);
+                localization);
         localRepo.saveAndFlush(local);
         hotel.addLocal(local);
 
@@ -156,7 +142,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
     }
 
     @Transactional
-    public HotelDTO addLocal(Long id, HotelLocalRequestDTO hotelDTO, Localization localization) {
+    public HotelDTO addLocal(Long id, HotelLocalDTO hotelDTO, Localization localization) {
         Hotel hotel = findById(id);
         boolean isExists = hotel.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
@@ -171,7 +157,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
                         hotelDTO.getDescription(),
                         hotelDTO.getDescription(),
                         hotelDTO.getAddress(),
-                        localization, hotel);
+                        localization);
         hotelLocal = localRepo.saveAndFlush(hotelLocal);
         hotel.addLocal(hotelLocal);
 
@@ -181,7 +167,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
     }
 
     @Transactional
-    public HotelDTO updateLocal(Long id, HotelLocalRequestDTO hotelDTO, Localization localization) {
+    public HotelDTO updateLocal(Long id, HotelLocalDTO hotelDTO, Localization localization) {
         Hotel hotel = findById(id);
         HotelLocal cur_local = hotel.getLocals().stream()
                 .filter(local -> local.getLocalization() == localization)
@@ -201,16 +187,26 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
     }
 
     @Transactional
-    public HotelDTO updateProperties(Long id, List<Long> propertyIds, Localization localization) {
+    public HotelDTO updateLogicData(Long id, HotelLogicDTO hotelDTO, Localization localization) {
         Hotel hotel = findById(id);
+        hotel.setStars(hotelDTO.getStars());
+
         for (Property property : hotel.getProperties().stream().toList()) {
             hotel.removeProperty(property);
         }
-
-        for (Long propertyId : propertyIds) {
+        for (Long propertyId : hotelDTO.getPropertyIds()) {
             Property property = propertyRepo.findById(propertyId)
                     .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + propertyId + " not found"));
             hotel.addProperty(property);
+        }
+
+        for (Sight sight : hotel.getSights().stream().toList()) {
+            hotel.removeSight(sight);
+        }
+        for (Long sightId : hotelDTO.getSightIds()) {
+            Sight sight = sightRepo.findById(sightId)
+                    .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + sightId + " not found"));
+            hotel.addSight(sight);
         }
 
         hotelRepo.saveAndFlush(hotel);
@@ -218,17 +214,11 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
     }
 
     @Transactional
-    public HotelDTO updateSights(Long id, List<Long> sightIds, Localization localization) {
+    public HotelDTO updateGeoData(Long id, HotelGeoDTO hotelDTO, Localization localization) {
         Hotel hotel = findById(id);
-        for (Sight sight : hotel.getSights().stream().toList()) {
-            hotel.removeSight(sight);
-        }
 
-        for (Long sightId : sightIds) {
-            Sight sight = sightRepo.findById(sightId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + sightId + " not found"));
-            hotel.removeSight(sight);
-        }
+        hotel.setLatitude(hotelDTO.getLatitude());
+        hotel.setLongitude(hotelDTO.getLongitude());
 
         hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, localization);

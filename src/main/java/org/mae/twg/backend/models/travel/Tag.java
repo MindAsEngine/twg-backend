@@ -29,6 +29,9 @@ public class Tag implements Model {
     @Column(name = "icon")
     private String icon;
 
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = Boolean.FALSE;
+
     @OneToMany(mappedBy = "tag",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
@@ -37,6 +40,16 @@ public class Tag implements Model {
     @ManyToMany(fetch = FetchType.LAZY,
             mappedBy = "tags")
     private Set<Tour> tours = new HashSet<>();
+
+    public void addLocal(TagLocal local) {
+        locals.add(local);
+        local.setTag(this);
+    }
+
+    public void removeLocal(TagLocal local) {
+        locals.remove(local);
+        local.setTag(null);
+    }
 
     @Override
     public List<TagLocal> getLocalizations() {

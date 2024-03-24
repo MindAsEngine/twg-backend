@@ -32,11 +32,9 @@ public class ResortLocal implements Local {
     private Resort resort;
 
     public ResortLocal(@NonNull String name,
-                       Localization localization,
-                       Resort resort) {
+                       Localization localization) {
         this.name = name;
         this.localization = localization;
-        this.resort = resort;
     }
 
     @Override

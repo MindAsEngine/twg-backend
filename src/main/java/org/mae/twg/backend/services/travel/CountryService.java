@@ -1,16 +1,14 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.CountryDTO;
-import org.mae.twg.backend.dto.travel.HotelDTO;
-import org.mae.twg.backend.dto.travel.request.CountryRequestDTO;
+import org.mae.twg.backend.dto.travel.response.CountryDTO;
+import org.mae.twg.backend.dto.travel.request.geo.CountryGeoDTO;
+import org.mae.twg.backend.dto.travel.request.locals.CountryLocalDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Country;
-import org.mae.twg.backend.models.travel.Hotel;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.CountryLocal;
-import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.repositories.travel.CountryRepo;
 import org.mae.twg.backend.repositories.travel.localization.CountryLocalRepo;
 import org.mae.twg.backend.services.ImageService;
@@ -29,12 +27,12 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService implements TravelService<CountryRequestDTO, CountryRequestDTO> {
+public class CountryService implements TravelService<CountryLocalDTO, CountryLocalDTO> {
     private final CountryRepo countryRepo;
     private final CountryLocalRepo localRepo;
     private final ImageService imageService;
 
-    private Country findById(Long id) {
+    public Country findById(Long id) {
         Country country = countryRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Country with id=" + id + " not found"));
         if (country.getIsDeleted()) {
@@ -55,11 +53,28 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
         return countryDTOS;
     }
 
+    private CountryLocal createLocal(CountryLocalDTO requestDTO, Localization localization) {
+        CountryLocal local = new CountryLocal(
+                requestDTO.getName(),
+                localization);
+        localRepo.saveAndFlush(local);
+        return local;
+    }
+
+    private Country createModel(CountryLocalDTO requestDTO, Localization localization) {
+        Country model = new Country();
+        countryRepo.saveAndFlush(model);
+
+        CountryLocal local = createLocal(requestDTO, localization);
+        model.addLocal(local);
+        return model;
+    }
+
     @Transactional
     public CountryDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
         List<String> urls = imageService.saveImages(ModelType.COUNTRY, images);
         Country country = findById(id);
-        country.setMediaPath(urls.get(0));
+        country.setMediaPath(urls.getFirst());
         countryRepo.saveAndFlush(country);
         return new CountryDTO(country, local);
     }
@@ -70,23 +85,6 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
         country.setMediaPath(null);
         countryRepo.save(country);
         return new CountryDTO(findById(id), local);
-    }
-
-    private CountryLocal createLocal(CountryRequestDTO requestDTO, Localization localization) {
-        CountryLocal local = new CountryLocal(
-                requestDTO.getName(),
-                localization);
-        localRepo.saveAndFlush(local);
-        return local;
-    }
-
-    private Country createModel(CountryRequestDTO requestDTO, Localization localization) {
-        Country model = new Country();
-        countryRepo.saveAndFlush(model);
-
-        CountryLocal local = createLocal(requestDTO, localization);
-        model.addLocal(local);
-        return model;
     }
 
     public List<CountryDTO> getAll(Localization localization) {
@@ -108,13 +106,13 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
     }
 
     @Transactional
-    public CountryDTO create(CountryRequestDTO countryDTO, Localization localization) {
+    public CountryDTO create(CountryLocalDTO countryDTO, Localization localization) {
         Country country = createModel(countryDTO, localization);
         return new CountryDTO(country, localization);
     }
 
     @Transactional
-    public CountryDTO addLocal(Long id, CountryRequestDTO countryDTO, Localization localization) {
+    public CountryDTO addLocal(Long id, CountryLocalDTO countryDTO, Localization localization) {
         Country country = findById(id);
         boolean isExists = country.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
@@ -130,7 +128,7 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
     }
 
     @Transactional
-    public CountryDTO updateLocal(Long id, CountryRequestDTO propertyDTO, Localization localization) {
+    public CountryDTO updateLocal(Long id, CountryLocalDTO propertyDTO, Localization localization) {
         Country country = findById(id);
         CountryLocal cur_local =
                 country.getLocals().stream()
@@ -140,6 +138,14 @@ public class CountryService implements TravelService<CountryRequestDTO, CountryR
                                 localization + " localization for country with id=" + id + " not found"));
         cur_local.setName(propertyDTO.getName());
         localRepo.saveAndFlush(cur_local);
+        return new CountryDTO(country, localization);
+    }
+
+    @Transactional
+    public CountryDTO updateGeo(Long id, CountryGeoDTO countryDTO, Localization localization) {
+        Country country = findById(id);
+        country.setGeoData(countryDTO.getGeoData());
+        countryRepo.saveAndFlush(country);
         return new CountryDTO(country, localization);
     }
 }

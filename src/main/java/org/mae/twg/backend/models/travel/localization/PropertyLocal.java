@@ -37,12 +37,10 @@ public class PropertyLocal implements Local {
 
     public PropertyLocal(@NonNull String title,
                          String description,
-                         Property property,
                          Localization localization) {
         this.title = title;
         this.description = description;
         this.localization = localization;
-        this.property = property;
     }
 
     @Override

@@ -45,13 +45,11 @@ public class AgencyLocal {
                        String description,
                        String contacts,
                        String address,
-                       Agency agency,
                        Localization localization) {
         this.name = name;
         this.description = description;
         this.contacts = contacts;
         this.address = address;
-        this.agency = agency;
         this.localization = localization;
     }
 }

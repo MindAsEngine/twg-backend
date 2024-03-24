@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -34,6 +33,10 @@ public class Sight implements Model {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sight_type_id")
     private SightType sightType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "header_img_id")
+    private SightMedia header;
 
     @OneToMany(mappedBy = "sight",
             cascade = CascadeType.ALL,

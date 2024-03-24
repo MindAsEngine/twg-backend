@@ -8,7 +8,6 @@ import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -51,15 +50,13 @@ public class HotelLocal implements Local {
                       String introduction,
                       String description,
                       String address,
-                      Localization localization,
-                      Hotel hotel) {
+                      Localization localization) {
         this.name = name;
         this.city = city;
         this.introduction = introduction;
         this.description = description;
         this.address = address;
         this.localization = localization;
-        this.hotel = hotel;
     }
 
     @Override

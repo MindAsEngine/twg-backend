@@ -56,6 +56,26 @@ public class Country implements Model {
         local.setCountry(null);
     }
 
+    public void addResort(Resort resort) {
+        resorts.add(resort);
+        resort.setCountry(this);
+    }
+
+    public void removeResort(Resort resort) {
+        resorts.remove(resort);
+        resort.setCountry(null);
+    }
+
+    public void addTour(Tour tour) {
+        tours.add(tour);
+        tour.setCountry(this);
+    }
+
+    public void removeTour(Tour tour) {
+        tours.remove(tour);
+        tour.setCountry(null);
+    }
+
     @Override
     public Long getId() {
         return id;

@@ -5,11 +5,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.mae.twg.backend.dto.travel.SightDTO;
-import org.mae.twg.backend.dto.travel.request.SightRequestDTO;
+import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
+import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
+import org.mae.twg.backend.dto.travel.request.logic.SightLogicDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.SightService;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,7 @@ import java.util.List;
 @RequestMapping("/travel/{local}/sights")
 @Tag(name = "Точки интереса")
 @Log4j2
-public class SightController extends BaseTravelController<SightService, SightRequestDTO, SightRequestDTO> {
+public class SightController extends BaseTravelController<SightService, SightLocalDTO, SightLocalDTO> {
 
     public SightController(SightService service) {
         super(service);
@@ -44,6 +43,24 @@ public class SightController extends BaseTravelController<SightService, SightReq
         }
         return ResponseEntity.ok(getService().getBySlug(slug, local));
     }
+
+
+    @PostMapping("/{id}/geo/update")
+    public ResponseEntity<?> updateGeoData(@PathVariable Localization local,
+                                           @PathVariable Long id,
+                                           @RequestBody SightGeoDTO sightDTO) {
+        log.info("Изменение геоданных точки интереса с id = " + id);
+        return ResponseEntity.ok(getService().updateGeoData(id, sightDTO, local));
+    }
+
+    @PostMapping("/{id}/logic/update")
+    public ResponseEntity<?> updateLogicData(@PathVariable Localization local,
+                                           @PathVariable Long id,
+                                           @RequestBody SightLogicDTO sightDTO) {
+        log.info("Изменение логических данных точки интереса с id = " + id);
+        return ResponseEntity.ok(getService().updateLogicData(id, sightDTO, local));
+    }
+
 
     @PostMapping("/{id}/images")
     @Operation(summary = "Добавить фотографии",
@@ -72,4 +89,6 @@ public class SightController extends BaseTravelController<SightService, SightReq
         }
         return ResponseEntity.ok(getService().deleteImages(id, local, images));
     }
+
+
 }
