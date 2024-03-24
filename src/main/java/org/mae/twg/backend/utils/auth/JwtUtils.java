@@ -11,7 +11,7 @@ import org.mae.twg.backend.exceptions.TokenValidationException;
 import org.mae.twg.backend.models.auth.RefreshToken;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
-import org.mae.twg.backend.services.ConfigService;
+import org.mae.twg.backend.services.admin.ConfigBusinessService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class JwtUtils {
     @NonNull
     private final RefreshTokenRepo refreshTokenRepo;
     @NonNull
-    private final ConfigService configService;
+    private final ConfigBusinessService configBusinessService;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -53,7 +53,7 @@ public class JwtUtils {
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + configService.getAccessExpiration() * 3600 * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + configBusinessService.getAccessExpiration() * 3600 * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
@@ -75,7 +75,7 @@ public class JwtUtils {
         RefreshToken refreshToken = new RefreshToken();
 
         refreshToken.setUser(user);
-        refreshToken.setExpiryDate(Instant.now().plusSeconds(configService.getRefreshExpiration() * 3600));
+        refreshToken.setExpiryDate(Instant.now().plusSeconds(configBusinessService.getRefreshExpiration() * 3600));
         refreshToken.setToken(UUID.randomUUID().toString());
 
         refreshTokenRepo.saveAndFlush(refreshToken);

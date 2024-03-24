@@ -1,4 +1,4 @@
-package org.mae.twg.backend.services;
+package org.mae.twg.backend.services.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.CurrencyHistory;
@@ -21,7 +21,7 @@ public class CurrencyService {
         return currencyHistoryRepo.findByCurrency(currency);
     }
 
-    public void putCurrency(ConfigEnum config, String value) {
+    public void putCurrency(ConfigBusinessEnum config, String value) {
         Currency currency;
         switch (config) {
             case USD_TO_RUB -> {currency = Currency.RUB;}

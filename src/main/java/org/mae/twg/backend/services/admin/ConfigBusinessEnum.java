@@ -1,6 +1,6 @@
-package org.mae.twg.backend.services;
+package org.mae.twg.backend.services.admin;
 
-public enum ConfigEnum {
+public enum ConfigBusinessEnum {
     REFRESH_EXPIRATION_KEY,
     ACCESS_EXPIRATION_KEY,
     USD_TO_USD,
