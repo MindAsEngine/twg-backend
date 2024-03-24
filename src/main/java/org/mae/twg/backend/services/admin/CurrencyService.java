@@ -1,7 +1,7 @@
 package org.mae.twg.backend.services.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.CurrencyHistory;
+import org.mae.twg.backend.models.CurrencyHistory;
 import org.mae.twg.backend.models.Currency;
 import org.mae.twg.backend.repositories.admin.CurrencyHistoryRepo;
 import org.springframework.stereotype.Service;

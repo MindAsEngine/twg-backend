@@ -4,7 +4,8 @@ public enum ModelType {
     HOTEL,
     COUNTRY,
     SIGHT,
-    TOUR;
+    TOUR,
+    NEWS;
 
     @Override
     public String toString() {
@@ -13,6 +14,7 @@ public enum ModelType {
             case COUNTRY -> {return "country";}
             case SIGHT -> {return "sight";}
             case TOUR -> {return "tour";}
+            case NEWS -> {return "news";}
         }
         return "";
     }
