@@ -1,4 +1,4 @@
-package org.mae.twg.backend.dto.travel.request;
+package org.mae.twg.backend.dto.travel.request.locals;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import org.mae.twg.backend.dto.RequestDTO;
 @Data
 @AllArgsConstructor
 @Schema(description = "Запрос на фишку отеля")
-public class PropertyRequestDTO implements RequestDTO {
+public class PropertyLocalDTO implements RequestDTO {
     @Schema(description = "Название", example = "Какое-то название")
     private String title;
     @Schema(description = "Описание", example = "Какое-то описание")

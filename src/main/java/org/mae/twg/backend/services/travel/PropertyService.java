@@ -1,8 +1,8 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.PropertyDTO;
-import org.mae.twg.backend.dto.travel.request.PropertyRequestDTO;
+import org.mae.twg.backend.dto.travel.response.PropertyDTO;
+import org.mae.twg.backend.dto.travel.request.locals.PropertyLocalDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Property;
@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class PropertyService implements TravelService<PropertyRequestDTO, PropertyRequestDTO> {
+public class PropertyService implements TravelService<PropertyLocalDTO, PropertyLocalDTO> {
     private final PropertyRepo propertyRepo;
     private final PropertyLocalRepo localRepo;
 
@@ -66,7 +66,7 @@ public class PropertyService implements TravelService<PropertyRequestDTO, Proper
     }
 
     @Transactional
-    public PropertyDTO create(PropertyRequestDTO propertyDTO, Localization localization) {
+    public PropertyDTO create(PropertyLocalDTO propertyDTO, Localization localization) {
         Property property = new Property();
         propertyRepo.saveAndFlush(property);
 
@@ -79,7 +79,7 @@ public class PropertyService implements TravelService<PropertyRequestDTO, Proper
     }
 
     @Transactional
-    public PropertyDTO addLocal(Long id, PropertyRequestDTO propertyDTO, Localization localization) {
+    public PropertyDTO addLocal(Long id, PropertyLocalDTO propertyDTO, Localization localization) {
         Property property = findById(id);
         boolean isExists = property.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
@@ -98,7 +98,7 @@ public class PropertyService implements TravelService<PropertyRequestDTO, Proper
     }
 
     @Transactional
-    public PropertyDTO updateLocal(Long id, PropertyRequestDTO propertyDTO, Localization localization) {
+    public PropertyDTO updateLocal(Long id, PropertyLocalDTO propertyDTO, Localization localization) {
         Property property = findById(id);
         PropertyLocal cur_local =
                 property.getLocals().stream()
