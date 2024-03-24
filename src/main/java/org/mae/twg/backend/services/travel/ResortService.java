@@ -1,10 +1,12 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.ResortDTO;
-import org.mae.twg.backend.dto.travel.request.ResortRequestDTO;
+import org.mae.twg.backend.dto.travel.request.logic.ResortLogicDTO;
+import org.mae.twg.backend.dto.travel.response.ResortDTO;
+import org.mae.twg.backend.dto.travel.request.locals.ResortLocalDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
+import org.mae.twg.backend.models.travel.Country;
 import org.mae.twg.backend.models.travel.Resort;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.ResortLocal;
@@ -23,9 +25,10 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class ResortService implements TravelService<ResortRequestDTO, ResortRequestDTO> {
+public class ResortService implements TravelService<ResortLocalDTO, ResortLocalDTO> {
     private final ResortRepo resortRepo;
     private final ResortLocalRepo localRepo;
+    private final CountryService countryService;
 
     private Resort findById(Long id) {
         Resort resort = resortRepo.findById(id)
@@ -71,7 +74,7 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
     }
 
     @Transactional
-    public ResortDTO create(ResortRequestDTO sightDTO, Localization local) {
+    public ResortDTO create(ResortLocalDTO sightDTO, Localization local) {
         Resort resort = new Resort();
         resortRepo.saveAndFlush(resort);
         ResortLocal resortLocal =
@@ -85,7 +88,7 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
     }
 
     @Transactional
-    public ResortDTO addLocal(Long id, ResortRequestDTO sightDTO, Localization localization) {
+    public ResortDTO addLocal(Long id, ResortLocalDTO sightDTO, Localization localization) {
         Resort resort = findById(id);
         boolean isExists = resort.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
@@ -105,7 +108,7 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
     }
 
     @Transactional
-    public ResortDTO updateLocal(Long id, ResortRequestDTO sightDTO, Localization localization) {
+    public ResortDTO updateLocal(Long id, ResortLocalDTO sightDTO, Localization localization) {
         Resort resort = findById(id);
         ResortLocal cur_local =
                 resort.getLocals().stream()
@@ -116,6 +119,15 @@ public class ResortService implements TravelService<ResortRequestDTO, ResortRequ
         cur_local.setName(sightDTO.getName());
         localRepo.saveAndFlush(cur_local);
 
+        resortRepo.saveAndFlush(resort);
+        return new ResortDTO(resort, localization);
+    }
+
+    @Transactional
+    public ResortDTO updateLogicData(Long id, ResortLogicDTO resortDTO, Localization localization) {
+        Resort resort = findById(id);
+        Country country = countryService.findById(resortDTO.getCountryId());
+        country.addResort(resort);
         resortRepo.saveAndFlush(resort);
         return new ResortDTO(resort, localization);
     }

@@ -1,4 +1,4 @@
-package org.mae.twg.backend.dto.travel;
+package org.mae.twg.backend.dto.travel.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,12 +10,12 @@ import org.mae.twg.backend.models.travel.localization.ResortLocal;
 
 @Data
 @AllArgsConstructor
-public class ResortDTO implements ModelDTO {
+public class ResortLightDTO implements ModelDTO {
     private Long id;
     private String name;
     private Localization localization;
 
-    public ResortDTO(Resort resort, Localization localization) {
+    public ResortLightDTO(Resort resort, Localization localization) {
         this.id = resort.getId();
         ResortLocal cur_local =
                 resort.getLocals().stream()
@@ -27,10 +27,10 @@ public class ResortDTO implements ModelDTO {
         this.localization = localization;
     }
 
-    static public ResortDTO getDTO(Resort resort, Localization localization) {
+    static public ResortLightDTO getDTO(Resort resort, Localization localization) {
         if (resort == null || resort.getIsDeleted()) {
             return null;
         }
-        return new ResortDTO(resort, localization);
+        return new ResortLightDTO(resort, localization);
     }
 }

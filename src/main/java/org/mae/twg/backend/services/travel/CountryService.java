@@ -32,7 +32,7 @@ public class CountryService implements TravelService<CountryLocalDTO, CountryLoc
     private final CountryLocalRepo localRepo;
     private final ImageService imageService;
 
-    private Country findById(Long id) {
+    public Country findById(Long id) {
         Country country = countryRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Country with id=" + id + " not found"));
         if (country.getIsDeleted()) {
