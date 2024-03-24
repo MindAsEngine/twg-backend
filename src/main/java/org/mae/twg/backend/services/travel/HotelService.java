@@ -11,10 +11,14 @@ import org.mae.twg.backend.models.travel.Property;
 import org.mae.twg.backend.models.travel.Sight;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
+import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.repositories.travel.HotelRepo;
 import org.mae.twg.backend.repositories.travel.PropertyRepo;
 import org.mae.twg.backend.repositories.travel.SightRepo;
+import org.mae.twg.backend.repositories.travel.images.HotelMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
+import org.mae.twg.backend.services.ImageService;
+import org.mae.twg.backend.services.ModelType;
 import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
@@ -22,7 +26,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -34,6 +41,8 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
     private final PropertyRepo propertyRepo;
     private final SightRepo sightRepo;
     private final SlugUtils slugUtils;
+    private final ImageService imageService;
+    private final HotelMediaRepo hotelMediaRepo;
 
     private Hotel findById(Long id) {
         Hotel hotel = hotelRepo.findById(id)
@@ -68,6 +77,28 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
     public List<HotelDTO> getAll(Localization localization) {
         List<Hotel> hotels = hotelRepo.findAll();
         return modelsToDTOs(hotels.stream(), localization);
+    }
+    @Transactional
+    public HotelDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
+        List<String> urls = imageService.saveImages(ModelType.HOTEL, images);
+        List<HotelMedia> hotelMedias = urls.stream().map(HotelMedia::new).toList();
+        Hotel hotel = findById(id);
+        for (HotelMedia hotelMedia : hotelMedias) {
+            hotel.addMedia(hotelMedia);
+        }
+        hotelRepo.saveAndFlush(hotel);
+        return new HotelDTO(hotel, local);
+    }
+
+    public HotelDTO deleteImages(Long id, Localization local, List<String> images) {
+        imageService.deleteImages(images);
+        List<HotelMedia> hotelMedias = hotelMediaRepo.findByHotel_id(id);
+        for (HotelMedia hotelMedia : hotelMedias) {
+            if (images.contains(hotelMedia.getMediaPath())) {
+                hotelMediaRepo.delete(hotelMedia);
+            }
+        }
+        return new HotelDTO(findById(id), local);
     }
 
     public List<HotelDTO> getAllPaged(Localization localization, int page, int size) {
@@ -113,6 +144,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
         HotelLocal local = new HotelLocal(hotelDTO.getName(),
                 hotelDTO.getCity(),
                 hotelDTO.getDescription(),
+                hotelDTO.getDescription(),
                 hotelDTO.getAddress(),
                 localization, hotel);
         localRepo.saveAndFlush(local);
@@ -136,6 +168,7 @@ public class HotelService implements TravelService<HotelRequestDTO, HotelLocalRe
         HotelLocal hotelLocal =
                 new HotelLocal(hotelDTO.getName(),
                         hotelDTO.getCity(),
+                        hotelDTO.getDescription(),
                         hotelDTO.getDescription(),
                         hotelDTO.getAddress(),
                         localization, hotel);

@@ -3,7 +3,6 @@ COPY src /home/app/src
 COPY pom.xml /home/app
 RUN mvn -f /home/app/pom.xml clean package
 
-
 FROM eclipse-temurin
 COPY --from=build /home/app/target/twg-alfa.jar /usr/local/lib/twg-alfa.jar
 EXPOSE 1337

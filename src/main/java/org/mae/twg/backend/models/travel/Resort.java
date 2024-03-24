@@ -4,15 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.localization.ResortLocal;
-import org.mae.twg.backend.models.travel.media.ResortMedia;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,8 +23,9 @@ public class Resort implements Model {
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private Boolean isDeleted = Boolean.FALSE;
 
-    @Column(name = "slug", unique = true)
-    private String slug;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
 
     @OneToMany(mappedBy = "resort",
             cascade = CascadeType.ALL,
@@ -36,13 +33,9 @@ public class Resort implements Model {
     private List<ResortLocal> locals = new ArrayList<>();
 
     @OneToMany(mappedBy = "resort",
-            cascade = CascadeType.ALL,
+            cascade = CascadeType.DETACH,
             orphanRemoval = true)
-    private List<ResortMedia> medias = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.LAZY,
-            mappedBy = "resorts")
-    private Set<Tour> tours = new HashSet<>();
+    private List<Hotel> hotels = new ArrayList<>();
 
     public void addLocal(ResortLocal local) {
         locals.add(local);
@@ -52,16 +45,6 @@ public class Resort implements Model {
     public void removeLocal(ResortLocal local) {
         locals.remove(local);
         local.setResort(null);
-    }
-
-    public void addMedia(ResortMedia media) {
-        medias.add(media);
-        media.setResort(this);
-    }
-
-    public void removeMedia(ResortMedia media) {
-        medias.remove(media);
-        media.setResort(null);
     }
 
     @Override

@@ -28,6 +28,10 @@ public class HotelLocal implements Local {
     @Column(name = "city")
     private String city;
 
+    @Column(name = "introduction",
+            columnDefinition = "TEXT")
+    private String introduction;
+
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
@@ -45,12 +49,14 @@ public class HotelLocal implements Local {
 
     public HotelLocal(@NonNull String name,
                       String city,
+                      String introduction,
                       String description,
                       String address,
                       Localization localization,
                       Hotel hotel) {
         this.name = name;
         this.city = city;
+        this.introduction = introduction;
         this.description = description;
         this.address = address;
         this.localization = localization;

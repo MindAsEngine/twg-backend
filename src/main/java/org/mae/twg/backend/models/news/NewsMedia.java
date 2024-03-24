@@ -1,28 +1,25 @@
-package org.mae.twg.backend.models.travel.media;
+package org.mae.twg.backend.models.news;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.mae.twg.backend.models.Media;
 import org.mae.twg.backend.models.Model;
-import org.mae.twg.backend.models.travel.Resort;
 
 @Entity
-//@Data
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "resort_medias")
-public class ResortMedia implements Media {
+@Table(name = "news_medias")
+public class NewsMedia implements Media {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "resort_media_id")
+    @Column(name = "news_media_id")
     private Long id;
 
-    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "resort_id", nullable = false)
-    private Resort resort;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "news_id", nullable = false)
+    private News news;
 
     @NonNull
     @Column(name = "media_path")
@@ -30,6 +27,6 @@ public class ResortMedia implements Media {
 
     @Override
     public Model getModel() {
-        return resort;
+        return news;
     }
 }

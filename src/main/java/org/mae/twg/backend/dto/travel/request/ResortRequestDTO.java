@@ -11,6 +11,4 @@ import org.mae.twg.backend.dto.RequestDTO;
 public class ResortRequestDTO implements RequestDTO {
     @Schema(description = "Название", example = "Какое-то название")
     private String name;
-    @Schema(description = "Описание", example = "Какое-то описание")
-    private String description;
 }

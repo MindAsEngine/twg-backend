@@ -1,15 +1,22 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
+import org.mae.twg.backend.dto.travel.HotelDTO;
 import org.mae.twg.backend.dto.travel.SightDTO;
 import org.mae.twg.backend.dto.travel.request.SightRequestDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
+import org.mae.twg.backend.models.travel.Hotel;
 import org.mae.twg.backend.models.travel.Sight;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
+import org.mae.twg.backend.models.travel.media.HotelMedia;
+import org.mae.twg.backend.models.travel.media.SightMedia;
 import org.mae.twg.backend.repositories.travel.SightRepo;
+import org.mae.twg.backend.repositories.travel.images.SightMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.SightLocalRepo;
+import org.mae.twg.backend.services.ImageService;
+import org.mae.twg.backend.services.ModelType;
 import org.mae.twg.backend.services.TravelService;
 import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
@@ -17,7 +24,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -28,6 +37,8 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
     private final SightRepo sightRepo;
     private final SightLocalRepo localRepo;
     private final SlugUtils slugUtils;
+    private final ImageService imageService;
+    private final SightMediaRepo sightMediaRepo;
 
     private Sight findById(Long id) {
         Sight sight = sightRepo.findById(id)
@@ -57,6 +68,29 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
             throw new ObjectNotFoundException("Sights with " + localization + " not found");
         }
         return sightDTOs;
+    }
+
+    @Transactional
+    public SightDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
+        List<String> urls = imageService.saveImages(ModelType.SIGHT, images);
+        List<SightMedia> sightMedias = urls.stream().map(SightMedia::new).toList();
+        Sight sight = findById(id);
+        for (SightMedia sightMedia : sightMedias) {
+            sight.addMedia(sightMedia);
+        }
+        sightRepo.saveAndFlush(sight);
+        return new SightDTO(sight, local);
+    }
+
+    public SightDTO deleteImages(Long id, Localization local, List<String> images) {
+        imageService.deleteImages(images);
+        List<SightMedia> sightMedias = sightMediaRepo.findBySight_id(id);
+        for (SightMedia sightMedia : sightMedias) {
+            if (images.contains(sightMedia.getMediaPath())) {
+                sightMediaRepo.delete(sightMedia);
+            }
+        }
+        return new SightDTO(findById(id), local);
     }
 
     public List<SightDTO> getAll(Localization localization) {
@@ -91,6 +125,7 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
         sightRepo.saveAndFlush(sight);
         SightLocal sightLocal =
                 new SightLocal(sightDTO.getName(),
+                        sightDTO.getIntroduction(),
                         sightDTO.getDescription(),
                         sightDTO.getAddress(),
                         sight, local);
@@ -114,6 +149,7 @@ public class SightService implements TravelService<SightRequestDTO, SightRequest
 
         SightLocal sightLocal =
                 new SightLocal(sightDTO.getName(),
+                        sightDTO.getIntroduction(),
                         sightDTO.getDescription(),
                         sightDTO.getAddress(),
                         sight, localization);

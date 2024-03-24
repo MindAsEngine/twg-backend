@@ -1,10 +1,7 @@
-package org.mae.twg.backend.models.business;
+package org.mae.twg.backend.models.travel.comments;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.Tour;
@@ -12,14 +9,15 @@ import org.mae.twg.backend.models.travel.Tour;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tour_requests")
-public class TourRequest {
+@Table(name = "tour_comments")
+public class TourComment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "tour_request_id")
+    @Column(name = "comment_id")
     private Long id;
 
     @NonNull
@@ -29,23 +27,25 @@ public class TourRequest {
     private User user;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    private Integer grade;
+
+    @Column(name = "comment",
+            columnDefinition = "TEXT")
+    private String comment;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
-    private Integer adults;
-
-    private Integer children;
-
-    @Column(name = "transfer_notes",
-            columnDefinition = "TEXT")
-    private String transferNotes;
-
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "closed_at")
-    private LocalDateTime closedAt;
+    public TourComment(@NonNull User user,
+                       @NonNull Integer grade,
+                       String comment) {
+        this.user = user;
+        this.grade = grade;
+        this.comment = comment;
+    }
 }

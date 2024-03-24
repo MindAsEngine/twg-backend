@@ -14,13 +14,7 @@ public class HotelLightDTO implements ModelDTO {
     private Long id;
     private String slug;
     private String name;
-//    private String city;
-//    private String description;
-//    private String address;
     private Localization localization;
-//    private List<String> medias;
-//    private List<PropertyDTO> properties;
-//    private List<SightDTO> sights;
 
     public HotelLightDTO(Hotel hotel, Localization localization) {
         this.id = hotel.getId();

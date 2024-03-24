@@ -11,6 +11,8 @@ import org.mae.twg.backend.dto.RequestDTO;
 public class SightRequestDTO implements RequestDTO {
     @Schema(description = "Имя", example = "Какое-то название")
     private String name;
+    @Schema(description = "Введение", example = "Какое-то описание")
+    private String introduction;
     @Schema(description = "Описание", example = "Какое-то описание")
     private String description;
     @Schema(description = "Адрес", example = "Какой-то адрес")

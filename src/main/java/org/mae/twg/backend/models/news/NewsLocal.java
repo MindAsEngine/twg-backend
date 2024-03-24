@@ -1,20 +1,20 @@
-package org.mae.twg.backend.models.travel.localization;
+package org.mae.twg.backend.models.news;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.mae.twg.backend.models.Local;
-import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
-//@Data
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tour_local")
-public class TourLocal implements Local {
+@Table(name = "news_local")
+public class NewsLocal implements Local {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,36 +25,24 @@ public class TourLocal implements Local {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "introduction",
-            columnDefinition = "TEXT")
-    private String introduction;
-
     @Column(name = "description",
             columnDefinition = "TEXT")
     private String description;
-
-    @Column(name = "additional",
-            columnDefinition = "TEXT")
-    private String additional;
 
     @Enumerated(EnumType.STRING)
     private Localization localization;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tour_id")
-    private Tour tour;
+    @JoinColumn(name = "news_id")
+    private News news;
 
-    public TourLocal(@NonNull String title,
-                     String introduction,
+    public NewsLocal(@NonNull String title,
                      String description,
-                     String additional,
-                     Tour tour,
+                     News news,
                      Localization localization) {
         this.title = title;
-        this.introduction = introduction;
         this.description = description;
-        this.additional = additional;
-        this.tour = tour;
+        this.news = news;
         this.localization = localization;
     }
 
@@ -65,6 +53,6 @@ public class TourLocal implements Local {
 
     @Override
     public Model getModel() {
-        return tour;
+        return null;
     }
 }
