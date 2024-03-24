@@ -17,7 +17,7 @@ services:
 
   redis:
     image: redis:latest
-    command: redis-server
+    command: "redis-server /usr/local/etc/redis/redis.conf"
     env_file:
       - ../environment.env
     volumes:
