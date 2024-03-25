@@ -1,5 +1,6 @@
 package org.mae.twg.backend.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,8 @@ import java.util.UUID;
 
 @Service
 public class ImageService {
-    private String parent_path = "C:/Users/SAPIPA/Desktop/test_image";
+    @Value("${upload.path}")
+    private String parent_path;
     public Resource loadFileAsResource(String folder, String filename) throws MalformedURLException {
         Path fileStorageLocation = Paths.get(parent_path + "/" + folder).toAbsolutePath().normalize();
         Path filePath = fileStorageLocation.resolve(filename).normalize();
