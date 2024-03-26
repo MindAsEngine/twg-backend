@@ -2,6 +2,7 @@ package org.mae.twg.backend.models.business;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.mae.twg.backend.models.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "agencies")
-public class Agency {
+public class Agency implements Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,5 +39,10 @@ public class Agency {
     public void removeLocal(AgencyLocal local) {
         locals.remove(local);
         local.setAgency(null);
+    }
+
+    @Override
+    public List<AgencyLocal> getLocalizations() {
+        return locals;
     }
 }

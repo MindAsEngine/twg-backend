@@ -7,11 +7,13 @@ import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.services.admin.ConfigDisplayEnum;
 import org.mae.twg.backend.services.admin.ConfigVisualService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
+@PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
 @RequestMapping("/admin/configs/visual")
 @RequiredArgsConstructor
 @Tag(name = "Динамический конфиг визуала сайта")
@@ -20,12 +22,12 @@ public class ConfigVisualController {
     private final ConfigVisualService configVisualService;
     @Operation(summary = "Получить всю конфигурацию")
     @GetMapping("/get")
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> getAll() {
         return ResponseEntity.ok(configVisualService.getAll());
     }
     @Operation(summary = "Обновить конфиг визуала")
     @PutMapping("/put")
-    public ResponseEntity<?> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
+    public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
         return ResponseEntity.ok(configVisualService.put(config));
     }
 }

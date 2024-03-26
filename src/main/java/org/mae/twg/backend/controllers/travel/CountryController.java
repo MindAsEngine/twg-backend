@@ -6,11 +6,14 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.controllers.BaseController;
 import org.mae.twg.backend.dto.travel.request.geo.CountryGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.CountryLocalDTO;
+import org.mae.twg.backend.dto.travel.response.CountryDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.CountryService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,12 +24,13 @@ import java.util.List;
 @RequestMapping("/travel/{local}/countries")
 @Tag(name = "Страны")
 @Log4j2
-public class CountryController extends BaseTravelController<CountryService, CountryLocalDTO, CountryLocalDTO> {
+public class CountryController extends BaseController<CountryService, CountryDTO, CountryLocalDTO> {
     public CountryController(CountryService service) {
         super(service);
     }
 
     @PostMapping("/{id}/geo/update")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Установка новых геоднанных",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -38,6 +42,7 @@ public class CountryController extends BaseTravelController<CountryService, Coun
     }
 
     @PostMapping("/{id}/images/upload")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -52,6 +57,7 @@ public class CountryController extends BaseTravelController<CountryService, Coun
     }
 
     @DeleteMapping("/{id}/images/delete")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Удалить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )

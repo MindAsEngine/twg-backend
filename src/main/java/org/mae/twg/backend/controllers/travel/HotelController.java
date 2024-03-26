@@ -7,12 +7,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.controllers.BaseController;
 import org.mae.twg.backend.dto.travel.request.geo.HotelGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.HotelLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.HotelLogicDTO;
+import org.mae.twg.backend.dto.travel.response.HotelDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.HotelService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,17 +26,18 @@ import java.util.List;
 @RequestMapping("/travel/{local}/hotels")
 @Tag(name = "Отели")
 @Log4j2
-public class HotelController extends BaseTravelController<HotelService, HotelLocalDTO, HotelLocalDTO> {
+public class HotelController extends BaseController<HotelService, HotelDTO, HotelLocalDTO> {
 
     public HotelController(HotelService service) {
         super(service);
     }
 
     @PostMapping("/{id}/image/upload")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить обложку",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> uploadImage(@PathVariable Localization local,
+    public ResponseEntity<HotelDTO> uploadImage(@PathVariable Localization local,
                                           @PathVariable Long id,
                                           MultipartFile image) throws IOException {
         log.info("Добавление обложки к отелю");
@@ -44,10 +48,11 @@ public class HotelController extends BaseTravelController<HotelService, HotelLoc
     }
 
     @PostMapping("/{id}/images/upload")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> uploadImages(@PathVariable Localization local,
+    public ResponseEntity<HotelDTO> uploadImages(@PathVariable Localization local,
                                           @PathVariable Long id,
                                           List<MultipartFile> images) throws IOException {
         log.info("Добавление фотографий к отелю");
@@ -59,10 +64,11 @@ public class HotelController extends BaseTravelController<HotelService, HotelLoc
 
 
     @DeleteMapping("/{id}/images/delete")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Удалить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> deleteImages(@PathVariable Localization local,
+    public ResponseEntity<HotelDTO> deleteImages(@PathVariable Localization local,
                                           @PathVariable Long id,
                                           @RequestBody List<String> images) {
         log.info("Delete images from hotel with id = " + id);
@@ -74,10 +80,11 @@ public class HotelController extends BaseTravelController<HotelService, HotelLoc
 
 
     @GetMapping("/get")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Отдать отель по id",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> get(@PathVariable Localization local,
+    public ResponseEntity<HotelDTO> get(@PathVariable Localization local,
                                  @RequestParam(required = false) Long id,
                                  @RequestParam(required = false) String slug) {
         if (id == null && slug == null) {
@@ -90,10 +97,11 @@ public class HotelController extends BaseTravelController<HotelService, HotelLoc
     }
 
     @PutMapping("/{id}/logic/update")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Обновить логических данных отеля",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> updateProperties(@PathVariable Long id,
+    public ResponseEntity<HotelDTO> updateProperties(@PathVariable Long id,
                                               @PathVariable Localization local,
                                               @Valid @RequestBody HotelLogicDTO hotelDTO) {
         log.info("Обновление логических данных отелю с id = " + id);
@@ -101,10 +109,11 @@ public class HotelController extends BaseTravelController<HotelService, HotelLoc
     }
 
     @PutMapping("/{id}/geo/update")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Обновить геоданных отеля",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> updateSights(@PathVariable Long id,
+    public ResponseEntity<HotelDTO> updateSights(@PathVariable Long id,
                                           @PathVariable Localization local,
                                           @Valid @RequestBody HotelGeoDTO hotelDTO) {
         log.info("Обновление геоданных данных отелю с id = " + id);

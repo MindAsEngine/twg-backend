@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class SightTypeService implements TravelService<SightTypeLocalDTO, SightTypeLocalDTO> {
+public class SightTypeService implements TravelService<SightTypeDTO, SightTypeLocalDTO> {
     private final SightTypeRepo sightTypeRepo;
     private final SightTypeLocalRepo localRepo;
 

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.mae.twg.backend.models.Local;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Entity
@@ -12,7 +13,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "agency_local")
-public class AgencyLocal {
+public class AgencyLocal implements Local {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -51,5 +52,15 @@ public class AgencyLocal {
         this.contacts = contacts;
         this.address = address;
         this.localization = localization;
+    }
+
+    @Override
+    public String getString() {
+        return name;
+    }
+
+    @Override
+    public Agency getModel() {
+        return agency;
     }
 }

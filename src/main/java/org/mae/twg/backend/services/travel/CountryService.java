@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService implements TravelService<CountryLocalDTO, CountryLocalDTO> {
+public class CountryService implements TravelService<CountryDTO, CountryLocalDTO> {
     private final CountryRepo countryRepo;
     private final CountryLocalRepo localRepo;
     private final ImageService imageService;

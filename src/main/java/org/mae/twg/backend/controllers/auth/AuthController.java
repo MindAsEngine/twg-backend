@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.auth.JwtAuthenticationResponse;
 import org.mae.twg.backend.dto.auth.SignInRequest;
 import org.mae.twg.backend.dto.auth.SignUpRequest;
 import org.mae.twg.backend.dto.auth.TokenRefreshRequest;
@@ -24,24 +25,22 @@ public class AuthController {
     private final AuthService authService;
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpRequest request) {
+    public ResponseEntity<JwtAuthenticationResponse> signUp(@RequestBody @Valid SignUpRequest request) {
         log.info("Регистрация пользователя");
         return ResponseEntity.ok(authService.signUp(request));
     }
 
     @Operation(summary = "Вход пользователя")
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody @Valid SignInRequest request) {
+    public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody @Valid SignInRequest request) {
         log.info("Вход пользователя");
         return ResponseEntity.ok(authService.signIn(request));
     }
 
     @Operation(summary = "Обновление токена доступа")
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestBody @Valid TokenRefreshRequest request) {
+    public ResponseEntity<JwtAuthenticationResponse> refreshToken(@RequestBody @Valid TokenRefreshRequest request) {
         log.info("Обновление токена");
         return ResponseEntity.ok(authService.refreshToken(request));
     }
-
-
 }

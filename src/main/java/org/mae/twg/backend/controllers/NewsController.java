@@ -6,12 +6,12 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
-import org.mae.twg.backend.controllers.travel.BaseTravelController;
+import org.mae.twg.backend.dto.news.NewsDTO;
 import org.mae.twg.backend.dto.news.NewsLocalRequestDTO;
-import org.mae.twg.backend.dto.news.NewsRequestDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.news.NewsService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,15 +22,16 @@ import java.util.List;
 @RequestMapping("/{local}/news")
 @Tag(name = "Новости")
 @Log4j2
-public class NewsController extends BaseTravelController<NewsService, NewsRequestDTO, NewsLocalRequestDTO> {
+public class NewsController extends BaseController<NewsService, NewsDTO, NewsLocalRequestDTO> {
     public NewsController(NewsService service) {
         super(service);
     }
     @PostMapping("/{id}/images/upload")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> uploadImages(@PathVariable Localization local,
+    public ResponseEntity<NewsDTO> uploadImages(@PathVariable Localization local,
                                           @PathVariable Long id,
                                           List<MultipartFile> images) throws IOException {
         log.info("Добавление фотографий к новости");
@@ -41,10 +42,11 @@ public class NewsController extends BaseTravelController<NewsService, NewsReques
     }
 
     @DeleteMapping("/{id}/images/delete")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Удалить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> deleteImages(@PathVariable Localization local,
+    public ResponseEntity<NewsDTO> deleteImages(@PathVariable Localization local,
                                           @PathVariable Long id,
                                           @RequestBody List<String> images) {
         log.info("Delete images from news with id = " + id);
@@ -59,7 +61,7 @@ public class NewsController extends BaseTravelController<NewsService, NewsReques
     @Operation(summary = "Отдать новость по id",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> get(@PathVariable Localization local,
+    public ResponseEntity<NewsDTO> get(@PathVariable Localization local,
                                  @RequestParam(required = false) Long id,
                                  @RequestParam(required = false) String slug) {
         if (id == null && slug == null) {

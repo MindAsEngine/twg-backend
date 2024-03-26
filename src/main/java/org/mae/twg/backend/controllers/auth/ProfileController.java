@@ -25,10 +25,14 @@ public class ProfileController {
     @ResponseBody
     @Operation(
             summary = "Профиль пользователя",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>")
     )
     @GetMapping("/me")
-    public ResponseEntity<?> currentUserName() {
+    public ResponseEntity<UserDTO> currentUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok((new UserDTO((User) authentication.getPrincipal())));
     }
