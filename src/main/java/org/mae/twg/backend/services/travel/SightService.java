@@ -75,8 +75,9 @@ public class SightService implements TravelService<SightLocalDTO, SightLocalDTO>
     public SightDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
         String url = imageService.saveImage(ModelType.HOTEL, image);
         SightMedia sightMedia = new SightMedia(url);
+        sightMediaRepo.saveAndFlush(sightMedia);
         Sight sight = findById(id);
-        sight.setHeader(sightMedia);
+        sight.addHeader(sightMedia);
         sightRepo.saveAndFlush(sight);
         return new SightDTO(sight, local);
     }
@@ -87,6 +88,7 @@ public class SightService implements TravelService<SightLocalDTO, SightLocalDTO>
         List<SightMedia> sightMedias = urls.stream().map(SightMedia::new).toList();
         Sight sight = findById(id);
         for (SightMedia sightMedia : sightMedias) {
+            sightMediaRepo.saveAndFlush(sightMedia);
             sight.addMedia(sightMedia);
         }
         sightRepo.saveAndFlush(sight);
@@ -97,6 +99,11 @@ public class SightService implements TravelService<SightLocalDTO, SightLocalDTO>
         imageService.deleteImages(images);
         List<SightMedia> sightMedias = sightMediaRepo.findBySight_id(id);
         for (SightMedia sightMedia : sightMedias) {
+            Sight sight = findById(id);
+            if (sight.getHeader() == sightMedia) {
+                sight.removeHeader(sightMedia);
+                sightRepo.saveAndFlush(sight);
+            }
             if (images.contains(sightMedia.getMediaPath())) {
                 sightMediaRepo.delete(sightMedia);
             }

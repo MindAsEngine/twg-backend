@@ -45,7 +45,7 @@ public class SightController extends BaseTravelController<SightService, SightLoc
     }
 
 
-    @PostMapping("/{id}/geo/update")
+    @PutMapping("/{id}/geo/update")
     public ResponseEntity<?> updateGeoData(@PathVariable Localization local,
                                            @PathVariable Long id,
                                            @RequestBody SightGeoDTO sightDTO) {
@@ -53,7 +53,7 @@ public class SightController extends BaseTravelController<SightService, SightLoc
         return ResponseEntity.ok(getService().updateGeoData(id, sightDTO, local));
     }
 
-    @PostMapping("/{id}/logic/update")
+    @PutMapping("/{id}/logic/update")
     public ResponseEntity<?> updateLogicData(@PathVariable Localization local,
                                            @PathVariable Long id,
                                            @RequestBody SightLogicDTO sightDTO) {

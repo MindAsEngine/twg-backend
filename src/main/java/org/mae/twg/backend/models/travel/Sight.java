@@ -5,7 +5,9 @@ import lombok.*;
 import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.comments.SightComment;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
+import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.models.travel.media.SightMedia;
+import org.mae.twg.backend.models.travel.media.TourMedia;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -79,7 +81,14 @@ public class Sight implements Model {
         locals.remove(local);
         local.setSight(null);
     }
-
+    public void addHeader(SightMedia media) {
+        header = media;
+        media.setSight(this);
+    }
+    public void removeHeader(SightMedia media) {
+        header = null;
+        media.setSight(null);
+    }
     public void addMedia(SightMedia media) {
         medias.add(media);
         media.setSight(this);

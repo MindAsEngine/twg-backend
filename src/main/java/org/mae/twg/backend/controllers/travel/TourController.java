@@ -28,6 +28,20 @@ public class TourController extends BaseTravelController<TourService, TourLocalD
         super(service);
     }
 
+    @PostMapping("/{id}/image/upload")
+    @Operation(summary = "Добавить обложку",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<?> uploadImage(@PathVariable Localization local,
+                                         @PathVariable Long id,
+                                         MultipartFile image) throws IOException {
+        log.info("Добавление обложки к отелю");
+        if (image == null) {
+            throw new ValidationException("Нет фотографии");
+        }
+        return ResponseEntity.ok(getService().uploadImage(id, local, image));
+    }
+
     @PostMapping("/{id}/images")
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")

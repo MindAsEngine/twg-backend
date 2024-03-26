@@ -28,7 +28,7 @@ public abstract class BaseTravelController<
     @Override
     @GetMapping
     @Operation(summary = "Отдать все сущности",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = false, example = "Bearer <token>")
     )
     public ResponseEntity<?> getAll(@PathVariable Localization local,
                                     @RequestParam(required = false) Integer page,

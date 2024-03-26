@@ -26,7 +26,7 @@ public class CountryController extends BaseTravelController<CountryService, Coun
         super(service);
     }
 
-    @PostMapping("/{id}/geo/update")
+    @PutMapping("/{id}/geo/update")
     @Operation(summary = "Установка новых геоднанных",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )

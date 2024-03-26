@@ -31,7 +31,7 @@ public class ResortController extends BaseTravelController<ResortService, Resort
         return ResponseEntity.ok(getService().getById(id, local));
     }
 
-    @PostMapping("/{id}/logic/update")
+    @PutMapping("/{id}/logic/update")
     @Operation(summary = "Обновление логичсеких данных курорта",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )

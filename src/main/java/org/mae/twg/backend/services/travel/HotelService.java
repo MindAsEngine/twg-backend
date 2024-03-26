@@ -83,8 +83,9 @@ public class HotelService implements TravelService<HotelLocalDTO, HotelLocalDTO>
     public HotelDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
         String url = imageService.saveImage(ModelType.HOTEL, image);
         HotelMedia hotelMedia = new HotelMedia(url);
+        hotelMediaRepo.saveAndFlush(hotelMedia);
         Hotel hotel = findById(id);
-        hotel.setHeader(hotelMedia);
+        hotel.addHeader(hotelMedia);
         hotelRepo.saveAndFlush(hotel);
         return new HotelDTO(hotel, local);
     }
@@ -95,6 +96,7 @@ public class HotelService implements TravelService<HotelLocalDTO, HotelLocalDTO>
         List<HotelMedia> hotelMedias = urls.stream().map(HotelMedia::new).toList();
         Hotel hotel = findById(id);
         for (HotelMedia hotelMedia : hotelMedias) {
+            hotelMediaRepo.saveAndFlush(hotelMedia);
             hotel.addMedia(hotelMedia);
         }
         hotelRepo.saveAndFlush(hotel);
@@ -105,6 +107,11 @@ public class HotelService implements TravelService<HotelLocalDTO, HotelLocalDTO>
         imageService.deleteImages(images);
         List<HotelMedia> hotelMedias = hotelMediaRepo.findByHotel_id(id);
         for (HotelMedia hotelMedia : hotelMedias) {
+            Hotel hotel = findById(id);
+            if (hotel.getHeader() == hotelMedia) {
+                hotel.removeHeader(hotelMedia);
+                hotelRepo.saveAndFlush(hotel);
+            }
             if (images.contains(hotelMedia.getMediaPath())) {
                 hotelMediaRepo.delete(hotelMedia);
             }

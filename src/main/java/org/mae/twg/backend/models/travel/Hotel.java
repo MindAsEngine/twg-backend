@@ -83,6 +83,14 @@ public class Hotel implements Model {
         locals.remove(local);
         local.setHotel(null);
     }
+    public void addHeader(HotelMedia media) {
+        header = media;
+        media.setHotel(this);
+    }
+    public void removeHeader(HotelMedia media) {
+        header = null;
+        media.setHotel(null);
+    }
     public void addMedia(HotelMedia media) {
         medias.add(media);
         media.setHotel(this);
