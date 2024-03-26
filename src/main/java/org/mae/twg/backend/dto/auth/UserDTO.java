@@ -2,11 +2,10 @@ package org.mae.twg.backend.dto.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.models.auth.User;
+import org.mae.twg.backend.models.auth.UserRole;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +13,8 @@ import org.mae.twg.backend.models.auth.User;
 public class UserDTO {
     @Schema(description = "Логин пользователя", example = "Sapipa")
     private String username;
+    @Schema(description = "Роль пользователя", example = "USER")
+    private UserRole role;
     @Schema(description = "Адрес электронной почты", example = "jondoe@gmail.com")
     @Email(message = "Email адрес должен быть в формате user@example.com")
     private String email;
@@ -30,6 +31,7 @@ public class UserDTO {
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.phone = user.getPhone();
+        this.role = user.getUserRole();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
