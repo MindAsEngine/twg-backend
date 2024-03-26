@@ -1,10 +1,10 @@
 package org.mae.twg.backend.controllers.travel;
 
-import jakarta.validation.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
@@ -61,6 +61,19 @@ public class SightController extends BaseTravelController<SightService, SightLoc
         return ResponseEntity.ok(getService().updateLogicData(id, sightDTO, local));
     }
 
+    @PostMapping("/{id}/image/upload")
+    @Operation(summary = "Добавить обложку",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<?> uploadImage(@PathVariable Localization local,
+                                         @PathVariable Long id,
+                                         MultipartFile image) throws IOException {
+        log.info("Добавление обложки к отелю");
+        if (image == null) {
+            throw new ValidationException("Нет фотографии");
+        }
+        return ResponseEntity.ok(getService().uploadImage(id, local, image));
+    }
 
     @PostMapping("/{id}/images")
     @Operation(summary = "Добавить фотографии",

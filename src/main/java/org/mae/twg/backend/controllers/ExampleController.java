@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Проверка запуска")
 public class ExampleController {
-
     @GetMapping
     @Operation(summary = "Отправь ping - получи pong")
     public String start() {

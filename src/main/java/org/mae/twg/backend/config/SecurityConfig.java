@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         // Можно указать конкретный путь, * - 1 уровень вложенности, ** - любое количество уровней вложенности
 //                          .anyRequest().permitAll())
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/ping").permitAll()
                         .requestMatchers("/swagger-ui/**", "/actuator/**", "/actuator/prometheus","/swagger-resources/*", "/v3/api-docs/**").permitAll()
 //                        .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())

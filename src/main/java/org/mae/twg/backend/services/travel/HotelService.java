@@ -1,10 +1,10 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.response.HotelDTO;
 import org.mae.twg.backend.dto.travel.request.geo.HotelGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.HotelLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.HotelLogicDTO;
+import org.mae.twg.backend.dto.travel.response.HotelDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Hotel;
@@ -78,6 +78,17 @@ public class HotelService implements TravelService<HotelLocalDTO, HotelLocalDTO>
         List<Hotel> hotels = hotelRepo.findAll();
         return modelsToDTOs(hotels.stream(), localization);
     }
+
+    @Transactional
+    public HotelDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
+        String url = imageService.saveImage(ModelType.HOTEL, image);
+        HotelMedia hotelMedia = new HotelMedia(url);
+        Hotel hotel = findById(id);
+        hotel.setHeader(hotelMedia);
+        hotelRepo.saveAndFlush(hotel);
+        return new HotelDTO(hotel, local);
+    }
+
     @Transactional
     public HotelDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
         List<String> urls = imageService.saveImages(ModelType.HOTEL, images);
