@@ -12,8 +12,11 @@ import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.auth.UserRole;
 import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
 import org.mae.twg.backend.utils.auth.JwtUtils;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -73,6 +76,11 @@ public class AuthService {
     }
 
     public boolean hasAccess(Role role) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            throw new AuthenticationCredentialsNotFoundException("User isn't authorized");
+        }
+
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                         .stream().map(grantedAuthority -> (Role) grantedAuthority)
                         .anyMatch(r -> r.includes(role));

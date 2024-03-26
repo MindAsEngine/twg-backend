@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
-public class HotelService implements TravelService<HotelLocalDTO, HotelLocalDTO> {
+public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
     private final HotelRepo hotelRepo;
     private final HotelLocalRepo localRepo;
     private final PropertyRepo propertyRepo;

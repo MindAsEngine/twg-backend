@@ -3,7 +3,6 @@ package org.mae.twg.backend.services.news;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.news.NewsDTO;
 import org.mae.twg.backend.dto.news.NewsLocalRequestDTO;
-import org.mae.twg.backend.dto.news.NewsRequestDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.news.News;
@@ -30,7 +29,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
-public class NewsService implements TravelService<NewsRequestDTO, NewsLocalRequestDTO> {
+public class NewsService implements TravelService<NewsDTO, NewsLocalRequestDTO> {
     private final NewsRepo newsRepo;
     private final NewsLocalRepo localRepo;
     private final SlugUtils slugUtils;
@@ -116,7 +115,7 @@ public class NewsService implements TravelService<NewsRequestDTO, NewsLocalReque
     }
 
     @Transactional
-    public NewsDTO create(NewsRequestDTO newsDTO, Localization localization) {
+    public NewsDTO create(NewsLocalRequestDTO newsDTO, Localization localization) {
         News news = new News();
         newsRepo.saveAndFlush(news);
         NewsLocal local = new NewsLocal(newsDTO.getTitle(),

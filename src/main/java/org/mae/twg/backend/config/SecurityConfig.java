@@ -47,10 +47,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         // Можно указать конкретный путь, * - 1 уровень вложенности, ** - любое количество уровней вложенности
 //                          .anyRequest().permitAll())
-                        .requestMatchers("/auth/**", "/ping").permitAll()
+                        .requestMatchers("/profile/**").authenticated()
+                        .requestMatchers("/images/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/admin/**").authenticated()
                         .requestMatchers("/swagger-ui/**", "/actuator/**", "/actuator/prometheus","/swagger-resources/*", "/v3/api-docs/**").permitAll()
 //                        .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

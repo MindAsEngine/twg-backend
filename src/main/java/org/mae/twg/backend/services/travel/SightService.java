@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class SightService implements TravelService<SightLocalDTO, SightLocalDTO> {
+public class SightService implements TravelService<SightDTO, SightLocalDTO> {
     private final SightRepo sightRepo;
     private final SightLocalRepo localRepo;
     private final SlugUtils slugUtils;

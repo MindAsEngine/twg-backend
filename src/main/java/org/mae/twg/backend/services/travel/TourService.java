@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
-public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
+public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     private final TourRepo tourRepo;
     private final TourLocalRepo localRepo;
     private final TourMediaRepo tourMediaRepo;

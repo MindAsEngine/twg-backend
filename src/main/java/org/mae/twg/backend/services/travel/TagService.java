@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class TagService implements TravelService<TagLocalDTO, TagLocalDTO> {
+public class TagService implements TravelService<TagDTO, TagLocalDTO> {
     private final TagRepo tagRepo;
     private final TagLocalRepo localRepo;
 

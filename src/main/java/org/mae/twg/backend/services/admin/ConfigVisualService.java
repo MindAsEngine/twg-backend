@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.repositories.admin.ConfigVisualRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -43,7 +44,7 @@ public class ConfigVisualService {
                     String.valueOf(true));
         }
     }
-    public Map<String, String> put(Map<ConfigDisplayEnum, Boolean> config) {
+    public Map<ConfigDisplayEnum, Boolean> put(Map<ConfigDisplayEnum, Boolean> config) {
         for (Map.Entry<ConfigDisplayEnum, Boolean> entry : config.entrySet()) {
             String key = entry.getKey().name();
             String value = entry.getValue().toString();
@@ -51,7 +52,12 @@ public class ConfigVisualService {
         }
         return getAll();
     }
-    public Map<String, String> getAll() {
-        return configRepo.findAll();
+    public Map<ConfigDisplayEnum, Boolean> getAll() {
+        Map<String, String> configs = configRepo.findAll();
+        Map<ConfigDisplayEnum, Boolean> result = new HashMap<>();
+        for (Map.Entry<String, String> entry : configs.entrySet()) {
+            result.put(ConfigDisplayEnum.valueOf(entry.getKey()), Boolean.valueOf(entry.getValue()));
+        }
+        return result;
     }
 }
