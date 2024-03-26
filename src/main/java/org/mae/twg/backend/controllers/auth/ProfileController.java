@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.auth.UserDTO;
 import org.mae.twg.backend.models.auth.User;
-import org.mae.twg.backend.services.auth.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Профиль пользователя")
 @Log4j2
 public class ProfileController {
-    private final UserService userService;
     @ResponseBody
     @Operation(
             summary = "Профиль пользователя",
