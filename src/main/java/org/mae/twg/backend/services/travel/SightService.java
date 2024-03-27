@@ -13,6 +13,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.models.travel.media.SightMedia;
 import org.mae.twg.backend.repositories.travel.SightRepo;
+import org.mae.twg.backend.repositories.travel.comments.SightCommentsRepo;
 import org.mae.twg.backend.repositories.travel.images.SightMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.SightLocalRepo;
 import org.mae.twg.backend.services.ImageService;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 
@@ -36,6 +38,7 @@ import java.util.stream.Stream;
 public class SightService implements TravelService<SightDTO, SightLocalDTO> {
     private final SightRepo sightRepo;
     private final SightLocalRepo localRepo;
+    private final SightCommentsRepo commentsRepo;
     private final SlugUtils slugUtils;
     private final ImageService imageService;
     private final SightMediaRepo sightMediaRepo;
@@ -59,11 +62,18 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         return sight;
     }
 
+    private SightDTO addGrade(SightDTO sightDTO) {
+        sightDTO.setGrade(commentsRepo.averageGradeBySightId(sightDTO.getId()));
+        return sightDTO;
+    }
+
     private List<SightDTO> modelsToDTOs(Stream<Sight> sights, Localization localization) {
+        Map<Long, Double> grades = commentsRepo.allAverageGrades();
         List<SightDTO> sightDTOs = sights
                 .filter(sight -> !sight.getIsDeleted())
                 .filter(sight -> sight.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(sight -> new SightDTO(sight, localization))
+                .peek(sightDTO -> sightDTO.setGrade(grades.getOrDefault(sightDTO.getId(), null)))
                 .toList();
         if (sightDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Sights with " + localization + " not found");
@@ -116,11 +126,11 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
     }
 
     public SightDTO getById(Long id, Localization local) {
-        return new SightDTO(findById(id), local);
+        return addGrade(new SightDTO(findById(id), local));
     }
 
     public SightDTO getBySlug(String slug, Localization local) {
-        return new SightDTO(findBySlug(slug), local);
+        return addGrade(new SightDTO(findBySlug(slug), local));
     }
 
     @Transactional

@@ -13,6 +13,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 import org.mae.twg.backend.repositories.travel.*;
+import org.mae.twg.backend.repositories.travel.comments.TourCommentsRepo;
 import org.mae.twg.backend.repositories.travel.images.TourMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
 import org.mae.twg.backend.services.ImageService;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ import java.util.stream.Stream;
 public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     private final TourRepo tourRepo;
     private final TourLocalRepo localRepo;
+    private final TourCommentsRepo commentsRepo;
     private final TourMediaRepo tourMediaRepo;
     private final TourPeriodRepo tourPeriodRepo;
     private final SlugUtils slugUtils;
@@ -62,11 +65,18 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         return tour;
     }
 
+    private TourDTO addGrade(TourDTO tourDTO) {
+        tourDTO.setGrade(commentsRepo.averageGradeByTourId(tourDTO.getId()));
+        return tourDTO;
+    }
+
     private List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
+        Map<Long, Double> grades = commentsRepo.allAverageGrades();
         List<TourDTO> tourDTOs = tours
                 .filter(tour -> !tour.getIsDeleted())
                 .filter(tour -> tour.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(tour -> new TourDTO(tour, localization))
+                .peek(tourDTO -> tourDTO.setGrade(grades.getOrDefault(tourDTO.getId(), null)))
                 .toList();
         if (tourDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
@@ -109,11 +119,11 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     }
 
     public TourDTO getById(Long id, Localization localization) {
-        return new TourDTO(findById(id), localization);
+        return addGrade(new TourDTO(findById(id), localization));
     }
 
     public TourDTO getBySlug(String slug, Localization localization) {
-        return new TourDTO(findBySlug(slug), localization);
+        return addGrade(new TourDTO(findBySlug(slug), localization));
     }
 
     @Transactional
