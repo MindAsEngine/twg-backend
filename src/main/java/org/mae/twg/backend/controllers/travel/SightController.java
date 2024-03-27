@@ -7,12 +7,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
+import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.SightLogicDTO;
 import org.mae.twg.backend.dto.travel.response.SightDTO;
+import org.mae.twg.backend.dto.travel.response.comments.SightCommentDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.SightService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -109,5 +112,53 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
         return ResponseEntity.ok(getService().deleteImages(id, local, images));
     }
 
+    @GetMapping("/{id}/comments")
+    @Operation(summary = "Получение отзывов")
+    public ResponseEntity<List<SightCommentDTO>> getComments(@PathVariable Long id,
+                                                             @RequestParam(required = false) Integer page,
+                                                             @RequestParam(required = false) Integer size) {
+        log.info("Получение отзывов к точке интереса с id = " + id);
+        if (page == null && size == null) {
+            return ResponseEntity.ok(getService().getAllCommentsById(id));
+        }
+        if (page == null || size == null) {
+            throw new ValidationException("Only both 'page' and 'size' params are required");
+        }
+        return ResponseEntity.ok(getService().getPaginatedCommentsById(id, page, size));
+    }
+
+    @PostMapping("/{id}/comments/add")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Добавить отзыв",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<SightCommentDTO> createComment(@PathVariable Long id,
+                                                         @RequestBody CommentDTO commentDTO) {
+        log.info("Добавление отзыва к точке интереса с id = " + id);
+        return new ResponseEntity<>(getService().addComment(id, commentDTO), HttpStatus.CREATED);
+
+    }
+
+    @DeleteMapping("/{id}/comments/{commentId}/delete")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Удалить отзыв",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
+        log.info("Удаление отзыва с id = " + commentId);
+        getService().deleteByCommentId(commentId);
+        return ResponseEntity.ok("Comment with id = " + commentId + " marked as deleted");
+    }
+
+    @PutMapping("/{id}/comments/{commentId}/update")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Изменить отзыв",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<SightCommentDTO> updateComment(@PathVariable Long commentId,
+                                                         @RequestBody CommentDTO commentDTO) {
+        log.info("Изменение отзыва с id = " + commentId);
+        return ResponseEntity.ok(getService().updateByCommentId(commentId, commentDTO));
+    }
 
 }

@@ -3,6 +3,7 @@ package org.mae.twg.backend.dto.travel.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.dto.ModelDTO;
+import org.mae.twg.backend.dto.travel.response.lightDTOs.CountryLightDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Resort;
 import org.mae.twg.backend.models.travel.enums.Localization;

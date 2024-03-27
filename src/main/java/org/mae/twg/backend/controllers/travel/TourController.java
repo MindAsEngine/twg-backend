@@ -8,12 +8,15 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
+import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
+import org.mae.twg.backend.dto.travel.response.comments.TourCommentDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.travel.TourService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -100,5 +103,54 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
                                            @Valid @RequestBody TourGeoDTO tourDTO) {
         log.info("Обновить геоданные тура с id = " + id);
         return ResponseEntity.ok(getService().updateGeoData(id, tourDTO, local));
+    }
+
+    @GetMapping("/{id}/comments")
+    @Operation(summary = "Получение отзывов")
+    public ResponseEntity<List<TourCommentDTO>> getComments(@PathVariable Long id,
+                                                            @RequestParam(required = false) Integer page,
+                                                            @RequestParam(required = false) Integer size) {
+        log.info("Получение отзывов к туру с id = " + id);
+        if (page == null && size == null) {
+            return ResponseEntity.ok(getService().getAllCommentsById(id));
+        }
+        if (page == null || size == null) {
+            throw new ValidationException("Only both 'page' and 'size' params are required");
+        }
+        return ResponseEntity.ok(getService().getPaginatedCommentsById(id, page, size));
+    }
+
+    @PostMapping("/{id}/comments/add")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Добавить отзыв",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<TourCommentDTO> createComment(@PathVariable Long id,
+                                                         @RequestBody CommentDTO commentDTO) {
+        log.info("Добавление отзыва к туру с id = " + id);
+        return new ResponseEntity<>(getService().addComment(id, commentDTO), HttpStatus.CREATED);
+
+    }
+
+    @DeleteMapping("/{id}/comments/{commentId}/delete")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Удалить отзыв",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
+        log.info("Удаление отзыва с id = " + commentId);
+        getService().deleteByCommentId(commentId);
+        return ResponseEntity.ok("Comment with id = " + commentId + " marked as deleted");
+    }
+
+    @PutMapping("/{id}/comments/{commentId}/update")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Изменить отзыв",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<TourCommentDTO> updateComment(@PathVariable Long commentId,
+                                                         @RequestBody CommentDTO commentDTO) {
+        log.info("Изменение отзыва с id = " + commentId);
+        return ResponseEntity.ok(getService().updateByCommentId(commentId, commentDTO));
     }
 }

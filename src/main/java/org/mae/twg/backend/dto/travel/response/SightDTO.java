@@ -20,6 +20,7 @@ public class SightDTO implements ModelDTO {
     private String introduction;
     private String description;
     private String address;
+    private Double grade;
     private Double latitude;
     private Double longitude;
     private Localization localization;

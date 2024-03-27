@@ -37,6 +37,15 @@ public class CustomExceptionHandler {
         return new ResponseErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
     @ExceptionHandler(value = {
+            AccessDeniedException.class
+    })
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseErrorDTO responseAccessException(RuntimeException exception) {
+        log.error(exception.getMessage());
+        return new ResponseErrorDTO(HttpStatus.FORBIDDEN, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {
             RuntimeException.class,
             SlugException.class
     })
