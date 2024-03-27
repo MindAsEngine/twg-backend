@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
@@ -36,7 +37,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -70,16 +74,30 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
     }
 
     private SightDTO addGrade(SightDTO sightDTO) {
-        sightDTO.setGrade(commentsRepo.averageGradeBySightId(sightDTO.getId()));
+        GradeData gradeData = commentsRepo.averageGradeBySightId(sightDTO.getId());
+        sightDTO.setGrade(gradeData.getGrade());
+        sightDTO.setCommentAmount(sightDTO.getCommentAmount());
+        return sightDTO;
+    }
+
+    private SightDTO addGrade(SightDTO sightDTO, GradeData gradeData) {
+        if (gradeData == null) {
+            sightDTO.setCommentAmount(0L);
+            return sightDTO;
+        }
+        sightDTO.setGrade(gradeData.getGrade());
+        sightDTO.setCommentAmount(sightDTO.getCommentAmount());
         return sightDTO;
     }
 
     private List<SightDTO> modelsToDTOs(Stream<Sight> sights, Localization localization) {
+        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
+                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<SightDTO> sightDTOs = sights
                 .filter(sight -> !sight.getIsDeleted())
                 .filter(sight -> sight.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(sight -> new SightDTO(sight, localization))
-                .map(this::addGrade)
+                .map(sightDTO -> addGrade(sightDTO, grades.getOrDefault(sightDTO.getId(), null)))
                 .toList();
         if (sightDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Sights with " + localization + " not found");
