@@ -9,6 +9,7 @@ import org.mae.twg.backend.models.news.NewsLocal;
 import org.mae.twg.backend.models.news.NewsMedia;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -18,11 +19,13 @@ public class NewsDTO implements ModelDTO {
     private String slug;
     private String title;
     private String description;
+    private LocalDate createdAt;
     private Localization localization;
     private List<String> medias;
     public NewsDTO(News news, Localization localization) {
         this.id = news.getId();
         this.slug = news.getSlug();
+        this.createdAt = news.getCreatedAt();
         NewsLocal cur_local =
                 news.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)
