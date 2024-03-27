@@ -325,8 +325,4 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         commentsRepo.saveAndFlush(comment);
         return new HotelCommentDTO(comment);
     }
-
-
-
-
 }

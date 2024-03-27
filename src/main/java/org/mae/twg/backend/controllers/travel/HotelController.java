@@ -101,9 +101,9 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
     @Operation(summary = "Обновить логических данных отеля",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<HotelDTO> updateProperties(@PathVariable Long id,
-                                                     @PathVariable Localization local,
-                                                     @Valid @RequestBody HotelLogicDTO hotelDTO) {
+    public ResponseEntity<HotelDTO> updateLogic(@PathVariable Long id,
+                                                @PathVariable Localization local,
+                                                @Valid @RequestBody HotelLogicDTO hotelDTO) {
         log.info("Обновление логических данных отелю с id = " + id);
         return ResponseEntity.ok(getService().updateLogicData(id, hotelDTO, local));
     }
@@ -113,9 +113,9 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
     @Operation(summary = "Обновить геоданных отеля",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<HotelDTO> updateSights(@PathVariable Long id,
-                                                 @PathVariable Localization local,
-                                                 @Valid @RequestBody HotelGeoDTO hotelDTO) {
+    public ResponseEntity<HotelDTO> updateGeo(@PathVariable Long id,
+                                              @PathVariable Localization local,
+                                              @Valid @RequestBody HotelGeoDTO hotelDTO) {
         log.info("Обновление геоданных данных отелю с id = " + id);
         return ResponseEntity.ok(getService().updateGeoData(id, hotelDTO, local));
     }
