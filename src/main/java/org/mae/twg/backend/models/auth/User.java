@@ -2,9 +2,12 @@ package org.mae.twg.backend.models.auth;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 
@@ -53,6 +56,13 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDate createdAt;
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,6 +1,8 @@
 package org.mae.twg.backend.controllers.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.mae.twg.backend.dto.auth.SignUpRequest;
 import org.mae.twg.backend.dto.auth.TokenRefreshRequest;
 import org.mae.twg.backend.services.auth.AuthService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,5 +45,19 @@ public class AuthController {
     public ResponseEntity<JwtAuthenticationResponse> refreshToken(@RequestBody @Valid TokenRefreshRequest request) {
         log.info("Обновление токена");
         return ResponseEntity.ok(authService.refreshToken(request));
+    }
+
+    @Operation(
+            summary = "Выход",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>"))
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        authService.logout();
+        return ResponseEntity.ok("User was logged out");
     }
 }
