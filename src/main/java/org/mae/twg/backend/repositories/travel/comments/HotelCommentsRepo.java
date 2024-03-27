@@ -18,7 +18,7 @@ public interface HotelCommentsRepo extends JpaRepository<HotelComment, Long> {
             "group by c.hotel.id")
     List<GradeData> allAverageGrades();
     @Query("select " +
-            "   new org.mae.twg.backend.dto.GradeData(c.hotel.id, avg(c.grade), count(c.grade)) " +
+            "   new org.mae.twg.backend.dto.GradeData(?1, avg(c.grade), count(c.grade)) " +
             "from HotelComment c " +
             "where c.isDeleted = false and c.hotel.id = ?1")
     GradeData averageGradeByHotelId(Long hotelId);

@@ -18,7 +18,7 @@ public interface SightCommentsRepo extends JpaRepository<SightComment, Long> {
             "group by c.sight.id")
     List<GradeData> allAverageGrades();
     @Query("select " +
-            "   new org.mae.twg.backend.dto.GradeData(c.sight.id, avg(c.grade), count(c.grade)) " +
+            "   new org.mae.twg.backend.dto.GradeData(?1, avg(c.grade), count(c.grade)) " +
             "from SightComment c " +
             "where c.isDeleted = false and c.sight.id = ?1")
     GradeData averageGradeBySightId(Long sightId);
