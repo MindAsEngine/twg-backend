@@ -39,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -79,12 +78,11 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
     }
 
     private List<HotelDTO> modelsToDTOs(Stream<Hotel> hotels, Localization localization) {
-        Map<Long, Double> grades = commentsRepo.allAverageGrades();
         List<HotelDTO> hotelDTOs = hotels
                 .filter(hotel -> !hotel.getIsDeleted())
                 .filter(hotel -> hotel.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(hotel -> new HotelDTO(hotel, localization))
-                .peek(hotelDTO -> hotelDTO.setGrade(grades.getOrDefault(hotelDTO.getId(), null)))
+                .map(this::addGrade)
                 .toList();
         if (hotelDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Hotels with " + localization + " with localization not found");

@@ -36,7 +36,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -76,12 +75,11 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
     }
 
     private List<SightDTO> modelsToDTOs(Stream<Sight> sights, Localization localization) {
-        Map<Long, Double> grades = commentsRepo.allAverageGrades();
         List<SightDTO> sightDTOs = sights
                 .filter(sight -> !sight.getIsDeleted())
                 .filter(sight -> sight.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(sight -> new SightDTO(sight, localization))
-                .peek(sightDTO -> sightDTO.setGrade(grades.getOrDefault(sightDTO.getId(), null)))
+                .map(this::addGrade)
                 .toList();
         if (sightDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Sights with " + localization + " not found");
