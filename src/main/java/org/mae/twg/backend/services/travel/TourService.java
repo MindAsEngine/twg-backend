@@ -78,6 +78,10 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
 
     private TourDTO addGrade(TourDTO tourDTO) {
         GradeData gradeData = commentsRepo.averageGradeByTourId(tourDTO.getId());
+        if (gradeData == null) {
+            tourDTO.setCommentAmount(0L);
+            return tourDTO;
+        }
         tourDTO.setGrade(gradeData.getGrade());
         tourDTO.setCommentAmount(gradeData.getCount());
         return tourDTO;

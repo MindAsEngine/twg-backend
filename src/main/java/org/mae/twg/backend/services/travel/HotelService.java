@@ -78,6 +78,10 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
 
     private HotelDTO addGrade(HotelDTO hotelDTO) {
         GradeData gradeData = commentsRepo.averageGradeByHotelId(hotelDTO.getId());
+        if (gradeData == null) {
+            hotelDTO.setCommentAmount(0L);
+            return hotelDTO;
+        }
         hotelDTO.setGrade(gradeData.getGrade());
         hotelDTO.setCommentAmount(gradeData.getCount());
         return hotelDTO;

@@ -75,6 +75,10 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
 
     private SightDTO addGrade(SightDTO sightDTO) {
         GradeData gradeData = commentsRepo.averageGradeBySightId(sightDTO.getId());
+        if (gradeData == null) {
+            sightDTO.setCommentAmount(0L);
+            return sightDTO;
+        }
         sightDTO.setGrade(gradeData.getGrade());
         sightDTO.setCommentAmount(sightDTO.getCommentAmount());
         return sightDTO;
