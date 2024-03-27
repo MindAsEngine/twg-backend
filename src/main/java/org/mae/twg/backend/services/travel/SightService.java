@@ -1,14 +1,20 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.SightLogicDTO;
 import org.mae.twg.backend.dto.travel.response.SightDTO;
+import org.mae.twg.backend.dto.travel.response.comments.SightCommentDTO;
+import org.mae.twg.backend.exceptions.AccessDeniedException;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
+import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.Sight;
 import org.mae.twg.backend.models.travel.SightType;
+import org.mae.twg.backend.models.travel.comments.SightComment;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.models.travel.media.SightMedia;
@@ -23,6 +29,7 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 
@@ -224,4 +232,78 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         sightRepo.saveAndFlush(sight);
         return new SightDTO(sight, localization);
     }
+    private List<SightCommentDTO> commentsToDTOs(Stream<SightComment> comments) {
+        List<SightCommentDTO> commentDTOs = comments
+                .filter(comment -> !comment.getIsDeleted())
+                .map(SightCommentDTO::new)
+                .toList();
+        if (commentDTOs.isEmpty()) {
+            throw new ObjectNotFoundException("Comments not found");
+        }
+        return commentDTOs;
+    }
+
+    private SightComment findCommentById(Long id) {
+        SightComment comment = commentsRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Sight comment with id=" + id + " not found"));
+        if (comment.getIsDeleted()) {
+            throw new ObjectNotFoundException("Sight comment with id=" + id + " marked as deleted");
+        }
+        return comment;
+    }
+
+    public List<SightCommentDTO> getAllCommentsById(Long id) {
+        return commentsToDTOs(commentsRepo.findAllBySight_IdOrderByCreatedAtDesc(id).stream());
+    }
+
+    public List<SightCommentDTO> getPaginatedCommentsById(Long id, int page, int size) {
+        Pageable commentsPage = PageRequest.of(page, size);
+        return commentsToDTOs(commentsRepo.findAllBySight_IdOrderByCreatedAtDesc(id, commentsPage).stream());
+    }
+
+    @Transactional
+    public SightCommentDTO addComment(Long id, CommentDTO commentDTO) {
+        Sight hotel = findById(id);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        SightComment comment = new SightComment(user, commentDTO.getGrade(), commentDTO.getComment());
+        commentsRepo.saveAndFlush(comment);
+
+        hotel.addComment(comment);
+        sightRepo.saveAndFlush(hotel);
+
+        return new SightCommentDTO(comment);
+    }
+
+    @SneakyThrows
+    private void verifyAccess(SightComment comment) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!Objects.equals(user.getId(), comment.getUser().getId())) {
+            throw new AccessDeniedException("You are not the owner of this comment");
+        }
+    }
+
+    @Transactional
+    public void deleteByCommentId(Long commentId) {
+        SightComment comment = findCommentById(commentId);
+        verifyAccess(comment);
+
+        comment.setIsDeleted(true);
+        commentsRepo.save(comment);
+    }
+
+    @Transactional
+    @SneakyThrows
+    public SightCommentDTO updateByCommentId(Long commentId, CommentDTO commentDTO) {
+        SightComment comment = findCommentById(commentId);
+        verifyAccess(comment);
+
+        comment.setComment(commentDTO.getComment());
+        comment.setGrade(commentDTO.getGrade());
+
+        commentsRepo.saveAndFlush(comment);
+        return new SightCommentDTO(comment);
+    }
+
+
 }
