@@ -11,6 +11,7 @@ import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -46,9 +47,11 @@ public class HotelDTO implements ModelDTO {
         this.medias = hotel.getMedias().stream().map(HotelMedia::getMediaPath).toList();
         this.properties = hotel.getProperties().stream()
                 .map(property -> PropertyDTO.getDTO(property, localization))
+                .filter(Objects::nonNull)
                 .toList();
         this.sights = hotel.getSights().stream()
                 .map(sight -> SightLightDTO.getDTO(sight, localization))
+                .filter(Objects::nonNull)
                 .toList();
         this.localization = localization;
     }
