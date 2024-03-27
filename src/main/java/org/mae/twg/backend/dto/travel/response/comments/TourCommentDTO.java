@@ -22,7 +22,7 @@ public class TourCommentDTO implements Serializable {
         this.author = new UserLightDTO(comment.getUser());
         this.comment = comment.getComment();
         this.grade = comment.getGrade();
-        this.createdAt = getCreatedAt();
+        this.createdAt = comment.getCreatedAt();
     }
 
     static public TourCommentDTO getDTO(TourComment comment) {
