@@ -26,9 +26,7 @@ public class ResortController extends BaseController<ResortService, ResortDTO, R
     }
 
     @GetMapping("/get")
-    @Operation(summary = "Отдать курорт по id",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
+    @Operation(summary = "Отдать курорт по id")
     public ResponseEntity<ResortDTO> getById(@PathVariable Localization local,
                                      @RequestParam Long id) {
         return ResponseEntity.ok(getService().getById(id, local));

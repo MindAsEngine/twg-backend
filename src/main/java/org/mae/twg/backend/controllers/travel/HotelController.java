@@ -80,10 +80,7 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
 
 
     @GetMapping("/get")
-    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
-    @Operation(summary = "Отдать отель по id",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
+    @Operation(summary = "Отдать отель по id")
     public ResponseEntity<HotelDTO> get(@PathVariable Localization local,
                                  @RequestParam(required = false) Long id,
                                  @RequestParam(required = false) String slug) {

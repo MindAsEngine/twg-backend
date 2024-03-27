@@ -58,9 +58,7 @@ public class NewsController extends BaseController<NewsService, NewsDTO, NewsLoc
 
 
     @GetMapping("/get")
-    @Operation(summary = "Отдать новость по id",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
+    @Operation(summary = "Отдать новость по id")
     public ResponseEntity<NewsDTO> get(@PathVariable Localization local,
                                  @RequestParam(required = false) Long id,
                                  @RequestParam(required = false) String slug) {

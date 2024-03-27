@@ -32,9 +32,7 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
     }
 
     @GetMapping("/get")
-    @Operation(summary = "Отдать точку интереса по id или по slug",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
+    @Operation(summary = "Отдать точку интереса по id или по slug")
     public ResponseEntity<SightDTO> get(@PathVariable Localization local,
                                  @RequestParam(required = false) Long id,
                                  @RequestParam(required = false) String slug) {

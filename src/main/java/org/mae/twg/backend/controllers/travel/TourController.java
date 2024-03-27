@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
-import org.mae.twg.backend.dto.travel.TourDTO;
+import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
@@ -62,9 +62,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
     }
 
     @GetMapping("/get")
-    @Operation(summary = "Отдать тур по id или slug",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
+    @Operation(summary = "Отдать тур по id или slug")
     public ResponseEntity<TourDTO> get(@PathVariable Localization local,
                                  @RequestParam(required = false) Long id,
                                  @RequestParam(required = false) String slug) {
