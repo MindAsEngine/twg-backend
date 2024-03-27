@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
 @RequestMapping("/admin/configs/visual")
 @RequiredArgsConstructor
 @Tag(name = "Динамический конфиг визуала сайта")
@@ -26,6 +25,7 @@ public class ConfigVisualController {
         return ResponseEntity.ok(configVisualService.getAll());
     }
     @Operation(summary = "Обновить конфиг визуала")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PutMapping("/put")
     public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
         return ResponseEntity.ok(configVisualService.put(config));

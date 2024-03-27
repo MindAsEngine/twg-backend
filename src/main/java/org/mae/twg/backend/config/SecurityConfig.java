@@ -50,7 +50,6 @@ public class SecurityConfig {
                         .requestMatchers("/profile/**").authenticated()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").authenticated()
                         .requestMatchers("/swagger-ui/**", "/actuator/**", "/actuator/prometheus","/swagger-resources/*", "/v3/api-docs/**").permitAll()
 //                        .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())

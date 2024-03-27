@@ -37,7 +37,8 @@ public class CustomExceptionHandler {
         return new ResponseErrorDTO(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
     @ExceptionHandler(value = {
-            AccessDeniedException.class
+            AccessDeniedException.class,
+            org.springframework.security.access.AccessDeniedException.class
     })
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseErrorDTO responseAccessException(RuntimeException exception) {
