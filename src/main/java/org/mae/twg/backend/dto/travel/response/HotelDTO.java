@@ -26,6 +26,7 @@ public class HotelDTO implements ModelDTO {
     private String description;
     private String address;
     private Double grade;
+    private Long commentAmount;
     private Localization localization;
     private List<String> medias;
     private List<PropertyDTO> properties;
