@@ -20,6 +20,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service("AuthService")
 @AllArgsConstructor
@@ -41,9 +45,11 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .patronymic(request.getPatronymic() == null ? "No patronymic" : request.getPatronymic())
                 .userRole(UserRole.USER)
+                .lastLogin(LocalDateTime.now())
                 .build();
 
         userService.create(user);
+        userService.refreshLastLogin(user);
 
         var jwt = jwtUtils.generateToken(user);
         var refreshToken = jwtUtils.createRefreshToken(user);
@@ -59,6 +65,8 @@ public class AuthService {
         var user = userService
                 .loadUserByUsername(request.getUsername());
 
+        userService.refreshLastLogin(user);
+
         var jwt = jwtUtils.generateToken(user);
         var refreshToken = jwtUtils.createRefreshToken(user);
         return new JwtAuthenticationResponse(jwt, refreshToken.getToken());
@@ -72,7 +80,24 @@ public class AuthService {
                         "Refresh token '" + requestRefreshToken +"' not found"));
         jwtUtils.verifyExpiration(token);
         String accessToken = jwtUtils.generateToken(token.getUser());
+        userService.refreshLastLogin(token.getUser());
         return new JwtAuthenticationResponse(accessToken, token.getToken());
+    }
+
+    @Transactional
+    public void logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return;
+        }
+
+        User user = (User) authentication.getPrincipal();
+
+        Optional<RefreshToken> refreshToken = refreshTokenRepo.findByUser(user);
+        if (refreshToken.isEmpty()) {
+            return;
+        }
+        refreshTokenRepo.delete(refreshToken.get());
     }
 
     public boolean hasAccess(Role role) {
@@ -81,7 +106,7 @@ public class AuthService {
             throw new AuthenticationCredentialsNotFoundException("User isn't authorized");
         }
 
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+        return authentication.getAuthorities()
                         .stream().map(grantedAuthority -> (Role) grantedAuthority)
                         .anyMatch(r -> r.includes(role));
     }
