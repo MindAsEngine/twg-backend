@@ -26,6 +26,7 @@ public class TourDTO implements ModelDTO {
     private String description;
     private String additional;
     private Double grade;
+    private Long commentAmount;
     private CountryDTO country;
     private Localization localization;
     private List<String> medias;

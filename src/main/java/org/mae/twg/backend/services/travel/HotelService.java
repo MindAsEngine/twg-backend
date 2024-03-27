@@ -22,6 +22,7 @@ import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.repositories.travel.HotelRepo;
 import org.mae.twg.backend.repositories.travel.PropertyRepo;
 import org.mae.twg.backend.repositories.travel.SightRepo;
+import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.repositories.travel.comments.HotelCommentsRepo;
 import org.mae.twg.backend.repositories.travel.images.HotelMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
@@ -39,7 +40,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -73,16 +77,34 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
     }
 
     private HotelDTO addGrade(HotelDTO hotelDTO) {
-        hotelDTO.setGrade(commentsRepo.averageGradeByHotelId(hotelDTO.getId()));
+        GradeData gradeData = commentsRepo.averageGradeByHotelId(hotelDTO.getId());
+        if (gradeData == null) {
+            hotelDTO.setCommentAmount(0L);
+            return hotelDTO;
+        }
+        hotelDTO.setGrade(gradeData.getGrade());
+        hotelDTO.setCommentAmount(gradeData.getCount());
+        return hotelDTO;
+    }
+
+    private HotelDTO addGrade(HotelDTO hotelDTO, GradeData gradeData) {
+        if (gradeData == null) {
+            hotelDTO.setCommentAmount(0L);
+            return hotelDTO;
+        }
+        hotelDTO.setGrade(gradeData.getGrade());
+        hotelDTO.setCommentAmount(gradeData.getCount());
         return hotelDTO;
     }
 
     private List<HotelDTO> modelsToDTOs(Stream<Hotel> hotels, Localization localization) {
+        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
+                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<HotelDTO> hotelDTOs = hotels
                 .filter(hotel -> !hotel.getIsDeleted())
                 .filter(hotel -> hotel.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(hotel -> new HotelDTO(hotel, localization))
-                .map(this::addGrade)
+                .map(hotelDTO -> addGrade(hotelDTO, grades.getOrDefault(hotelDTO.getId(), null)))
                 .toList();
         if (hotelDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Hotels with " + localization + " with localization not found");

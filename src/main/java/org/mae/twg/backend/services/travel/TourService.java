@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
@@ -36,7 +37,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -73,16 +77,34 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     }
 
     private TourDTO addGrade(TourDTO tourDTO) {
-        tourDTO.setGrade(commentsRepo.averageGradeByTourId(tourDTO.getId()));
+        GradeData gradeData = commentsRepo.averageGradeByTourId(tourDTO.getId());
+        if (gradeData == null) {
+            tourDTO.setCommentAmount(0L);
+            return tourDTO;
+        }
+        tourDTO.setGrade(gradeData.getGrade());
+        tourDTO.setCommentAmount(gradeData.getCount());
+        return tourDTO;
+    }
+
+    private TourDTO addGrade(TourDTO tourDTO, GradeData gradeData) {
+        if (gradeData == null) {
+            tourDTO.setCommentAmount(0L);
+            return tourDTO;
+        }
+        tourDTO.setGrade(gradeData.getGrade());
+        tourDTO.setCommentAmount(gradeData.getCount());
         return tourDTO;
     }
 
     private List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
+        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
+                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<TourDTO> tourDTOs = tours
                 .filter(tour -> !tour.getIsDeleted())
                 .filter(tour -> tour.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(tour -> new TourDTO(tour, localization))
-                .map(this::addGrade)
+                .map(tourDTO -> addGrade(tourDTO, grades.getOrDefault(tourDTO.getId(), null)))
                 .toList();
         if (tourDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
