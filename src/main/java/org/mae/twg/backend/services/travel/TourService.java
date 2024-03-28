@@ -11,6 +11,7 @@ import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourPeriodDTO;
 import org.mae.twg.backend.dto.travel.response.comments.TourCommentDTO;
 import org.mae.twg.backend.exceptions.AccessDeniedException;
+import org.mae.twg.backend.dto.travel.response.HotelDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.auth.User;
@@ -18,6 +19,7 @@ import org.mae.twg.backend.models.travel.*;
 import org.mae.twg.backend.models.travel.comments.TourComment;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
+import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 import org.mae.twg.backend.repositories.travel.*;
 import org.mae.twg.backend.repositories.travel.comments.TourCommentsRepo;
@@ -113,11 +115,23 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     }
 
     @Transactional
+    public TourDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
+        String url = imageService.saveImage(ModelType.TOUR, image);
+        TourMedia tourMedia = new TourMedia(url);
+        tourMediaRepo.saveAndFlush(tourMedia);
+        Tour tour = findById(id);
+        tour.setHeader(tourMedia);
+        tourRepo.saveAndFlush(tour);
+        return new TourDTO(tour, local);
+    }
+
+    @Transactional
     public TourDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
         List<String> urls = imageService.saveImages(ModelType.TOUR, images);
         List<TourMedia> tourMedias = urls.stream().map(TourMedia::new).toList();
         Tour tour = findById(id);
         for (TourMedia tourMedia : tourMedias) {
+            tourMediaRepo.saveAndFlush(tourMedia);
             tour.addMedia(tourMedia);
         }
         tourRepo.saveAndFlush(tour);
@@ -128,6 +142,11 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         imageService.deleteImages(images);
         List<TourMedia> tourMedias = tourMediaRepo.findByTour_id(id);
         for (TourMedia tourMedia : tourMedias) {
+            Tour tour = findById(id);
+            if (tour.getHeader() == tourMedia) {
+                tour.removeHeader(tourMedia);
+                tourRepo.saveAndFlush(tour);
+            }
             if (images.contains(tourMedia.getMediaPath())) {
                 tourMediaRepo.delete(tourMedia);
             }

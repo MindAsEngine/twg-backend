@@ -29,6 +29,7 @@ public class TourDTO implements ModelDTO {
     private Long commentAmount;
     private CountryDTO country;
     private Localization localization;
+    private String header;
     private List<String> medias;
     private List<HotelLightDTO> hotels;
     private SightLightDTO hospital;
@@ -53,6 +54,7 @@ public class TourDTO implements ModelDTO {
         this.type = tour.getType();
         this.isActive = tour.getIsActive();
         this.description = cur_local.getDescription();
+        this.header = (tour.getHeader() != null ? tour.getHeader().getMediaPath() : null);
         this.medias = tour.getMedias().stream().map(TourMedia::getMediaPath).toList();
         this.hotels = tour.getHotels().stream()
                 .map(hotel -> HotelLightDTO.getDTO(hotel, localization))

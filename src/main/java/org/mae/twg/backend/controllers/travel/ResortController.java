@@ -32,7 +32,7 @@ public class ResortController extends BaseController<ResortService, ResortDTO, R
         return ResponseEntity.ok(getService().getById(id, local));
     }
 
-    @PostMapping("/{id}/logic/update")
+    @PutMapping("/{id}/logic/update")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Обновление логичсеких данных курорта",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
