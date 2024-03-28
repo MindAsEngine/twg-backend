@@ -3,21 +3,17 @@ package org.mae.twg.backend.services.auth;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
+import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
-import org.mae.twg.backend.dto.auth.UserDTO;
-import org.mae.twg.backend.dto.travel.response.CountryDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.exceptions.UserNotFound;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
-import org.mae.twg.backend.models.travel.Country;
-import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.repositories.business.UserRepo;
-import org.mae.twg.backend.services.travel.TourService;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.mae.twg.backend.services.ImageService;
 import org.mae.twg.backend.services.ModelType;
+import org.mae.twg.backend.services.travel.TourService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,12 +21,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 import java.util.List;
 
 @Service
@@ -69,9 +63,8 @@ public class UserService implements UserDetailsService{
     }
 
     public User findById(Long id) {
-        User user = userRepo.findById(id)
+        return userRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("User with id=" + id + " not found"));
-        return user;
     }
 
     public void refreshLastLogin(User user) {
