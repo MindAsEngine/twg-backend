@@ -47,15 +47,19 @@ public class UserService implements UserDetailsService{
      * @return созданный пользователь
      */
     public User create(User user) {
+        String exceptionText = "";
         if (userRepo.existsByUsername(user.getUsername())) {
-            // TODO: Заменить на свои исключения
-            throw new ValidationException("Пользователь с таким именем уже существует");
+            exceptionText += ("Пользователь с таким username уже существует.\n");
         }
-
         if (userRepo.existsByEmail(user.getEmail())) {
-            throw new ValidationException("Пользователь с таким email уже существует");
+            exceptionText += ("Пользователь с таким email уже существует.\n");
         }
-
+        if (userRepo.existsByPhone(user.getPhone())) {
+            exceptionText += ("Пользователь с таким телефоном уже существует.\n");
+        }
+        if (!exceptionText.isEmpty()) {
+            throw new ValidationException(exceptionText);
+        }
         return save(user);
     }
 
