@@ -21,9 +21,7 @@ import java.util.Map;
 @Log4j2
 public class ConfigVisualController {
     private final ConfigVisualService configVisualService;
-    @Operation(summary = "Получить всю конфигурацию",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
+    @Operation(summary = "Получить всю конфигурацию")
     @GetMapping("/get")
     public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> getAll() {
         return ResponseEntity.ok(configVisualService.getAll());

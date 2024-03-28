@@ -25,9 +25,7 @@ import java.util.List;
 public class ImageController {
     private final ImageService imageService;
     @GetMapping(value = "/{imageFolder}/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
-    @Operation(summary = "Отдать фотографию",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = false, example = "Bearer <token>")
-    )
+    @Operation(summary = "Отдать фотографию")
     public ResponseEntity<byte[]> serveFile(@PathVariable String imageFolder,
                                             @PathVariable String imageName) throws IOException {
         try {
