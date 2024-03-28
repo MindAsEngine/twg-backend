@@ -2,9 +2,11 @@ package org.mae.twg.backend.services.auth;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.exceptions.UserNotFound;
 import org.mae.twg.backend.models.auth.User;
+import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.repositories.business.UserRepo;
 import org.mae.twg.backend.services.travel.TourService;
@@ -12,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,5 +74,14 @@ public class UserService implements UserDetailsService{
         Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         User user = userRepo.getReferenceById(id);
         return tourService.modelsToDTOs(user.getFavourites().stream(), localization);
+    }
+
+    @Transactional
+    public void addTourToFavourite(FavouriteTourDTO tourDTO) {
+        Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        User user = userRepo.getReferenceById(id);
+
+        Tour tour = tourService.findById(tourDTO.getTourId());
+        user.getFavourites().add(tour);
     }
 }

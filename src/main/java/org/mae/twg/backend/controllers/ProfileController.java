@@ -6,7 +6,8 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.mae.twg.backend.dto.auth.UserDTO;
+import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
+import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -54,5 +55,22 @@ public class ProfileController {
         log.info("Получение избранных туров");
         return ResponseEntity.ok(userService.getFavouriteTours(local));
     }
+
+    @PostMapping("/{local}/favourites/add")
+    @Operation(
+            summary = "Избранные туры",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>")
+    )
+    public ResponseEntity<String> addToFavourites(@PathVariable Localization local,
+                                                  @RequestBody FavouriteTourDTO tourDTO) {
+        log.info("Добавление тура в избранное");
+        userService.addTourToFavourite(tourDTO);
+        return ResponseEntity.ok("Tour was added to favourites");
+    }
+
 
 }

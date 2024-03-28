@@ -1,4 +1,4 @@
-package org.mae.twg.backend.dto.auth;
+package org.mae.twg.backend.dto.profile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
