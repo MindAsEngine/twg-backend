@@ -81,7 +81,22 @@ public class ProfileController {
                     example = "Bearer <token>")
     )
     public ResponseEntity<Boolean> checkInFavourites(@RequestParam Long tourId) {
-        log.info("Проерка тура в избранном");
+        log.info("Проверка тура в избранном");
         return ResponseEntity.ok(userService.checkInFavourite(tourId));
+    }
+
+    @DeleteMapping("/{local}/favourites/delete")
+    @Operation(
+            summary = "Избранные туры",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>")
+    )
+    public ResponseEntity<String> deleteFromFavourites(@RequestBody FavouriteTourDTO tourDTO) {
+        log.info("Удаление тура из избранного");
+        userService.deleteTourFromFavourite(tourDTO);
+        return ResponseEntity.ok("Tour was deleted from favourites");
     }
 }
