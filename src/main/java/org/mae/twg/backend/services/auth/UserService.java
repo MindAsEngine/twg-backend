@@ -68,7 +68,8 @@ public class UserService implements UserDetailsService{
     }
 
     public List<TourDTO> getFavouriteTours(Localization localization) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        User user = userRepo.getReferenceById(id);
         return tourService.modelsToDTOs(user.getFavourites().stream(), localization);
     }
 }
