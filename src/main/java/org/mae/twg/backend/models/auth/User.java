@@ -64,6 +64,9 @@ public class User implements UserDetails {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
+    @Column(name = "media_path")
+    private String mediaPath;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Set.of(userRole);
