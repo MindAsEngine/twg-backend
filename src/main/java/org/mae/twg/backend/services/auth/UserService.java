@@ -84,4 +84,15 @@ public class UserService implements UserDetailsService{
         Tour tour = tourService.findById(tourDTO.getTourId());
         user.getFavourites().add(tour);
     }
+
+    @Transactional
+    public Boolean checkInFavourite(Long tourId) {
+        Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        User user = userRepo.getReferenceById(id);
+
+        Tour tour = tourService.findById(tourId);
+        return user.getFavourites().contains(tour);
+    }
+
+
 }

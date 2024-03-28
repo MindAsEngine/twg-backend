@@ -65,12 +65,23 @@ public class ProfileController {
                     required = true,
                     example = "Bearer <token>")
     )
-    public ResponseEntity<String> addToFavourites(@PathVariable Localization local,
-                                                  @RequestBody FavouriteTourDTO tourDTO) {
+    public ResponseEntity<String> addToFavourites(@RequestBody FavouriteTourDTO tourDTO) {
         log.info("Добавление тура в избранное");
         userService.addTourToFavourite(tourDTO);
         return ResponseEntity.ok("Tour was added to favourites");
     }
 
-
+    @PostMapping("/{local}/favourites/check")
+    @Operation(
+            summary = "Избранные туры",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>")
+    )
+    public ResponseEntity<Boolean> checkInFavourites(@RequestParam Long tourId) {
+        log.info("Проерка тура в избранном");
+        return ResponseEntity.ok(userService.checkInFavourite(tourId));
+    }
 }
