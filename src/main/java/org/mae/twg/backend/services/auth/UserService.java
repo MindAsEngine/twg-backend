@@ -12,6 +12,8 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.repositories.business.UserRepo;
 import org.mae.twg.backend.services.ImageService;
 import org.mae.twg.backend.services.ModelType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -81,7 +83,9 @@ public class UserService implements UserDetailsService{
     }
 
     @Transactional
-    public UserDTO uploadImages(Long id, MultipartFile image) throws IOException {
+    public UserDTO uploadImages(MultipartFile image) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = ((User) authentication.getPrincipal()).getId();
         String url = imageService.saveImage(ModelType.USER, image);
         User user = findById(id);
         user.setMediaPath(url);
@@ -89,7 +93,9 @@ public class UserService implements UserDetailsService{
         return new UserDTO(user);
     }
 
-    public UserDTO deleteImages(Long id, String image) {
+    public UserDTO deleteImages(String image) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = ((User) authentication.getPrincipal()).getId();
         imageService.deleteImages(Collections.singletonList(image));
         User user = findById(id);
         user.setMediaPath(null);

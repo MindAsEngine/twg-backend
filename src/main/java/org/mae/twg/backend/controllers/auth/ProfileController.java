@@ -50,11 +50,11 @@ public class ProfileController {
     public ResponseEntity<?> uploadImages(MultipartFile image) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long id = ((User) authentication.getPrincipal()).getId();
-        log.info("Добавление фотографии к профилю");
+        log.info("Добавление фотографии к профилю c id = " + id);
         if (image == null) {
             throw new ValidationException("Пустой список фотографий");
         }
-        return ResponseEntity.ok(userService.uploadImages(id, image));
+        return ResponseEntity.ok(userService.uploadImages(image));
     }
 
     @DeleteMapping("/image/delete")
@@ -69,6 +69,6 @@ public class ProfileController {
         if (image == null) {
             throw new ValidationException("Empty images list");
         }
-        return ResponseEntity.ok(userService.deleteImages(id, image));
+        return ResponseEntity.ok(userService.deleteImages(image));
     }
 }
