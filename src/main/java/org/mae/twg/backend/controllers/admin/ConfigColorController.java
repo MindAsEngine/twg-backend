@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.services.admin.ConfigColorService;
 import org.mae.twg.backend.services.admin.ConfigDisplayEnum;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin/configs/colors")
 @RequiredArgsConstructor
+@PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
 @Tag(name = "Динамический конфиг цветов блоков сайта")
 @Log4j2
 public class ConfigColorController {
