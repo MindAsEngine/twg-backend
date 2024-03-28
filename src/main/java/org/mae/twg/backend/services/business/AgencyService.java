@@ -10,15 +10,20 @@ import org.mae.twg.backend.models.business.AgencyLocal;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.repositories.business.AgencyLocalRepo;
 import org.mae.twg.backend.repositories.business.AgencyRepo;
+import org.mae.twg.backend.services.TravelService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @Service
 @RequiredArgsConstructor
-public class AgencyService {
+public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO> {
     private final AgencyRepo agencyRepo;
     private final AgencyLocalRepo localRepo;
 
@@ -31,17 +36,27 @@ public class AgencyService {
         return agency;
     }
 
-    public List<AgencyDTO> getAll(Localization localization) {
-        List<Agency> agencies = agencyRepo.findAll();
-        List<AgencyDTO> agencyDTOs = agencies.stream()
+    private List<AgencyDTO> modelsToDTOs(Stream<Agency> agencies, Localization localization) {
+        List<AgencyDTO> agencyDTOs = agencies
                 .filter(agency -> !agency.getIsDeleted())
-                .filter(agency -> agency.getLocals().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(agency -> new AgencyDTO(agency, localization))
+                 .filter(agency -> agency.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
+                .map(tour -> new AgencyDTO(tour, localization))
                 .toList();
         if (agencyDTOs.isEmpty()) {
-            throw new ObjectNotFoundException("Agencies with " + localization + " not found");
+            throw new ObjectNotFoundException("Agencies with " + localization + " with localization not found");
         }
         return agencyDTOs;
+    }
+
+    public List<AgencyDTO> getAll(Localization localization) {
+        return modelsToDTOs(agencyRepo.findAll().stream(), localization);
+    }
+
+    @Override
+    public List<AgencyDTO> getAllPaged(Localization localization, int page, int size) {
+        Pageable agencyPage = PageRequest.of(page, size);
+        Page<Agency> agencies = agencyRepo.findAll(agencyPage);
+        return modelsToDTOs(agencies.stream(), localization);
     }
 
     public AgencyDTO getById(Long id, Localization local) {

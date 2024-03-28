@@ -5,9 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.mae.twg.backend.models.Model;
-import org.mae.twg.backend.models.travel.media.HotelMedia;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class News implements Model {
     private String slug;
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private Boolean isDeleted = Boolean.FALSE;
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private LocalDate createdAt;
     @OneToMany(mappedBy = "news",
             cascade = CascadeType.ALL)
     private List<NewsLocal> locals = new ArrayList<>();

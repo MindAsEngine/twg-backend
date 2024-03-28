@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class PropertyService implements TravelService<PropertyLocalDTO, PropertyLocalDTO> {
+public class PropertyService implements TravelService<PropertyDTO, PropertyLocalDTO> {
     private final PropertyRepo propertyRepo;
     private final PropertyLocalRepo localRepo;
 

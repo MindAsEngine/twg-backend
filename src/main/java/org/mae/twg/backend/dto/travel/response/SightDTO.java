@@ -16,10 +16,13 @@ import java.util.List;
 public class SightDTO implements ModelDTO {
     private Long id;
     private String slug;
+    private SightTypeDTO type;
     private String name;
     private String introduction;
     private String description;
     private String address;
+    private Double grade;
+    private Long commentAmount;
     private Double latitude;
     private Double longitude;
     private Localization localization;
@@ -29,6 +32,7 @@ public class SightDTO implements ModelDTO {
     public SightDTO(Sight sight, Localization localization) {
         this.id = sight.getId();
         this.slug = sight.getSlug();
+        this.type = SightTypeDTO.getDTO(sight.getSightType(), localization);
         SightLocal cur_local =
                 sight.getLocals().stream()
                         .filter(local -> local.getLocalization() == localization)

@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.business;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.business.Agency;
 import org.mae.twg.backend.models.business.AgencyLocal;
@@ -11,7 +12,7 @@ import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
-public class AgencyDTO implements Serializable {
+public class AgencyDTO implements Serializable, ModelDTO {
     private Long id;
     private String name;
     private String description;

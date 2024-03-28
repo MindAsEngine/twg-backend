@@ -37,6 +37,9 @@ public class HotelComment {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Column(name = "is_deleted", columnDefinition = "boolean default false")
+    private Boolean isDeleted = Boolean.FALSE;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;

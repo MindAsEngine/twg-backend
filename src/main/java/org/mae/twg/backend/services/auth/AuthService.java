@@ -12,11 +12,18 @@ import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.auth.UserRole;
 import org.mae.twg.backend.repositories.auth.RefreshTokenRepo;
 import org.mae.twg.backend.utils.auth.JwtUtils;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service("AuthService")
 @AllArgsConstructor
@@ -27,6 +34,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepo refreshTokenRepo;
 
+    @Transactional
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
 
         var user = User.builder()
@@ -38,15 +46,18 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .patronymic(request.getPatronymic() == null ? "No patronymic" : request.getPatronymic())
                 .userRole(UserRole.USER)
+                .lastLogin(LocalDateTime.now())
                 .build();
 
         userService.create(user);
+        userService.refreshLastLogin(user);
 
         var jwt = jwtUtils.generateToken(user);
         var refreshToken = jwtUtils.createRefreshToken(user);
         return new JwtAuthenticationResponse(jwt, refreshToken.getToken());
     }
 
+    @Transactional
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
@@ -56,11 +67,14 @@ public class AuthService {
         var user = userService
                 .loadUserByUsername(request.getUsername());
 
+        userService.refreshLastLogin(user);
+
         var jwt = jwtUtils.generateToken(user);
         var refreshToken = jwtUtils.createRefreshToken(user);
         return new JwtAuthenticationResponse(jwt, refreshToken.getToken());
     }
 
+    @Transactional
     public JwtAuthenticationResponse refreshToken(TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();
 
@@ -69,11 +83,33 @@ public class AuthService {
                         "Refresh token '" + requestRefreshToken +"' not found"));
         jwtUtils.verifyExpiration(token);
         String accessToken = jwtUtils.generateToken(token.getUser());
+        userService.refreshLastLogin(token.getUser());
         return new JwtAuthenticationResponse(accessToken, token.getToken());
     }
 
+    @Transactional
+    public void logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return;
+        }
+
+        User user = (User) authentication.getPrincipal();
+
+        Optional<RefreshToken> refreshToken = refreshTokenRepo.findByUser(user);
+        if (refreshToken.isEmpty()) {
+            return;
+        }
+        refreshTokenRepo.delete(refreshToken.get());
+    }
+
     public boolean hasAccess(Role role) {
-        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            throw new AuthenticationCredentialsNotFoundException("User isn't authorized");
+        }
+
+        return authentication.getAuthorities()
                         .stream().map(grantedAuthority -> (Role) grantedAuthority)
                         .anyMatch(r -> r.includes(role));
     }

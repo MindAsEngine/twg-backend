@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService{
@@ -40,6 +42,11 @@ public class UserService implements UserDetailsService{
         }
 
         return save(user);
+    }
+
+    public void refreshLastLogin(User user) {
+        user.setLastLogin(LocalDateTime.now());
+        userRepo.saveAndFlush(user);
     }
 
     public User getById(Long id) throws UserNotFound {

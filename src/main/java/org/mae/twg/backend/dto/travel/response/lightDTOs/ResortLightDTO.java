@@ -1,4 +1,4 @@
-package org.mae.twg.backend.dto.travel.response;
+package org.mae.twg.backend.dto.travel.response.lightDTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

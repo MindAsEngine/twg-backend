@@ -1,20 +1,28 @@
 package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.travel.TourDTO;
+import lombok.SneakyThrows;
+import org.mae.twg.backend.dto.GradeData;
+import org.mae.twg.backend.dto.travel.request.CommentDTO;
+import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourPeriodDTO;
+import org.mae.twg.backend.dto.travel.response.comments.TourCommentDTO;
+import org.mae.twg.backend.exceptions.AccessDeniedException;
 import org.mae.twg.backend.dto.travel.response.HotelDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
+import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.*;
+import org.mae.twg.backend.models.travel.comments.TourComment;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 import org.mae.twg.backend.repositories.travel.*;
+import org.mae.twg.backend.repositories.travel.comments.TourCommentsRepo;
 import org.mae.twg.backend.repositories.travel.images.TourMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
 import org.mae.twg.backend.services.ImageService;
@@ -24,19 +32,25 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
-public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
+public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     private final TourRepo tourRepo;
     private final TourLocalRepo localRepo;
+    private final TourCommentsRepo commentsRepo;
     private final TourMediaRepo tourMediaRepo;
     private final TourPeriodRepo tourPeriodRepo;
     private final SlugUtils slugUtils;
@@ -64,11 +78,35 @@ public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
         return tour;
     }
 
+    private TourDTO addGrade(TourDTO tourDTO) {
+        GradeData gradeData = commentsRepo.averageGradeByTourId(tourDTO.getId());
+        if (gradeData == null) {
+            tourDTO.setCommentAmount(0L);
+            return tourDTO;
+        }
+        tourDTO.setGrade(gradeData.getGrade());
+        tourDTO.setCommentAmount(gradeData.getCount());
+        return tourDTO;
+    }
+
+    private TourDTO addGrade(TourDTO tourDTO, GradeData gradeData) {
+        if (gradeData == null) {
+            tourDTO.setCommentAmount(0L);
+            return tourDTO;
+        }
+        tourDTO.setGrade(gradeData.getGrade());
+        tourDTO.setCommentAmount(gradeData.getCount());
+        return tourDTO;
+    }
+
     private List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
+        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
+                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<TourDTO> tourDTOs = tours
                 .filter(tour -> !tour.getIsDeleted())
                 .filter(tour -> tour.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(tour -> new TourDTO(tour, localization))
+                .map(tourDTO -> addGrade(tourDTO, grades.getOrDefault(tourDTO.getId(), null)))
                 .toList();
         if (tourDTOs.isEmpty()) {
             throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
@@ -128,11 +166,11 @@ public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
     }
 
     public TourDTO getById(Long id, Localization localization) {
-        return new TourDTO(findById(id), localization);
+        return addGrade(new TourDTO(findById(id), localization));
     }
 
     public TourDTO getBySlug(String slug, Localization localization) {
-        return new TourDTO(findBySlug(slug), localization);
+        return addGrade(new TourDTO(findBySlug(slug), localization));
     }
 
     @Transactional
@@ -262,5 +300,78 @@ public class TourService implements TravelService<TourLocalDTO, TourLocalDTO> {
         tour.addPeriod(period);
         tourRepo.saveAndFlush(tour);
         return new TourDTO(tour, localization);
+    }
+
+    private List<TourCommentDTO> commentsToDTOs(Stream<TourComment> comments) {
+        List<TourCommentDTO> commentDTOs = comments
+                .filter(comment -> !comment.getIsDeleted())
+                .map(TourCommentDTO::new)
+                .toList();
+        if (commentDTOs.isEmpty()) {
+            throw new ObjectNotFoundException("Comments not found");
+        }
+        return commentDTOs;
+    }
+
+    private TourComment findCommentById(Long id) {
+        TourComment comment = commentsRepo.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Tour comment with id=" + id + " not found"));
+        if (comment.getIsDeleted()) {
+            throw new ObjectNotFoundException("Tour comment with id=" + id + " marked as deleted");
+        }
+        return comment;
+    }
+
+    public List<TourCommentDTO> getAllCommentsById(Long id) {
+        return commentsToDTOs(commentsRepo.findAllByTour_IdOrderByCreatedAtDesc(id).stream());
+    }
+
+    public List<TourCommentDTO> getPaginatedCommentsById(Long id, int page, int size) {
+        Pageable commentsPage = PageRequest.of(page, size);
+        return commentsToDTOs(commentsRepo.findAllByTour_IdOrderByCreatedAtDesc(id, commentsPage).stream());
+    }
+
+    @Transactional
+    public TourCommentDTO addComment(Long id, CommentDTO commentDTO) {
+        Tour hotel = findById(id);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        TourComment comment = new TourComment(user, commentDTO.getGrade(), commentDTO.getComment());
+        commentsRepo.saveAndFlush(comment);
+
+        hotel.addComment(comment);
+        tourRepo.saveAndFlush(hotel);
+
+        return new TourCommentDTO(comment);
+    }
+
+    @SneakyThrows
+    private void verifyAccess(TourComment comment) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!Objects.equals(user.getId(), comment.getUser().getId())) {
+            throw new AccessDeniedException("You are not the owner of this comment");
+        }
+    }
+
+    @Transactional
+    public void deleteByCommentId(Long commentId) {
+        TourComment comment = findCommentById(commentId);
+        verifyAccess(comment);
+
+        comment.setIsDeleted(true);
+        commentsRepo.save(comment);
+    }
+
+    @Transactional
+    @SneakyThrows
+    public TourCommentDTO updateByCommentId(Long commentId, CommentDTO commentDTO) {
+        TourComment comment = findCommentById(commentId);
+        verifyAccess(comment);
+
+        comment.setComment(commentDTO.getComment());
+        comment.setGrade(commentDTO.getGrade());
+
+        commentsRepo.saveAndFlush(comment);
+        return new TourCommentDTO(comment);
     }
 }

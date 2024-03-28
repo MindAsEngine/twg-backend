@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.services.admin.ConfigDisplayEnum;
 import org.mae.twg.backend.services.admin.ConfigVisualService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -24,14 +25,14 @@ public class ConfigVisualController {
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     @GetMapping("/get")
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> getAll() {
         return ResponseEntity.ok(configVisualService.getAll());
     }
     @Operation(summary = "Обновить конфиг визуала",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
+    )    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PutMapping("/put")
-    public ResponseEntity<?> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
+    public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
         return ResponseEntity.ok(configVisualService.put(config));
     }
 }

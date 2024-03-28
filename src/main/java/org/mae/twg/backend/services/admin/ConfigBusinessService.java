@@ -78,30 +78,23 @@ public class ConfigBusinessService {
             currencyService.putCurrency(key, value);
         }
         configRepo.add(key.name(), value);
-        return new ConfigDTO(key.name(), value);
+        return new ConfigDTO(key, value);
     }
 
     public ConfigDTO get(ConfigBusinessEnum key) {
         if (key == ConfigBusinessEnum.USD_TO_USD) {
-            return new ConfigDTO(key.name(), "1.0");
+            return new ConfigDTO(key, "1.0");
         }
         if (!configRepo.exists(key.name())) {
             throw new ObjectNotFoundException("Config " + key + " not found");
         }
-        return new ConfigDTO(key.name(), configRepo.find(key.name()));
+        return new ConfigDTO(key, configRepo.find(key.name()));
     }
 
     public List<ConfigDTO> getAll() {
         Map<String, String> configs = configRepo.findAll();
         return configs.entrySet().stream()
-                .map(entry -> new ConfigDTO(entry.getKey(), entry.getValue()))
-                .toList();
-    }
-
-    public List<ConfigDTO> getAllBlocks() {
-        Map<String, String> configs = configRepo.findAll();
-        return configs.entrySet().stream()
-                .map(entry -> new ConfigDTO(entry.getKey(), entry.getValue()))
+                .map(entry -> new ConfigDTO(ConfigBusinessEnum.valueOf(entry.getKey()), entry.getValue()))
                 .toList();
     }
 
