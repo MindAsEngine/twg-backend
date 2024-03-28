@@ -30,7 +30,9 @@ public abstract class BaseController<
 
     @Override
     @GetMapping
-    @Operation(summary = "Отдать все сущности")
+    @Operation(summary = "Отдать все сущности",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = false, example = "Bearer <token>")
+    )
     public ResponseEntity<List<ResponseDTO>> getAll(@PathVariable Localization local,
                                                     @RequestParam(required = false) Integer page,
                                                     @RequestParam(required = false) Integer size) {

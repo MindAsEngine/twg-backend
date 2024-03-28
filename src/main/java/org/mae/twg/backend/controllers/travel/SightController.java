@@ -50,7 +50,7 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
 
 
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
-    @PostMapping("/{id}/geo/update")
+    @PutMapping("/{id}/geo/update")
     public ResponseEntity<SightDTO> updateGeoData(@PathVariable Localization local,
                                            @PathVariable Long id,
                                            @RequestBody SightGeoDTO sightDTO) {
@@ -59,7 +59,7 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
     }
 
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
-    @PostMapping("/{id}/logic/update")
+    @PutMapping("/{id}/logic/update")
     public ResponseEntity<SightDTO> updateLogicData(@PathVariable Localization local,
                                            @PathVariable Long id,
                                            @RequestBody SightLogicDTO sightDTO) {

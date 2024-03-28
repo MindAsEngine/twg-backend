@@ -6,6 +6,7 @@ import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.comments.TourComment;
 import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
+import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 
 import java.util.*;
@@ -123,7 +124,14 @@ public class Tour implements Model {
         locals.remove(local);
         local.setTour(null);
     }
-
+    public void addHeader(TourMedia media) {
+        header = media;
+        media.setTour(this);
+    }
+    public void removeHeader(TourMedia media) {
+        header = null;
+        media.setTour(null);
+    }
     public void addMedia(TourMedia media) {
         medias.add(media);
         media.setTour(this);

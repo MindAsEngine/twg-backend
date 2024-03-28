@@ -28,6 +28,7 @@ public class HotelDTO implements ModelDTO {
     private Double grade;
     private Long commentAmount;
     private Localization localization;
+    private String header;
     private List<String> medias;
     private List<PropertyDTO> properties;
     private List<SightLightDTO> sights;
@@ -47,6 +48,7 @@ public class HotelDTO implements ModelDTO {
         this.introduction = cur_local.getIntroduction();
         this.description = cur_local.getDescription();
         this.address = cur_local.getAddress();
+        this.header = (hotel.getHeader() != null ? hotel.getHeader().getMediaPath() : null);
         this.medias = hotel.getMedias().stream().map(HotelMedia::getMediaPath).toList();
         this.properties = hotel.getProperties().stream()
                 .map(property -> PropertyDTO.getDTO(property, localization))
