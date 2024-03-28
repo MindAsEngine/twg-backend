@@ -26,6 +26,8 @@ public class UserDTO {
     private String lastName;
     @Schema(description = "Отчество пользователя", example = "Valerich")
     private String patronymic;
+    @Schema(description = "Фотография пользователя", example = "/user/test.png")
+    private String media;
 
     public UserDTO(User user) {
         this.username = user.getUsername();
@@ -35,5 +37,6 @@ public class UserDTO {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
+        this.media = user.getMediaPath();
     }
 }
