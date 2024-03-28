@@ -3,12 +3,14 @@ package org.mae.twg.backend.models.auth;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.mae.twg.backend.models.travel.Tour;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -63,6 +65,12 @@ public class User implements UserDetails {
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "favourite_tours",
+            joinColumns = @JoinColumn(referencedColumnName = "user_id"),
+            inverseJoinColumns = @JoinColumn(referencedColumnName = "tour_id"))
+    private Set<Tour> favourites = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
