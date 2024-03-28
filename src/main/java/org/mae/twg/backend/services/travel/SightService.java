@@ -9,7 +9,6 @@ import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.SightLogicDTO;
 import org.mae.twg.backend.dto.travel.response.SightDTO;
 import org.mae.twg.backend.dto.travel.response.comments.SightCommentDTO;
-import org.mae.twg.backend.exceptions.AccessDeniedException;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.auth.User;
@@ -38,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -270,11 +268,11 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         return commentDTOs;
     }
 
-    private SightComment findCommentById(Long id) {
-        SightComment comment = commentsRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Sight comment with id=" + id + " not found"));
+    private SightComment findCommentByUserIdAndSightId(Long authorId, Long hotelId) {
+        SightComment comment = commentsRepo.findByUser_IdAndSight_Id(authorId, hotelId)
+                .orElseThrow(() -> new ObjectNotFoundException("Hotel comment with author id=" + authorId + " not found"));
         if (comment.getIsDeleted()) {
-            throw new ObjectNotFoundException("Sight comment with id=" + id + " marked as deleted");
+            throw new ObjectNotFoundException("Hotel comment with author id=" + authorId + " marked as deleted");
         }
         return comment;
     }
@@ -290,40 +288,35 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
 
     @Transactional
     public SightCommentDTO addComment(Long id, CommentDTO commentDTO) {
-        Sight hotel = findById(id);
+        Sight sight = findById(id);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (commentsRepo.existsByUser_IdAndSight_Id(user.getId(), id)) {
+            throw new ObjectAlreadyExistsException("Comment for this sight already exists");
+        }
 
         SightComment comment = new SightComment(user, commentDTO.getGrade(), commentDTO.getComment());
         commentsRepo.saveAndFlush(comment);
 
-        hotel.addComment(comment);
-        sightRepo.saveAndFlush(hotel);
+        sight.addComment(comment);
+        sightRepo.saveAndFlush(sight);
 
         return new SightCommentDTO(comment);
     }
 
-    @SneakyThrows
-    private void verifyAccess(SightComment comment) {
+    @Transactional
+    public void deleteComment(Long id) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!Objects.equals(user.getId(), comment.getUser().getId())) {
-            throw new AccessDeniedException("You are not the owner of this comment");
-        }
-    }
+        SightComment comment = findCommentByUserIdAndSightId(user.getId(), id);
 
-    @Transactional
-    public void deleteByCommentId(Long commentId) {
-        SightComment comment = findCommentById(commentId);
-        verifyAccess(comment);
-
-        comment.setIsDeleted(true);
-        commentsRepo.save(comment);
+        commentsRepo.delete(comment);
     }
 
     @Transactional
     @SneakyThrows
-    public SightCommentDTO updateByCommentId(Long commentId, CommentDTO commentDTO) {
-        SightComment comment = findCommentById(commentId);
-        verifyAccess(comment);
+    public SightCommentDTO updateComment(Long id, CommentDTO commentDTO) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        SightComment comment = findCommentByUserIdAndSightId(user.getId(), id);
 
         comment.setComment(commentDTO.getComment());
         comment.setGrade(commentDTO.getGrade());
