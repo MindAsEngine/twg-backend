@@ -1,4 +1,4 @@
-package org.mae.twg.backend.dto.auth;
+package org.mae.twg.backend.dto.profile;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -2,16 +2,18 @@ package org.mae.twg.backend.services.auth;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import org.mae.twg.backend.dto.auth.UserDTO;
-import org.mae.twg.backend.dto.travel.response.CountryDTO;
+import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
+import org.mae.twg.backend.dto.profile.UserDTO;
+import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.exceptions.UserNotFound;
 import org.mae.twg.backend.models.auth.User;
-import org.mae.twg.backend.models.travel.Country;
+import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.repositories.business.UserRepo;
 import org.mae.twg.backend.services.ImageService;
 import org.mae.twg.backend.services.ModelType;
+import org.mae.twg.backend.services.travel.TourService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,6 +32,7 @@ import java.util.List;
 public class UserService implements UserDetailsService{
     private final UserRepo userRepo;
     private final ImageService imageService;
+    private final TourService tourService;
 
     /**
      * Сохранение пользователя
@@ -60,9 +63,8 @@ public class UserService implements UserDetailsService{
     }
 
     public User findById(Long id) {
-        User user = userRepo.findById(id)
+        return userRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("User with id=" + id + " not found"));
-        return user;
     }
 
     public void refreshLastLogin(User user) {
@@ -102,5 +104,40 @@ public class UserService implements UserDetailsService{
         userRepo.save(user);
         return new UserDTO(findById(id));
     }
+
+
+    public List<TourDTO> getFavouriteTours(Localization localization) {
+        Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        User user = userRepo.getReferenceById(id);
+        return tourService.modelsToDTOs(user.getFavourites().stream(), localization);
+    }
+
+    @Transactional
+    public void addTourToFavourite(FavouriteTourDTO tourDTO) {
+        Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        User user = userRepo.getReferenceById(id);
+
+        Tour tour = tourService.findById(tourDTO.getTourId());
+        user.getFavourites().add(tour);
+    }
+
+    @Transactional
+    public void deleteTourFromFavourite(FavouriteTourDTO tourDTO) {
+        Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        User user = userRepo.getReferenceById(id);
+
+        Tour tour = tourService.findById(tourDTO.getTourId());
+        user.getFavourites().remove(tour);
+    }
+
+    @Transactional
+    public Boolean checkInFavourite(Long tourId) {
+        Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        User user = userRepo.getReferenceById(id);
+
+        Tour tour = tourService.findById(tourId);
+        return user.getFavourites().contains(tour);
+    }
+
 
 }

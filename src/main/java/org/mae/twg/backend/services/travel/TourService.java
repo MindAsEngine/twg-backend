@@ -99,7 +99,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         return tourDTO;
     }
 
-    private List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
+    public List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
         Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
                 .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<TourDTO> tourDTOs = tours
