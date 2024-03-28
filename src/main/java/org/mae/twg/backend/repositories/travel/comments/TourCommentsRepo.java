@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TourCommentsRepo extends JpaRepository<TourComment, Long> {
@@ -25,4 +26,6 @@ public interface TourCommentsRepo extends JpaRepository<TourComment, Long> {
 
     List<TourComment> findAllByTour_IdOrderByCreatedAtDesc(Long id);
     List<TourComment> findAllByTour_IdOrderByCreatedAtDesc(Long id, Pageable pageable);
+    Optional<TourComment> findByUser_IdAndTour_Id(Long authorId, Long tourId);
+    Boolean existsByUser_IdAndTour_Id(Long authorId, Long sightId);
 }

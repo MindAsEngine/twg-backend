@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SightCommentsRepo extends JpaRepository<SightComment, Long> {
@@ -25,4 +26,6 @@ public interface SightCommentsRepo extends JpaRepository<SightComment, Long> {
 
     List<SightComment> findAllBySight_IdOrderByCreatedAtDesc(Long id);
     List<SightComment> findAllBySight_IdOrderByCreatedAtDesc(Long id, Pageable pageable);
+    Optional<SightComment> findByUser_IdAndSight_Id(Long authorId, Long sightId);
+    Boolean existsByUser_IdAndSight_Id(Long authorId, Long sightId);
 }

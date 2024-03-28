@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tour_comments")
+@Table(name = "tour_comments",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "tour_id"}))
 public class TourComment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
