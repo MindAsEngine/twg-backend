@@ -68,10 +68,10 @@ public class ProfileController {
     public ResponseEntity<String> addToFavourites(@RequestBody FavouriteTourDTO tourDTO) {
         log.info("Добавление тура в избранное");
         userService.addTourToFavourite(tourDTO);
-        return ResponseEntity.ok("Tour was added to favourites");
+        return ResponseEntity.ok("Tour with id = " + tourDTO.getTourId() + " was added to favourites");
     }
 
-    @PostMapping("/{local}/favourites/check")
+    @GetMapping("/{local}/favourites/check")
     @Operation(
             summary = "Избранные туры",
             parameters = @Parameter(in = ParameterIn.HEADER,
@@ -97,6 +97,6 @@ public class ProfileController {
     public ResponseEntity<String> deleteFromFavourites(@RequestBody FavouriteTourDTO tourDTO) {
         log.info("Удаление тура из избранного");
         userService.deleteTourFromFavourite(tourDTO);
-        return ResponseEntity.ok("Tour was deleted from favourites");
+        return ResponseEntity.ok("Tour with id = " + tourDTO.getTourId() + " was deleted from favourites");
     }
 }
