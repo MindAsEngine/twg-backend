@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HotelCommentsRepo extends JpaRepository<HotelComment, Long> {
@@ -25,4 +26,6 @@ public interface HotelCommentsRepo extends JpaRepository<HotelComment, Long> {
 
     List<HotelComment> findAllByHotel_IdOrderByCreatedAtDesc(Long id);
     List<HotelComment> findAllByHotel_IdOrderByCreatedAtDesc(Long id, Pageable pageable);
+    Optional<HotelComment> findByUser_IdAndHotel_Id(Long authorId, Long hotelId);
+    Boolean existsByUser_IdAndHotel_Id(Long authorId, Long hotelId);
 }
