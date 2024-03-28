@@ -42,13 +42,14 @@ public class ProfileController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok((new UserDTO((User) authentication.getPrincipal())));
     }
-    @PostMapping("/{id}/image/upload")
+    @PostMapping("/image/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> uploadImages(@PathVariable Long id,
-                                          MultipartFile image) throws IOException {
+    public ResponseEntity<?> uploadImages(MultipartFile image) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = ((User) authentication.getPrincipal()).getId();
         log.info("Добавление фотографии к профилю");
         if (image == null) {
             throw new ValidationException("Пустой список фотографий");
@@ -56,13 +57,14 @@ public class ProfileController {
         return ResponseEntity.ok(userService.uploadImages(id, image));
     }
 
-    @DeleteMapping("/{id}/image/delete")
+    @DeleteMapping("/image/delete")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     @Operation(summary = "Удалить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> deleteImages(@PathVariable Long id,
-                                          @RequestBody String image) {
+    public ResponseEntity<?> deleteImages(@RequestBody String image) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = ((User) authentication.getPrincipal()).getId();
         log.info("Delete images from user profile with id = " + id);
         if (image == null) {
             throw new ValidationException("Empty images list");
