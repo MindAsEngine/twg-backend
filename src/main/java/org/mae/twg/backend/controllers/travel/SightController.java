@@ -139,7 +139,7 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
 
     }
 
-    @DeleteMapping("/{id}/comments/{commentId}/delete")
+    @DeleteMapping("/{id}/comments/my/delete")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Удалить отзыв",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
@@ -150,7 +150,7 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
         return ResponseEntity.ok("Comment was deleted");
     }
 
-    @PutMapping("/{id}/comments/{commentId}/update")
+    @PutMapping("/{id}/comments/my/update")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Изменить отзыв",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")

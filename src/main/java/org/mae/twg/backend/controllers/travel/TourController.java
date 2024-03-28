@@ -54,8 +54,8 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<TourDTO> uploadImages(@PathVariable Localization local,
-                                          @PathVariable Long id,
-                                          List<MultipartFile> images) throws IOException {
+                                                @PathVariable Long id,
+                                                List<MultipartFile> images) throws IOException {
         log.info("Добавление фотографий к отелю");
         if (images == null) {
             throw new ValidationException("Пустой список фотографий");
@@ -69,8 +69,8 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<TourDTO> deleteImages(@PathVariable Localization local,
-                                          @PathVariable Long id,
-                                          @RequestBody List<String> images) {
+                                                @PathVariable Long id,
+                                                @RequestBody List<String> images) {
         log.info("Delete images from hotel with id = " + id);
         if (images == null) {
             throw new ValidationException("Empty images list");
@@ -81,8 +81,8 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
     @GetMapping("/get")
     @Operation(summary = "Отдать тур по id или slug")
     public ResponseEntity<TourDTO> get(@PathVariable Localization local,
-                                 @RequestParam(required = false) Long id,
-                                 @RequestParam(required = false) String slug) {
+                                       @RequestParam(required = false) Long id,
+                                       @RequestParam(required = false) String slug) {
         if (id == null && slug == null) {
             log.error("One of id or slug is required");
             throw new ValidationException("One of id or slug is required");
@@ -101,8 +101,8 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<TourDTO> updateLogicData(@PathVariable Long id,
-                                             @PathVariable Localization local,
-                                             @Valid @RequestBody TourLogicDTO tourDTO) {
+                                                   @PathVariable Localization local,
+                                                   @Valid @RequestBody TourLogicDTO tourDTO) {
         log.info("Обновить логическую информацию тура с id = " + id);
         return ResponseEntity.ok(getService().updateLogicData(id, tourDTO, local));
     }
@@ -113,8 +113,8 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<TourDTO> updateGeoData(@PathVariable Long id,
-                                           @PathVariable Localization local,
-                                           @Valid @RequestBody TourGeoDTO tourDTO) {
+                                                 @PathVariable Localization local,
+                                                 @Valid @RequestBody TourGeoDTO tourDTO) {
         log.info("Обновить геоданные тура с id = " + id);
         return ResponseEntity.ok(getService().updateGeoData(id, tourDTO, local));
     }
@@ -140,31 +140,31 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<TourCommentDTO> createComment(@PathVariable Long id,
-                                                         @RequestBody CommentDTO commentDTO) {
+                                                        @RequestBody CommentDTO commentDTO) {
         log.info("Добавление отзыва к туру с id = " + id);
         return new ResponseEntity<>(getService().addComment(id, commentDTO), HttpStatus.CREATED);
 
     }
 
-    @DeleteMapping("/{id}/comments/{commentId}/delete")
+    @DeleteMapping("/{id}/comments/my/delete")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Удалить отзыв",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
-        log.info("Удаление отзыва с id = " + commentId);
-        getService().deleteByCommentId(commentId);
-        return ResponseEntity.ok("Comment with id = " + commentId + " marked as deleted");
+    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
+        log.info("Удаление отзыва");
+        getService().deleteComment(id);
+        return ResponseEntity.ok("Comment was deleted");
     }
 
-    @PutMapping("/{id}/comments/{commentId}/update")
+    @PutMapping("/{id}/comments/my/update")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Изменить отзыв",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<TourCommentDTO> updateComment(@PathVariable Long commentId,
-                                                         @RequestBody CommentDTO commentDTO) {
-        log.info("Изменение отзыва с id = " + commentId);
-        return ResponseEntity.ok(getService().updateByCommentId(commentId, commentDTO));
+    public ResponseEntity<TourCommentDTO> updateComment(@PathVariable Long id,
+                                                        @RequestBody CommentDTO commentDTO) {
+        log.info("Изменение отзыва");
+        return ResponseEntity.ok(getService().updateComment(id, commentDTO));
     }
 }

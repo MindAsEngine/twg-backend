@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
-import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourPeriodDTO;
+import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.dto.travel.response.comments.TourCommentDTO;
-import org.mae.twg.backend.exceptions.AccessDeniedException;
-import org.mae.twg.backend.dto.travel.response.HotelDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.auth.User;
@@ -19,9 +17,9 @@ import org.mae.twg.backend.models.travel.*;
 import org.mae.twg.backend.models.travel.comments.TourComment;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
-import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.models.travel.media.TourMedia;
-import org.mae.twg.backend.repositories.travel.*;
+import org.mae.twg.backend.repositories.travel.TourPeriodRepo;
+import org.mae.twg.backend.repositories.travel.TourRepo;
 import org.mae.twg.backend.repositories.travel.comments.TourCommentsRepo;
 import org.mae.twg.backend.repositories.travel.images.TourMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
@@ -40,7 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -313,11 +310,11 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         return commentDTOs;
     }
 
-    private TourComment findCommentById(Long id) {
-        TourComment comment = commentsRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Tour comment with id=" + id + " not found"));
+    private TourComment findCommentByUserIdAndTourId(Long authorId, Long hotelId) {
+        TourComment comment = commentsRepo.findByUser_IdAndTour_Id(authorId, hotelId)
+                .orElseThrow(() -> new ObjectNotFoundException("Tour comment with author id=" + authorId + " not found"));
         if (comment.getIsDeleted()) {
-            throw new ObjectNotFoundException("Tour comment with id=" + id + " marked as deleted");
+            throw new ObjectNotFoundException("Tour comment with author id=" + authorId + " marked as deleted");
         }
         return comment;
     }
@@ -333,40 +330,35 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
 
     @Transactional
     public TourCommentDTO addComment(Long id, CommentDTO commentDTO) {
-        Tour hotel = findById(id);
+        Tour tour = findById(id);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (commentsRepo.existsByUser_IdAndTour_Id(user.getId(), id)) {
+            throw new ObjectAlreadyExistsException("Comment for this tour already exists");
+        }
 
         TourComment comment = new TourComment(user, commentDTO.getGrade(), commentDTO.getComment());
         commentsRepo.saveAndFlush(comment);
 
-        hotel.addComment(comment);
-        tourRepo.saveAndFlush(hotel);
+        tour.addComment(comment);
+        tourRepo.saveAndFlush(tour);
 
         return new TourCommentDTO(comment);
     }
 
-    @SneakyThrows
-    private void verifyAccess(TourComment comment) {
+    @Transactional
+    public void deleteComment(Long id) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!Objects.equals(user.getId(), comment.getUser().getId())) {
-            throw new AccessDeniedException("You are not the owner of this comment");
-        }
-    }
+        TourComment comment = findCommentByUserIdAndTourId(user.getId(), id);
 
-    @Transactional
-    public void deleteByCommentId(Long commentId) {
-        TourComment comment = findCommentById(commentId);
-        verifyAccess(comment);
-
-        comment.setIsDeleted(true);
-        commentsRepo.save(comment);
+        commentsRepo.delete(comment);
     }
 
     @Transactional
     @SneakyThrows
-    public TourCommentDTO updateByCommentId(Long commentId, CommentDTO commentDTO) {
-        TourComment comment = findCommentById(commentId);
-        verifyAccess(comment);
+    public TourCommentDTO updateComment(Long id, CommentDTO commentDTO) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        TourComment comment = findCommentByUserIdAndTourId(user.getId(), id);
 
         comment.setComment(commentDTO.getComment());
         comment.setGrade(commentDTO.getGrade());
