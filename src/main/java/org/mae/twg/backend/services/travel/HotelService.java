@@ -289,15 +289,6 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         return commentDTOs;
     }
 
-    private HotelComment findCommentById(Long id) {
-        HotelComment comment = commentsRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel comment with id=" + id + " not found"));
-        if (comment.getIsDeleted()) {
-            throw new ObjectNotFoundException("Hotel comment with id=" + id + " marked as deleted");
-        }
-        return comment;
-    }
-
     private HotelComment findCommentByUserIdAndHotelId(Long authorId, Long hotelId) {
         HotelComment comment = commentsRepo.findByUser_IdAndHotel_Id(authorId, hotelId)
                 .orElseThrow(() -> new ObjectNotFoundException("Hotel comment with author id=" + authorId + " not found"));
