@@ -34,7 +34,6 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepo refreshTokenRepo;
 
-    @Transactional
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
 
         var user = User.builder()
@@ -57,7 +56,6 @@ public class AuthService {
         return new JwtAuthenticationResponse(jwt, refreshToken.getToken());
     }
 
-    @Transactional
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
