@@ -1,6 +1,8 @@
 package org.mae.twg.backend.controllers.config;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,8 +26,9 @@ public class ConfigVisualController {
     public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> getAll() {
         return ResponseEntity.ok(configVisualService.getAll());
     }
-    @Operation(summary = "Обновить конфиг визуала")
-    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
+    @Operation(summary = "Обновить конфиг визуала",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PutMapping("/put")
     public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
         return ResponseEntity.ok(configVisualService.put(config));

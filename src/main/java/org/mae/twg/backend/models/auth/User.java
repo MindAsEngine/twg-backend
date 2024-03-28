@@ -66,6 +66,9 @@ public class User implements UserDetails {
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
+    @Column(name = "media_path")
+    private String mediaPath;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "favourite_tours",
             joinColumns = @JoinColumn(referencedColumnName = "user_id"),

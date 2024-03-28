@@ -29,7 +29,7 @@ public class CountryController extends BaseController<CountryService, CountryDTO
         super(service);
     }
 
-    @PostMapping("/{id}/geo/update")
+    @PutMapping("/{id}/geo/update")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Установка новых геоднанных",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
