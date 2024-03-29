@@ -126,12 +126,13 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     public List<TourDTO> findByTitle(String title,
                                      Localization localization,
                                      Integer page, Integer size) {
-        return modelsToDTOs(tourRepo.findByTitle(localization.toString(), title,
+        return modelsToDTOs(tourRepo.findByTitle(localization.name(), title,
                 getPageable(page, size)).stream(), localization);
     }
 
     public List<TourDTO> findByFilters(List<Long> countryIds,
                                        List<Long> tagIds,
+                                       List<Long> hospitalId,
                                        List<TourType> types,
                                        Integer minDuration,
                                        Integer maxDuration,
@@ -142,7 +143,8 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                                        Localization localization,
                                        Integer page, Integer size) {
         return modelsToDTOs(tourRepo.findFilteredFours(
-                countryIds, tagIds, types,
+                countryIds, tagIds, hospitalId,
+                types.stream().map(TourType::name).toList(),
                 minDuration, maxDuration,
                 minCost, maxCost,
                 stars, resortIds,
