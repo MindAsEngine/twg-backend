@@ -17,6 +17,8 @@ import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.*;
 import org.mae.twg.backend.models.travel.comments.TourComment;
 import org.mae.twg.backend.models.travel.enums.Localization;
+import org.mae.twg.backend.models.travel.enums.Stars;
+import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 import org.mae.twg.backend.repositories.travel.TourPeriodRepo;
@@ -111,6 +113,40 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
             throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
         }
         return tourDTOs;
+    }
+
+
+    public Pageable getPageable(Integer page, Integer size) {
+        if (page != null && size != null) {
+            return PageRequest.of(page, size);
+        }
+        return null;
+    }
+
+    public List<TourDTO> findByTitle(String title,
+                                     Localization localization,
+                                     Integer page, Integer size) {
+        return modelsToDTOs(tourRepo.findByTitle(localization.toString(), title,
+                getPageable(page, size)).stream(), localization);
+    }
+
+    public List<TourDTO> findByFilters(List<Long> countryIds,
+                                       List<Long> tagIds,
+                                       List<TourType> types,
+                                       Integer minDuration,
+                                       Integer maxDuration,
+                                       Long minCost,
+                                       Long maxCost,
+                                       List<Stars> stars,
+                                       List<Long> resortIds,
+                                       Localization localization,
+                                       Integer page, Integer size) {
+        return modelsToDTOs(tourRepo.findFilteredFours(
+                countryIds, tagIds, types,
+                minDuration, maxDuration,
+                minCost, maxCost,
+                stars, resortIds,
+                getPageable(page, size)).stream(), localization);
     }
 
     @Transactional
@@ -294,16 +330,13 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                                        Double maxLatitude,
                                        Localization localization,
                                        Integer page, Integer size) {
-        Pageable pageable = null;
-        if (page != null && size != null) {
-            pageable = PageRequest.of(page, size);
-        }
+
         return modelsToDTOs(
                 tourRepo.findToursByGeoData(
                         minLongitude,
                         maxLongitude,
                         minLatitude,
-                        maxLatitude, pageable).stream(), localization);
+                        maxLatitude, getPageable(page, size)).stream(), localization);
     }
 
     @Transactional
