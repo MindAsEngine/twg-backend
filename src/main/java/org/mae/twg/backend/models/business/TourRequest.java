@@ -8,6 +8,7 @@ import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.Tour;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 
@@ -23,14 +24,12 @@ public class TourRequest {
     private Long id;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
@@ -48,4 +47,15 @@ public class TourRequest {
 
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
+
+    public TourRequest(Tour tour,
+                       Integer adults,
+                       Integer children,
+                       String transferNotes) {
+        this.user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        this.tour = tour;
+        this.adults = adults;
+        this.children = children;
+        this.transferNotes = transferNotes;
+    }
 }
