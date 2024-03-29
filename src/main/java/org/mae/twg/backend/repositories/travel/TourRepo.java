@@ -1,7 +1,6 @@
 package org.mae.twg.backend.repositories.travel;
 
 import org.mae.twg.backend.models.travel.Tour;
-import org.mae.twg.backend.models.travel.enums.Stars;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -47,7 +46,7 @@ where regexp_like(l.title, :title, 'i')
             left join tour_tags tt using (tour_id)
             left join tour_hotels th using (tour_id)
             left join hotels h using (hotel_id)
-            left join resorts r on r.country_id = t.country_id
+            left join resorts r on h.resort_id = r.resort_id
             where 
                 (:countries is null or t.country_id in :countries)
                 and
@@ -73,7 +72,7 @@ where regexp_like(l.title, :title, 'i')
                                  @Param("maxDur") Integer maxDuration,
                                  @Param("minCost") Long minCost,
                                  @Param("maxCost") Long maxCost,
-                                 @Param("stars") List<Stars> stars,
+                                 @Param("stars") List<String> stars,
                                  @Param("resorts") List<Long> resortIds,
                                  Pageable pageable);
 }

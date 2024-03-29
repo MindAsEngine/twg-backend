@@ -147,7 +147,8 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                 types.stream().map(TourType::name).toList(),
                 minDuration, maxDuration,
                 minCost, maxCost,
-                stars, resortIds,
+                stars.stream().map(Stars::name).toList(),
+                resortIds,
                 getPageable(page, size)).stream(), localization);
     }
 
