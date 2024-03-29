@@ -1,12 +1,10 @@
 package org.mae.twg.backend.services.travel;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
-import org.mae.twg.backend.dto.travel.request.geo.GeoDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
