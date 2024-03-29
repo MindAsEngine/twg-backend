@@ -15,6 +15,8 @@ import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TourLogicDTO;
 import org.mae.twg.backend.dto.travel.response.comments.TourCommentDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
+import org.mae.twg.backend.models.travel.enums.Stars;
+import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.services.travel.TourService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,46 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
     public TourController(TourService service) {
         super(service);
     }
+
+    private void validatePageable(Integer page, Integer size) {
+        if (page != null && size == null || page == null && size != null) {
+            throw new ValidationException("Only both 'page' and 'size' params required");
+        }
+    }
+
+    @GetMapping("/find/title")
+    @Operation(summary = "Туры по координатам")
+    public ResponseEntity<List<TourDTO>> findByTitle(@PathVariable Localization local,
+                                                     @RequestParam(required = false) Integer page,
+                                                     @RequestParam(required = false) Integer size,
+                                                     @RequestParam(required = false) String title) {
+        validatePageable(page, size);
+        return ResponseEntity.ok(getService().findByTitle(title, local, page, size));
+    }
+
+    @GetMapping("/find/filters")
+    @Operation(summary = "Туры по координатам")
+    public ResponseEntity<List<TourDTO>> findByFilters(@PathVariable Localization local,
+                                                       @RequestParam(required = false) Integer page,
+                                                       @RequestParam(required = false) Integer size,
+                                                       @RequestParam(required = false) List<Long> countryIds,
+                                                       @RequestParam(required = false) List<Long> tagIds,
+                                                       @RequestParam(required = false) List<TourType> types,
+                                                       @RequestParam(required = false) Integer minDuration,
+                                                       @RequestParam(required = false) Integer maxDuration,
+                                                       @RequestParam(required = false) Long minCost,
+                                                       @RequestParam(required = false) Long maxCost,
+                                                       @RequestParam(required = false) List<Stars> stars,
+                                                       @RequestParam(required = false) List<Long> resortIds) {
+        validatePageable(page, size);
+        return ResponseEntity.ok(getService().findByFilters(
+                countryIds, tagIds, types,
+                minDuration, maxDuration,
+                minCost, maxCost,
+                stars, resortIds,
+                local, page, size));
+    }
+
 
     @PostMapping("/{id}/image/upload")
     @Operation(summary = "Добавить обложку",
@@ -107,7 +149,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
         return ResponseEntity.ok(getService().updateLogicData(id, tourDTO, local));
     }
 
-    @GetMapping("/geo")
+    @GetMapping("/find/geo")
     @Operation(summary = "Туры по координатам")
     public ResponseEntity<List<TourDTO>> findByGeo(@PathVariable Localization local,
                                                    @RequestParam(required = false) Integer page,
@@ -116,9 +158,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
                                                    @RequestParam Double maxLongitude,
                                                    @RequestParam Double minLatitude,
                                                    @RequestParam Double maxLatitude) {
-        if (page != null && size == null || page == null && size != null) {
-            throw new ValidationException("Only both 'page' and 'size' params required");
-        }
+        validatePageable(page, size);
         return ResponseEntity.ok(getService().findByGeoData(
                 minLongitude, maxLongitude,
                 minLatitude, maxLatitude,
