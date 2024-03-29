@@ -60,9 +60,13 @@ where regexp_like(l.title, :title, 'i')
                 and
                 (:hospitals is null or t.hospital_id in :hospitals)
                 and
-                (t.duration is null or coalesce(:minDur <= t.duration, true) and coalesce(:maxDur >= t.duration, true))
+                (:minDur is null or :maxDur is null 
+                    or t.duration is not null 
+                    and coalesce(:minDur <= t.duration, true) and coalesce(:maxDur >= t.duration, true))
                 and
-                (t.price is null or coalesce(:minCost <= t.price, true) and coalesce(:maxCost >= t.price, true))
+                (:minCost is null and :maxCost is null 
+                    or t.price is not null 
+                    and coalesce(:minCost <= t.price, true) and coalesce(:maxCost >= t.price, true))
             """, nativeQuery = true)
     Page<Tour> findFilteredFours(@Param("countries") List<Long> countryIds,
                                  @Param("tags") List<Long> tagIds,
