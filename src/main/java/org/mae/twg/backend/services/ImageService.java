@@ -1,8 +1,10 @@
 package org.mae.twg.backend.services;
 
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +28,9 @@ public class ImageService {
     }
 
     public String saveImage(ModelType modelType, MultipartFile image) throws IOException {
+        if (!isValidImageType(image.getContentType())) {
+            throw new ValidationException("Недопустимый тип файла");
+        }
         String uuidFile = UUID.randomUUID().toString();
         String resultFilename = uuidFile + "." + image.getOriginalFilename();
         String uploadPath = parent_path + "/" + modelType.toString();
@@ -42,6 +47,9 @@ public class ImageService {
     public List<String> saveImages(ModelType modelType, List<MultipartFile> images) throws IOException {
         List<String> paths = new ArrayList<>();
         for (MultipartFile image : images) {
+            if (!isValidImageType(image.getContentType())) {
+                throw new ValidationException("Недопустимый тип файла");
+            }
             String uuidFile = UUID.randomUUID().toString();
             String resultFilename = uuidFile + "." + image.getOriginalFilename();
             String uploadPath = parent_path + "/" + modelType.toString();
@@ -64,5 +72,11 @@ public class ImageService {
                 fileToDelete.delete();
             }
         }
+    }
+
+    public boolean isValidImageType(String contentType) {
+        return contentType.equals(MediaType.IMAGE_JPEG_VALUE) ||
+                contentType.equals(MediaType.IMAGE_PNG_VALUE) ||
+                contentType.equals(MediaType.IMAGE_GIF_VALUE);
     }
 }

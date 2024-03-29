@@ -6,5 +6,6 @@ RUN mvn -f /home/app/pom.xml clean package
 FROM eclipse-temurin
 COPY --from=build /home/app/target/twg-alfa.jar /usr/local/lib/twg-alfa.jar
 EXPOSE 1337
+EXPOSE 80
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/usr/local/lib/twg-alfa.jar"]

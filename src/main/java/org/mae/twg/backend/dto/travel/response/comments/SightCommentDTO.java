@@ -2,7 +2,7 @@ package org.mae.twg.backend.dto.travel.response.comments;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.mae.twg.backend.dto.auth.UserLightDTO;
+import org.mae.twg.backend.dto.profile.UserLightDTO;
 import org.mae.twg.backend.models.travel.comments.SightComment;
 
 import java.io.Serializable;

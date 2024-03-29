@@ -139,26 +139,26 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
 
     }
 
-    @DeleteMapping("/{id}/comments/{commentId}/delete")
+    @DeleteMapping("/{id}/comments/my/delete")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Удалить отзыв",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
-        log.info("Удаление отзыва с id = " + commentId);
-        getService().deleteByCommentId(commentId);
-        return ResponseEntity.ok("Comment with id = " + commentId + " marked as deleted");
+    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
+        log.info("Удаление отзыва");
+        getService().deleteComment(id);
+        return ResponseEntity.ok("Comment was deleted");
     }
 
-    @PutMapping("/{id}/comments/{commentId}/update")
+    @PutMapping("/{id}/comments/my/update")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Изменить отзыв",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<SightCommentDTO> updateComment(@PathVariable Long commentId,
+    public ResponseEntity<SightCommentDTO> updateComment(@PathVariable Long id,
                                                          @RequestBody CommentDTO commentDTO) {
-        log.info("Изменение отзыва с id = " + commentId);
-        return ResponseEntity.ok(getService().updateByCommentId(commentId, commentDTO));
+        log.info("Изменение отзыва");
+        return ResponseEntity.ok(getService().updateComment(id, commentDTO));
     }
 
 }

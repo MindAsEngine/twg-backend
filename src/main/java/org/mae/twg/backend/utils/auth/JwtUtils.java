@@ -78,7 +78,7 @@ public class JwtUtils {
         refreshToken.setExpiryDate(Instant.now().plusSeconds(configBusinessService.getRefreshExpiration() * 3600));
         refreshToken.setToken(UUID.randomUUID().toString());
 
-        refreshTokenRepo.saveAndFlush(refreshToken);
+        refreshTokenRepo.save(refreshToken);
         return refreshToken;
     }
 
