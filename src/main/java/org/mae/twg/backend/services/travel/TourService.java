@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
@@ -44,6 +45,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     private final TourRepo tourRepo;
     private final TourLocalRepo localRepo;
@@ -284,6 +286,24 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         Tour tour = findById(id);
         tour.setRoute(tourDTO.getGeoData());
         return new TourDTO(tour, localization);
+    }
+
+    public List<TourDTO> findByGeoData(Double minLongitude,
+                                       Double maxLongitude,
+                                       Double minLatitude,
+                                       Double maxLatitude,
+                                       Localization localization,
+                                       Integer page, Integer size) {
+        Pageable pageable = null;
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size);
+        }
+        return modelsToDTOs(
+                tourRepo.findToursByGeoData(
+                        minLongitude,
+                        maxLongitude,
+                        minLatitude,
+                        maxLatitude, pageable).stream(), localization);
     }
 
     @Transactional
