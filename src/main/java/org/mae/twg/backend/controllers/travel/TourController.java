@@ -107,6 +107,24 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
         return ResponseEntity.ok(getService().updateLogicData(id, tourDTO, local));
     }
 
+    @GetMapping("/geo")
+    @Operation(summary = "Туры по координатам")
+    public ResponseEntity<List<TourDTO>> findByGeo(@PathVariable Localization local,
+                                                   @RequestParam(required = false) Integer page,
+                                                   @RequestParam(required = false) Integer size,
+                                                   @RequestParam Double minLongitude,
+                                                   @RequestParam Double maxLongitude,
+                                                   @RequestParam Double minLatitude,
+                                                   @RequestParam Double maxLatitude) {
+        if (page != null && size == null || page == null && size != null) {
+            throw new ValidationException("Only both 'page' and 'size' params required");
+        }
+        return ResponseEntity.ok(getService().findByGeoData(
+                minLongitude, maxLongitude,
+                minLatitude, maxLatitude,
+                local, page, size));
+    }
+
     @PutMapping("/{id}/geo/update")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Обновить геоданные тура",
