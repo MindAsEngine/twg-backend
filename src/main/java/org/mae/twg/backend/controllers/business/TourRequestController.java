@@ -44,9 +44,9 @@ public class TourRequestController {
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<List<TourReqResponseDTO>> getRequests(@PathVariable Localization local,
-                                                                @RequestParam (required = false) Long agency_id)  {
+                                                                @RequestParam (required = false) Long agencyId)  {
         log.info("Отдать все заявки");
-        return ResponseEntity.ok(tourRequestService.getAll(agency_id, local));
+        return ResponseEntity.ok(tourRequestService.getAll(agencyId, local));
     }
 
     @PostMapping("/resolve")
@@ -55,11 +55,11 @@ public class TourRequestController {
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<List<TourReqResponseDTO>> resolve(@PathVariable Localization local,
-                                                            @RequestBody Long request_id)  {
+                                                            @RequestBody Long requestId)  {
         log.info("Решить заявку на тур");
-        if (request_id == null) {
+        if (requestId == null) {
             throw new ValidationException("Не передали заявку");
         }
-        return ResponseEntity.ok(tourRequestService.resolve(request_id, local));
+        return ResponseEntity.ok(tourRequestService.resolve(requestId, local));
     }
 }

@@ -38,20 +38,20 @@ public class CallRequestController {
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Отдать все заявки агентства")
     public ResponseEntity<List<CallReqResponseDTO>> getCall(@PathVariable Localization local,
-                                                            @RequestParam (required = false) Long agency_id)  {
+                                                            @RequestParam (required = false) Long agencyId)  {
         log.info("Отдать все заявки агентства");
-        return ResponseEntity.ok(callRequestService.getAll(agency_id, local));
+        return ResponseEntity.ok(callRequestService.getAll(agencyId, local));
     }
 
     @PostMapping("/resolve")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Решить заявку")
     public ResponseEntity<List<CallReqResponseDTO>> resolve(@PathVariable Localization local,
-                                                            @RequestBody Long request_id)  {
+                                                            @RequestBody Long requestId)  {
         log.info("Решить заявку на звонок");
-        if (request_id == null) {
+        if (requestId == null) {
             throw new ValidationException("Не передали заявку");
         }
-        return ResponseEntity.ok(callRequestService.resolve(request_id, local));
+        return ResponseEntity.ok(callRequestService.resolve(requestId, local));
     }
 }
