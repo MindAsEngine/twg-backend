@@ -8,7 +8,6 @@ import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.Tour;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 
@@ -48,11 +47,12 @@ public class TourRequest {
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
 
-    public TourRequest(Tour tour,
+    public TourRequest(User user,
+                       Tour tour,
                        Integer adults,
                        Integer children,
                        String transferNotes) {
-        this.user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        this.user = user;
         this.tour = tour;
         this.adults = adults;
         this.children = children;

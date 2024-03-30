@@ -1,6 +1,7 @@
 package org.mae.twg.backend.services.business;
 
 import lombok.RequiredArgsConstructor;
+import org.mae.twg.backend.dto.business.CallReqResponseDTO;
 import org.mae.twg.backend.dto.business.CallRequestDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.business.Agency;
@@ -25,26 +26,25 @@ public class CallRequestService {
         return callRequest;
     }
     @Transactional
-    public CallRequestDTO addRequest(CallRequestDTO callRequestDTO) {
+    public CallReqResponseDTO addRequest(CallRequestDTO callRequestDTO) {
         Agency agency = agencyRepo.findById(callRequestDTO.getAgency())
                 .orElseThrow(() -> new ObjectNotFoundException("Agency with id=" + callRequestDTO.getAgency() + " not found"));
-        CallRequest callRequest = new CallRequest(callRequestDTO.getUser(), callRequestDTO.getPhone(), agency, callRequestDTO.getText());
+        CallRequest callRequest = new CallRequest(callRequestDTO.getFullName(), callRequestDTO.getPhone(), agency, callRequestDTO.getText());
         callRequestRepo.saveAndFlush(callRequest);
-        return new CallRequestDTO(callRequest);
+        return new CallReqResponseDTO(callRequest);
     }
 
-    public List<CallRequestDTO> getAll(Long id) {
+    public List<CallReqResponseDTO> getAll(Long id) {
         List<CallRequest> callRequests = callRequestRepo.findByAgency_idAndClosedAtIsNull(id);
-        List<CallRequestDTO> callRequestDTOs = new ArrayList<>();
-
-        for (CallRequest callRequest : callRequests) {
-            callRequestDTOs.add(new CallRequestDTO(callRequest));
+        if (id == null) {
+            callRequests = callRequestRepo.findByClosedAtIsNull();
         }
-
+        List<CallReqResponseDTO> callRequestDTOs = new ArrayList<>();
+        callRequests.stream().map(CallReqResponseDTO::new).forEach(callRequestDTOs::add);
         return callRequestDTOs;
     }
 
-    public List<CallRequestDTO> resolve(Long request_id) {
+    public List<CallReqResponseDTO> resolve(Long request_id) {
         CallRequest callRequest = findById(request_id);
         callRequest.setClosedAt(LocalDateTime.now());
         callRequestRepo.saveAndFlush(callRequest);

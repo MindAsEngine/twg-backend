@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.business.CallReqResponseDTO;
 import org.mae.twg.backend.dto.business.CallRequestDTO;
 import org.mae.twg.backend.services.business.CallRequestService;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class CallRequestController {
 
     @PostMapping("/add")
     @Operation(summary = "Добавить заявку на звонок")
-    public ResponseEntity<CallRequestDTO> addCall(@RequestBody CallRequestDTO callRequestDTO)  {
+    public ResponseEntity<CallReqResponseDTO> addCall(@RequestBody CallRequestDTO callRequestDTO)  {
         log.info("Добавить заявку на звонок");
         if (callRequestDTO == null) {
             throw new ValidationException("Заявка пустая");
@@ -34,18 +35,15 @@ public class CallRequestController {
     @GetMapping("/get")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Отдать все заявки агентства")
-    public ResponseEntity<List<CallRequestDTO>> getCall(@RequestBody Long agency_id)  {
+    public ResponseEntity<List<CallReqResponseDTO>> getCall(@RequestParam (required = false) Long agency_id)  {
         log.info("Отдать все заявки агентства");
-        if (agency_id == null) {
-            throw new ValidationException("Не передали агенство");
-        }
         return ResponseEntity.ok(callRequestService.getAll(agency_id));
     }
 
     @PostMapping("/resolve")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Решить заявку")
-    public ResponseEntity<List<CallRequestDTO>> resolve(@RequestBody Long request_id)  {
+    public ResponseEntity<List<CallReqResponseDTO>> resolve(@RequestBody Long request_id)  {
         log.info("Отдать все заявки агентства");
         if (request_id == null) {
             throw new ValidationException("Не передали заявку");

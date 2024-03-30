@@ -17,8 +17,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Schema(description = "Запрос на тур")
 public class TourRequestDTO {
-    @Schema(description = "id заявки", example = "1")
-    private Long id;
     @Schema(description = "id тура", example = "1")
     private Long tour;
     @Schema(description = "Количество взрослых", example = "1")
@@ -27,11 +25,4 @@ public class TourRequestDTO {
     private Integer children;
     @Schema(description = "Заметки", example = "Какие-то заметки")
     private String transferNotes;
-    public TourRequestDTO(TourRequest tourRequest) {
-        this.id = tourRequest.getId();
-        this.tour = tourRequest.getTour().getId();
-        this.adults = tourRequest.getAdults();
-        this.children = tourRequest.getChildren();
-        this.transferNotes = tourRequest.getTransferNotes();
-    }
 }
