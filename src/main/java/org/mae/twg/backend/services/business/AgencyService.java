@@ -27,7 +27,7 @@ public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO>
     private final AgencyRepo agencyRepo;
     private final AgencyLocalRepo localRepo;
 
-    private Agency findById(Long id) {
+    public Agency findById(Long id) {
         Agency agency = agencyRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Agency with id=" + id + " not found"));
         if (agency.getIsDeleted()) {
