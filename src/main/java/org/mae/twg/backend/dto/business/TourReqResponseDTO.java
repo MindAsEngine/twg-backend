@@ -17,6 +17,8 @@ public class TourReqResponseDTO {
     private Long id;
     @Schema(description = "Тур", example = "1")
     private TourDTO tour;
+    @Schema(description = "Агентство", example = "1")
+    private AgencyDTO agency;
     @Schema(description = "Количество взрослых", example = "1")
     private Integer adults;
     @Schema(description = "Количество детей", example = "1")
@@ -28,6 +30,7 @@ public class TourReqResponseDTO {
     public TourReqResponseDTO(TourRequest tourRequest, Localization localization) {
         this.id = tourRequest.getId();
         this.tour = TourDTO.getDTO(tourRequest.getTour(), localization);
+        this.agency = AgencyDTO.getDTO(tourRequest.getAgency(), localization);
         this.adults = tourRequest.getAdults();
         this.children = tourRequest.getChildren();
         this.transferNotes = tourRequest.getTransferNotes();

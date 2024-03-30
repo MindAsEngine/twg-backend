@@ -13,7 +13,7 @@ public class CallRequestDTO {
     @Schema(description = "Телефон пользователя", example = "88005553535")
     private String phone;
     @Schema(description = "Id агентства", example = "1")
-    private Long agency;
+    private Long agencyId;
     @Schema(description = "Вопрос", example = "Как какать?")
     private String text;
 }

@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TourRequestRepo extends JpaRepository<TourRequest, Long> {
+    List<TourRequest> findByAgency_IdAndClosedAtIsNull(Long id);
     List<TourRequest> findByClosedAtIsNull();
 }

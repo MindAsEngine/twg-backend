@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.models.business.CallRequest;
+import org.mae.twg.backend.models.travel.enums.Localization;
 
 import java.time.LocalDateTime;
 
@@ -17,18 +18,18 @@ public class CallReqResponseDTO {
     private String fullName;
     @Schema(description = "Телефон пользователя", example = "88005553535")
     private String phone;
-    @Schema(description = "Id агентства", example = "1")
-    private Long agency;
+    @Schema(description = "Агентство", example = "1")
+    private AgencyDTO agency;
     @Schema(description = "Вопрос", example = "Как какать?")
     private String text;
     @Schema(description = "Дата создания", example = "01.01.01")
     private LocalDateTime createdAt;
 
-    public CallReqResponseDTO(CallRequest callRequest) {
+    public CallReqResponseDTO(CallRequest callRequest, Localization localization) {
         this.id = callRequest.getId();
         this.fullName = callRequest.getUser();
         this.phone = callRequest.getNumber();
-        this.agency = callRequest.getAgency().getId();
+        this.agency = AgencyDTO.getDTO(callRequest.getAgency(), localization);
         this.text = callRequest.getText();
         this.createdAt = callRequest.getCreatedAt();
     }

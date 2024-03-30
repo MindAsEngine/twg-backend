@@ -18,7 +18,9 @@ import java.time.LocalDateTime;
 @Schema(description = "Запрос на тур")
 public class TourRequestDTO {
     @Schema(description = "id тура", example = "1")
-    private Long tour;
+    private Long tourId;
+    @Schema(description = "Id агентства", example = "1")
+    private Long agencyId;
     @Schema(description = "Количество взрослых", example = "1")
     private Integer adults;
     @Schema(description = "Количество детей", example = "1")
