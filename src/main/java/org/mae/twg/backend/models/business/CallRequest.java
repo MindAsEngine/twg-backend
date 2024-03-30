@@ -21,17 +21,27 @@ public class CallRequest {
     @Column(name = "call_request_id")
     private Long id;
 
-    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+/*    @NonNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user;*/
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @Column(name = "user_fio")
+    private String user;
+
+    @NonNull
+    @Column(name = "number")
+    private String number;
+
+    @NonNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id")
     private Agency agency;
+
+    @NonNull
+    @Column(name = "text")
+    private String text;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -39,4 +49,14 @@ public class CallRequest {
 
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
+
+    public CallRequest(String user,
+                       String number,
+                       Agency agency,
+                       String text) {
+        this.user = user;
+        this.number = number;
+        this.agency = agency;
+        this.text = text;
+    }
 }

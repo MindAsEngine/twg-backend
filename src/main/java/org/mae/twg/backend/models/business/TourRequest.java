@@ -23,14 +23,17 @@ public class TourRequest {
     private Long id;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY,
-            optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
+
+    @NonNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
@@ -48,4 +51,18 @@ public class TourRequest {
 
     @Column(name = "closed_at")
     private LocalDateTime closedAt;
+
+    public TourRequest(User user,
+                       Agency agency,
+                       Tour tour,
+                       Integer adults,
+                       Integer children,
+                       String transferNotes) {
+        this.user = user;
+        this.agency = agency;
+        this.tour = tour;
+        this.adults = adults;
+        this.children = children;
+        this.transferNotes = transferNotes;
+    }
 }
