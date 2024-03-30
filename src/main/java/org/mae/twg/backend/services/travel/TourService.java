@@ -58,7 +58,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     private final ImageService imageService;
     private final HotelService hotelService;
     private final CountryService countryService;
-    private final SightService sightService;
+    private final HospitalService hospitalService;
     private final TagService tagService;
 
     public Tour findById(Long id) {
@@ -305,9 +305,9 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         Country newCountry = countryService.findById(tourDTO.getCountryId());
         newCountry.addTour(tour);
 
-        Sight newHospital = null;
+        Hospital newHospital = null;
         if (tourDTO.getHospitalId() != null) {
-            newHospital = sightService.findById(tourDTO.getHospitalId());
+            newHospital = hospitalService.findById(tourDTO.getHospitalId());
         }
         tour.setHospital(newHospital);
 

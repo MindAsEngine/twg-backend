@@ -6,10 +6,12 @@ import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.comments.TourComment;
 import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
-import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.models.travel.media.TourMedia;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -62,7 +64,7 @@ public class Tour implements Model {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hospital_id")
-    private Sight hospital;
+    private Hospital hospital;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "header_img_id")

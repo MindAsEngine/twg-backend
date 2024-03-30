@@ -3,8 +3,8 @@ package org.mae.twg.backend.dto.travel.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.dto.ModelDTO;
+import org.mae.twg.backend.dto.travel.response.lightDTOs.HospitalLightDTO;
 import org.mae.twg.backend.dto.travel.response.lightDTOs.HotelLightDTO;
-import org.mae.twg.backend.dto.travel.response.lightDTOs.SightLightDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -32,7 +32,7 @@ public class TourDTO implements ModelDTO {
     private String header;
     private List<String> medias;
     private List<HotelLightDTO> hotels;
-    private SightLightDTO hospital;
+    private HospitalLightDTO hospital;
     private List<TagDTO> tags;
     private Integer duration;
     private Long price;
@@ -65,7 +65,7 @@ public class TourDTO implements ModelDTO {
                 .filter(Objects::nonNull)
                 .toList();
         this.country = CountryDTO.getDTO(tour.getCountry(), localization);
-        this.hospital = SightLightDTO.getDTO(tour.getHospital(), localization);
+        this.hospital = HospitalLightDTO.getDTO(tour.getHospital(), localization);
         this.price = tour.getPrice();
         this.duration = tour.getDuration();
         this.route = tour.getRoute();

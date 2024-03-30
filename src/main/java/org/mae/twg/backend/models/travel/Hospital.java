@@ -11,7 +11,9 @@ import org.mae.twg.backend.models.travel.localization.HospitalLocal;
 import org.mae.twg.backend.models.travel.media.HospitalMedia;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -43,8 +45,8 @@ public class Hospital implements Model {
     private List<HospitalComment> comments = new ArrayList<>();
     private Double latitude;
     private Double longitude;
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "hospitals")
-//    private Set<Tour> tours = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "hospital")
+    private Set<Tour> tours = new HashSet<>();
     @OneToMany(mappedBy = "hospital",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
