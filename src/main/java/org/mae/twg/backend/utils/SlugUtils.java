@@ -33,16 +33,20 @@ public class SlugUtils {
     public String getSlug(Model model) {
         List<? extends Local> locals = model.getLocalizations();
         List<Localization> localizations = locals.stream().map(Local::getLocalization).toList();
+        String slug = null;
         if (localizations.contains(Localization.EN)) {
-            return slugFromEN(locals.get(localizations.indexOf(Localization.EN)));
+            slug = slugFromEN(locals.get(localizations.indexOf(Localization.EN)));
         }
         if (localizations.contains(Localization.RU)) {
-            return slugFromRU(locals.get(localizations.indexOf(Localization.RU)));
+            slug = slugFromRU(locals.get(localizations.indexOf(Localization.RU)));
         }
         if (localizations.contains(Localization.UZ)) {
-            return slugFromUZ(locals.get(localizations.indexOf(Localization.UZ)));
+            slug = slugFromUZ(locals.get(localizations.indexOf(Localization.UZ)));
         }
-        throw new SlugException("Locals for model with id=" + model.getId() + " not found");
+        if (slug == null) {
+            throw new SlugException("Locals for model with id=" + model.getId() + " not found");
+        }
+        return slug + model.getId().toString();
     }
 
     private String slugify(String string) {
