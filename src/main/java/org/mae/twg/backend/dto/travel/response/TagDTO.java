@@ -13,6 +13,7 @@ import org.mae.twg.backend.models.travel.localization.TagLocal;
 public class TagDTO implements ModelDTO {
     private Long id;
     private String name;
+    private String icon;
     private Localization localization;
 
     public TagDTO(Tag tag, Localization localization) {
@@ -24,6 +25,7 @@ public class TagDTO implements ModelDTO {
                         .orElseThrow(() -> new ObjectNotFoundException("Tag "
                                 + localization.name() + " localization not found"));
         this.name = cur_local.getName();
+        this.icon = tag.getIcon();
         this.localization = localization;
     }
 

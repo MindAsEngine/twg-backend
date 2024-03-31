@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.travel.request.locals.TagLocalDTO;
+import org.mae.twg.backend.dto.travel.request.logic.TagLogicDTO;
 import org.mae.twg.backend.dto.travel.response.TagDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
@@ -117,4 +118,14 @@ public class TagService implements TravelService<TagDTO, TagLocalDTO> {
         tagRepo.saveAndFlush(tag);
         return new TagDTO(tag, localization);
     }
+
+    @Transactional
+    public TagDTO updateLogic(Long id, TagLogicDTO tagDTO, Localization localization) {
+        Tag tag = findById(id);
+        tag.setIcon(tagDTO.getIcon());
+        tagRepo.saveAndFlush(tag);
+        return new TagDTO(tag, localization);
+    }
+
+
 }
