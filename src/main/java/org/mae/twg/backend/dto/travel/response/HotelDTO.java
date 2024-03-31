@@ -25,6 +25,8 @@ public class HotelDTO implements ModelDTO {
     private String introduction;
     private String description;
     private String address;
+    private Double latitude;
+    private Double longitude;
     private Double grade;
     private Long commentAmount;
     private Localization localization;
@@ -45,6 +47,8 @@ public class HotelDTO implements ModelDTO {
         this.name = cur_local.getName();
         this.city = cur_local.getCity();
         this.stars = hotel.getStars();
+        this.latitude = hotel.getLatitude();
+        this.longitude = hotel.getLongitude();
         this.introduction = cur_local.getIntroduction();
         this.description = cur_local.getDescription();
         this.address = cur_local.getAddress();
