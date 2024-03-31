@@ -86,7 +86,10 @@ public class ConfigBusinessService {
             return new ConfigDTO(key, "1.0");
         }
         if (!configRepo.exists(key.name())) {
-            throw new ObjectNotFoundException("Config " + key + " not found");
+            init();
+            if (!configRepo.exists(key.name())) {
+                throw new ObjectNotFoundException("Config " + key + " not found");
+            }
         }
         return new ConfigDTO(key, configRepo.find(key.name()));
     }
