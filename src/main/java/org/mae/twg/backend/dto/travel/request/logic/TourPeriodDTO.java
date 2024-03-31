@@ -1,14 +1,12 @@
 package org.mae.twg.backend.dto.travel.request.logic;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.dto.RequestDTO;
 
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
 @Schema(description = "Запрос на обновление тура")
 public class TourPeriodDTO implements RequestDTO {
     @Schema(description = "Дата начала тура", example = "2024-01-01")

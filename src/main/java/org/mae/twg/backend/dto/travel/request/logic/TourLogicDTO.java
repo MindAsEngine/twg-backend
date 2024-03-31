@@ -1,7 +1,6 @@
 package org.mae.twg.backend.dto.travel.request.logic;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.mae.twg.backend.dto.RequestDTO;
 import org.mae.twg.backend.models.travel.enums.TourType;
@@ -9,7 +8,6 @@ import org.mae.twg.backend.models.travel.enums.TourType;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @Schema(description = "Запрос на обновление тура")
 public class TourLogicDTO implements RequestDTO {
     @Schema(description = "Тип тура", example = "Какой-то тип")
