@@ -46,7 +46,7 @@ public class SlugUtils {
         if (slug == null) {
             throw new SlugException("Locals for model with id=" + model.getId() + " not found");
         }
-        return slug + model.getId().toString();
+        return slug + "-" + model.getId().toString();
     }
 
     private String slugify(String string) {
