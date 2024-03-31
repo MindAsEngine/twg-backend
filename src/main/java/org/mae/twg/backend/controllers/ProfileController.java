@@ -51,7 +51,7 @@ public class ProfileController {
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> uploadImages(MultipartFile image) throws IOException {
+    public ResponseEntity<UserDTO> uploadImages(MultipartFile image) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long id = ((User) authentication.getPrincipal()).getId();
         log.info("Добавление фотографии к профилю c id = " + id);
@@ -66,7 +66,7 @@ public class ProfileController {
     @Operation(summary = "Удалить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> deleteImages(@RequestBody String image) {
+    public ResponseEntity<UserDTO> deleteImages(@RequestBody String image) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long id = ((User) authentication.getPrincipal()).getId();
         log.info("Delete images from user profile with id = " + id);
@@ -74,6 +74,19 @@ public class ProfileController {
             throw new ValidationException("Empty images list");
         }
         return ResponseEntity.ok(userService.deleteImages(image));
+    }
+
+    @DeleteMapping("/delete")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
+    @Operation(summary = "Удалить пользователя",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<String> deleteMe() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = ((User) authentication.getPrincipal()).getUsername();
+        log.info("Delete user with username = " + username);
+        userService.deleteByUsername(username);
+        return ResponseEntity.ok("User was deleted");
     }
 
     @GetMapping("/{local}/favourites/get")

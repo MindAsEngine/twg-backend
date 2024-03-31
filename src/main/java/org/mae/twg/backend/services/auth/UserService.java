@@ -66,9 +66,20 @@ public class UserService implements UserDetailsService{
         return save(user);
     }
 
+    public void deleteByUsername(String username) {
+        User user = findByUsername(username);
+        user.setIsEnabled(false);
+        userRepo.saveAndFlush(user);
+    }
+
     public User findById(Long id) {
         return userRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("User with id=" + id + " not found"));
+    }
+
+    public User findByUsername(String username) {
+        return userRepo.findByUsername(username)
+                .orElseThrow(() -> new ObjectNotFoundException("User with username=" + username + " not found"));
     }
 
     public void refreshLastLogin(User user) {

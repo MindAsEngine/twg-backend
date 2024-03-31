@@ -69,6 +69,9 @@ public class User implements UserDetails {
     @Column(name = "media_path")
     private String mediaPath;
 
+    @Column(name = "is_enabled", columnDefinition = "boolean default true")
+    private Boolean isEnabled;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "favourite_tours",
             joinColumns = @JoinColumn(referencedColumnName = "user_id"),
@@ -97,6 +100,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 }
