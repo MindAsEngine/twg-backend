@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         // Можно указать конкретный путь, * - 1 уровень вложенности, ** - любое количество уровней вложенности
 //                          .anyRequest().permitAll())
+                        .requestMatchers("/profile/telegram/connect/set_id").permitAll()
                         .requestMatchers("/profile/**").authenticated()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()

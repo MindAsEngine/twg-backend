@@ -8,11 +8,13 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
+import org.mae.twg.backend.dto.profile.TelegramDataDTO;
 import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.auth.UserService;
+import org.mae.twg.backend.utils.BotUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -30,6 +32,7 @@ import java.util.List;
 @Log4j2
 public class ProfileController {
     private final UserService userService;
+    private final BotUtils botUtils;
 
     @ResponseBody
     @Operation(
@@ -131,6 +134,32 @@ public class ProfileController {
         log.info("Проверка тура в избранном");
         return ResponseEntity.ok(userService.checkInFavourite(tourId));
     }
+
+    @GetMapping("/telegram/connect/get_url")
+    @Operation(
+            summary = "Получения ссылки телеграма",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>")
+    )
+    public ResponseEntity<String> getBotIntegrationUrl() {
+        log.info("Получение ссылки для привязки телеграма");
+        return ResponseEntity.ok(botUtils.getBotIntegrationUrl());
+    }
+
+    @PostMapping("/telegram/connect/set_id")
+    @Operation(
+            summary = "Установка telegram id"
+    )
+    public ResponseEntity<String> setTelegramId(@RequestBody TelegramDataDTO telegramData) {
+        log.info("Получение ссылки для привязки телеграма");
+        userService.setTelegramId(telegramData);
+        return ResponseEntity.ok("Telegram id was updated");
+    }
+
+
 
     @DeleteMapping("/{local}/favourites/delete")
     @Operation(
