@@ -3,11 +3,13 @@ package org.mae.twg.backend.services.auth;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
+import org.mae.twg.backend.dto.profile.TelegramDataDTO;
 import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.exceptions.UserNotFound;
 import org.mae.twg.backend.models.auth.User;
+import org.mae.twg.backend.models.auth.UserRole;
 import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.repositories.business.UserRepo;
@@ -43,12 +45,19 @@ public class UserService implements UserDetailsService{
         return userRepo.save(user);
     }
 
+    public void setTelegramId(TelegramDataDTO telegramDataDTO) {
+        User user = findByUsername(telegramDataDTO.getUsername());
+        user.setTelegramId(telegramDataDTO.getTelegramId());
+        userRepo.saveAndFlush(user);
+    }
 
-    /**
-     * Создание пользователя
-     *
-     * @return созданный пользователь
-     */
+    public List<Long> getAdminTelegramIds() {
+        return userRepo.findAllByUserRoleAndTelegramIdIsNotNull(UserRole.TWG_ADMIN).stream()
+                .map(User::getTelegramId)
+                .map(Long::valueOf)
+                .toList();
+    }
+
     public User create(User user) {
         String exceptionText = "";
         if (userRepo.existsByUsername(user.getUsername())) {

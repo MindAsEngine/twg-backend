@@ -13,6 +13,8 @@ import org.mae.twg.backend.models.auth.UserRole;
 public class UserDTO {
     @Schema(description = "Логин пользователя", example = "Sapipa")
     private String username;
+    @Schema(description = "Id telegram", example = "103815051")
+    private String telegramId;
     @Schema(description = "Роль пользователя", example = "USER")
     private UserRole role;
     @Schema(description = "Адрес электронной почты", example = "jondoe@gmail.com")
@@ -31,6 +33,7 @@ public class UserDTO {
 
     public UserDTO(User user) {
         this.username = user.getUsername();
+        this.telegramId = user.getTelegramId();
         this.email = user.getEmail();
         this.phone = user.getPhone();
         this.role = user.getUserRole();
