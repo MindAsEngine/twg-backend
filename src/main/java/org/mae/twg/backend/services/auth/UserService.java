@@ -58,6 +58,14 @@ public class UserService implements UserDetailsService{
         return new UserDTO(user);
     }
 
+    public List<UserDTO> getUsersByRole(UserRole role) {
+        List<User> users = userRepo.findAllByUserRoleAndIsEnabledTrue(role);
+        if (users.isEmpty()) {
+            throw new ObjectNotFoundException("Users with role " + role.name() + " not found");
+        }
+        return users.stream().map(UserDTO::new).toList();
+    }
+
     public void setTelegramId(TelegramDataDTO telegramDataDTO) {
         User user = findByUsername(telegramDataDTO.getUsername());
         user.setTelegramId(telegramDataDTO.getTelegramId());
@@ -66,6 +74,7 @@ public class UserService implements UserDetailsService{
 
     public List<Long> getAdminTelegramIds() {
         return userRepo.findAllByUserRoleAndTelegramIdIsNotNull(UserRole.TWG_ADMIN).stream()
+                .filter(User::getIsEnabled)
                 .map(User::getTelegramId)
                 .map(Long::valueOf)
                 .toList();

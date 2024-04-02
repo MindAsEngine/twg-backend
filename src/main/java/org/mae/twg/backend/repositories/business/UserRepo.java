@@ -16,4 +16,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
     boolean existsByPhone(String phone);
 
     List<User> findAllByUserRoleAndTelegramIdIsNotNull(UserRole role);
+    List<User> findAllByUserRoleAndIsEnabledTrue(UserRole role);
 }
