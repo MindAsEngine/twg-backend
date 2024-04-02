@@ -51,19 +51,21 @@ public class TourRequestService {
         return new TourReqResponseDTO(tourRequest, localization);
     }
 
-    public List<TourReqResponseDTO> getAll(Long id, Localization localization) {
-        List<TourRequest> tourRequests = tourRequestRepo.findByAgency_IdAndClosedAtIsNull(id);
-        if (id == null) {
-            tourRequests = tourRequestRepo.findByClosedAtIsNull();
+    public List<TourReqResponseDTO> getAll(Long agencyId, String username, Localization localization) {
+        if (agencyId != null) {
+            return modelsToDTOs(tourRequestRepo.findByAgency_IdAndClosedAtIsNull(agencyId).stream(), localization);
         }
-        return modelsToDTOs(tourRequests.stream(), localization);
+        if (username != null) {
+            return modelsToDTOs((tourRequestRepo.findAllByUser_Username(username)).stream(), localization);
+        }
+        return modelsToDTOs(tourRequestRepo.findByClosedAtIsNull().stream(), localization);
     }
 
     public List<TourReqResponseDTO> resolve(Long request_id, Localization localization) {
         TourRequest tourRequest = findById(request_id);
         tourRequest.setClosedAt(LocalDateTime.now());
         tourRequestRepo.saveAndFlush(tourRequest);
-        return getAll(null, localization);
+        return getAll(null, null, localization);
     }
 
 
