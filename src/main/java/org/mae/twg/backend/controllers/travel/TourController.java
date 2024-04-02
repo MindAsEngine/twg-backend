@@ -244,4 +244,16 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
         log.info("Изменение отзыва");
         return ResponseEntity.ok(getService().updateComment(id, commentDTO));
     }
+
+    @GetMapping("/{id}/comments/my")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Получить отзыв пользователя",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<TourCommentDTO> getUserComment(@PathVariable Long id) {
+        log.info("Получить отзыв пользователя для тура с id = " + id);
+        return ResponseEntity.ok(getService().getCommentByUserAndTour(id));
+    }
+
+
 }
