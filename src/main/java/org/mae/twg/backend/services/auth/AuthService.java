@@ -46,6 +46,7 @@ public class AuthService {
                 .patronymic(request.getPatronymic() == null ? "No patronymic" : request.getPatronymic())
                 .userRole(role)
                 .lastLogin(LocalDateTime.now())
+                .isEnabled(true)
                 .build();
     }
 

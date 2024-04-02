@@ -69,7 +69,7 @@ public class AuthController {
                     description = "JWT токен",
                     required = true,
                     example = "Bearer <token>"))
-    @PreAuthorize("@AuthService.hasAccess(UserRole.TWG_ADMIN)")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @PostMapping("/create/agent")
     public ResponseEntity<UserDTO> createAgent(@RequestBody SignUpRequest request) {
         log.info("Создание агента");
@@ -83,7 +83,7 @@ public class AuthController {
                     description = "JWT токен",
                     required = true,
                     example = "Bearer <token>"))
-    @PreAuthorize("@AuthService.hasAccess(UserRole.GOD)")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PostMapping("/create/admin")
     public ResponseEntity<UserDTO> createAdmin(@RequestBody SignUpRequest request) {
         log.info("Создание админа");
@@ -97,7 +97,7 @@ public class AuthController {
                     description = "JWT токен",
                     required = true,
                     example = "Bearer <token>"))
-    @PreAuthorize("@AuthService.hasAccess(UserRole.GOD)")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PostMapping("/delete")
     public ResponseEntity<String> deleteUserByUsername(@RequestBody UserDeleteDTO request) {
         log.info("Удаление пользователя");
@@ -112,8 +112,8 @@ public class AuthController {
                     description = "JWT токен",
                     required = true,
                     example = "Bearer <token>"))
-    @PreAuthorize("@AuthService.hasAccess(UserRole.TWG_ADMIN)")
-    @GetMapping("/users/agents")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
+    @GetMapping("/agents")
     public ResponseEntity<List<UserDTO>> getAgents() {
         log.info("Получение агентов");
         return ResponseEntity.ok(userService.getUsersByRole(UserRole.AGENT));

@@ -70,7 +70,7 @@ public class User implements UserDetails {
     private String mediaPath;
 
     @Column(name = "is_enabled", columnDefinition = "boolean default true")
-    private Boolean isEnabled;
+    private Boolean isEnabled = true;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "favourite_tours",
