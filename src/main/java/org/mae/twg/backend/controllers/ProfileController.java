@@ -8,6 +8,7 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
+import org.mae.twg.backend.dto.profile.ProfileDTO;
 import org.mae.twg.backend.dto.profile.TelegramDataDTO;
 import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
@@ -62,6 +63,16 @@ public class ProfileController {
             throw new ValidationException("Пустой список фотографий");
         }
         return ResponseEntity.ok(userService.uploadImages(image));
+    }
+
+    @PostMapping("/update")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
+    @Operation(summary = "Обновление профиля по username",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<UserDTO> updateProfile(@RequestBody ProfileDTO profileDTO) {
+        log.info("Обновление профиля пользователя с username = " + profileDTO.getUsername());
+        return ResponseEntity.ok(userService.update(profileDTO));
     }
 
     @DeleteMapping("/image/delete")

@@ -3,6 +3,7 @@ package org.mae.twg.backend.services.auth;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
+import org.mae.twg.backend.dto.profile.ProfileDTO;
 import org.mae.twg.backend.dto.profile.TelegramDataDTO;
 import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
@@ -43,6 +44,18 @@ public class UserService implements UserDetailsService{
      */
     public User save(User user) {
         return userRepo.save(user);
+    }
+
+    public UserDTO update(ProfileDTO profileDTO) {
+        User user = findByUsername(profileDTO.getUsername());
+        user.setEmail(profileDTO.getEmail());
+        user.setPhone(profileDTO.getPhone());
+        user.setFirstName(profileDTO.getFirstName());
+        user.setLastName(profileDTO.getLastName());
+        user.setPatronymic(profileDTO.getPatronymic());
+        save(user);
+
+        return new UserDTO(user);
     }
 
     public void setTelegramId(TelegramDataDTO telegramDataDTO) {
