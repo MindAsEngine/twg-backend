@@ -5,6 +5,7 @@ import org.mae.twg.backend.dto.auth.JwtAuthenticationResponse;
 import org.mae.twg.backend.dto.auth.SignInRequest;
 import org.mae.twg.backend.dto.auth.SignUpRequest;
 import org.mae.twg.backend.dto.auth.TokenRefreshRequest;
+import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.exceptions.TokenValidationException;
 import org.mae.twg.backend.models.auth.RefreshToken;
 import org.mae.twg.backend.models.auth.Role;
@@ -34,9 +35,8 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepo refreshTokenRepo;
 
-    public JwtAuthenticationResponse signUp(SignUpRequest request) {
-
-        var user = User.builder()
+    public User createUser(SignUpRequest request, UserRole role) {
+        return User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -44,9 +44,24 @@ public class AuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .patronymic(request.getPatronymic() == null ? "No patronymic" : request.getPatronymic())
-                .userRole(UserRole.USER)
+                .userRole(role)
                 .lastLogin(LocalDateTime.now())
                 .build();
+    }
+
+    public UserDTO addUserWithRole(SignUpRequest request, UserRole role) {
+        User user = createUser(request, role);
+        userService.save(user);
+        return new UserDTO(user);
+    }
+
+    public void deleteByUsername(String username) {
+        userService.deleteByUsername(username);
+    }
+
+    public JwtAuthenticationResponse signUp(SignUpRequest request) {
+
+        User user = createUser(request, UserRole.USER);
 
         userService.create(user);
         userService.refreshLastLogin(user);

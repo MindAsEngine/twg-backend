@@ -25,8 +25,10 @@ public class TourReqResponseDTO {
     private Integer children;
     @Schema(description = "Заметки", example = "Какие-то заметки")
     private String transferNotes;
-    @Schema(description = "Дата создания", example = "01.01.01")
+    @Schema(description = "Время создания", example = "01.01.01")
     private LocalDateTime createdAt;
+    @Schema(description = "Время закрытия ", example = "01.01.01")
+    private LocalDateTime closedAt;
     public TourReqResponseDTO(TourRequest tourRequest, Localization localization) {
         this.id = tourRequest.getId();
         this.tour = TourDTO.getDTO(tourRequest.getTour(), localization);
@@ -35,5 +37,6 @@ public class TourReqResponseDTO {
         this.children = tourRequest.getChildren();
         this.transferNotes = tourRequest.getTransferNotes();
         this.createdAt = tourRequest.getCreatedAt();
+        this.closedAt = tourRequest.getClosedAt();
     }
 }

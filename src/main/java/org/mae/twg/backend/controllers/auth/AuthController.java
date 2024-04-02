@@ -7,10 +7,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.mae.twg.backend.dto.auth.JwtAuthenticationResponse;
-import org.mae.twg.backend.dto.auth.SignInRequest;
-import org.mae.twg.backend.dto.auth.SignUpRequest;
-import org.mae.twg.backend.dto.auth.TokenRefreshRequest;
+import org.mae.twg.backend.dto.auth.*;
+import org.mae.twg.backend.dto.profile.UserDTO;
+import org.mae.twg.backend.models.auth.UserRole;
 import org.mae.twg.backend.services.auth.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -60,4 +59,48 @@ public class AuthController {
         authService.logout();
         return ResponseEntity.ok("User was logged out");
     }
+
+    @Operation(
+            summary = "Выход",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>"))
+    @PreAuthorize("@AuthService.hasAccess(UserRole.TWG_ADMIN)")
+    @PostMapping("/create/agent")
+    public ResponseEntity<UserDTO> createAgent(@RequestBody SignUpRequest request) {
+        log.info("Создание агента");
+        return ResponseEntity.ok(authService.addUserWithRole(request, UserRole.AGENT));
+    }
+
+    @Operation(
+            summary = "Выход",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>"))
+    @PreAuthorize("@AuthService.hasAccess(UserRole.GOD)")
+    @PostMapping("/create/admin")
+    public ResponseEntity<UserDTO> createAdmin(@RequestBody SignUpRequest request) {
+        log.info("Создание админа");
+        return ResponseEntity.ok(authService.addUserWithRole(request, UserRole.TWG_ADMIN));
+    }
+
+    @Operation(
+            summary = "Выход",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>"))
+    @PreAuthorize("@AuthService.hasAccess(UserRole.GOD)")
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteUserByUsername(@RequestBody UserDeleteDTO request) {
+        log.info("Удаление пользователя");
+        authService.deleteByUsername(request.getUsername());
+        return ResponseEntity.ok("User marked as disabled");
+    }
+
 }

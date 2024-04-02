@@ -13,6 +13,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.business.TourRequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,13 +41,24 @@ public class TourRequestController {
 
     @GetMapping("/get")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
-    @Operation(summary = "Отдать все заявки",
+    @Operation(summary = "Отдать все заявки агенству",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<List<TourReqResponseDTO>> getRequests(@PathVariable Localization local,
                                                                 @RequestParam (required = false) Long agencyId)  {
-        log.info("Отдать все заявки");
-        return ResponseEntity.ok(tourRequestService.getAll(agencyId, local));
+        log.info("Отдать все заявки по агенству");
+        return ResponseEntity.ok(tourRequestService.getAll(agencyId, null, local));
+    }
+
+    @GetMapping("/getMy")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
+    @Operation(summary = "Отдать все заявки авторизованного пользователя",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<List<TourReqResponseDTO>> getRequestsByUser(@PathVariable Localization local)  {
+        log.info("Отдать все заявки авторизованного пользователя");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(tourRequestService.getAll(null, username, local));
     }
 
     @PostMapping("/resolve")

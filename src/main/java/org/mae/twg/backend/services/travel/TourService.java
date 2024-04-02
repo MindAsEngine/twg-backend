@@ -375,6 +375,11 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         return comment;
     }
 
+    public TourCommentDTO getCommentByUserAndTour(Long tourId) {
+        Long userId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        return new TourCommentDTO(findCommentByUserIdAndTourId(userId, tourId));
+    }
+
     public List<TourCommentDTO> getAllCommentsById(Long id) {
         return commentsToDTOs(commentsRepo.findAllByTour_IdOrderByCreatedAtDesc(id).stream());
     }
@@ -383,6 +388,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         Pageable commentsPage = PageRequest.of(page, size);
         return commentsToDTOs(commentsRepo.findAllByTour_IdOrderByCreatedAtDesc(id, commentsPage).stream());
     }
+
 
     @Transactional
     public TourCommentDTO addComment(Long id, CommentDTO commentDTO) {

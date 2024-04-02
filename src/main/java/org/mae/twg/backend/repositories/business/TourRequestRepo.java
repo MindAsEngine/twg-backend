@@ -8,4 +8,6 @@ import java.util.List;
 public interface TourRequestRepo extends JpaRepository<TourRequest, Long> {
     List<TourRequest> findByAgency_IdAndClosedAtIsNull(Long id);
     List<TourRequest> findByClosedAtIsNull();
+
+    List<TourRequest> findAllByUser_Username(String username);
 }
