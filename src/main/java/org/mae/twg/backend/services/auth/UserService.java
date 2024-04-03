@@ -53,7 +53,7 @@ public class UserService implements UserDetailsService{
         user.setFirstName(profileDTO.getFirstName());
         user.setLastName(profileDTO.getLastName());
         user.setPatronymic(profileDTO.getPatronymic());
-        save(user);
+        create(user);
 
         return new UserDTO(user);
     }

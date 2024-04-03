@@ -52,7 +52,7 @@ public class AuthService {
 
     public UserDTO addUserWithRole(SignUpRequest request, UserRole role) {
         User user = createUser(request, role);
-        userService.save(user);
+        userService.create(user);
         return new UserDTO(user);
     }
 
