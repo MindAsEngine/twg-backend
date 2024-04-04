@@ -2,6 +2,7 @@ package org.mae.twg.backend.services;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class ImageService {
     @Value("${upload.path}")
     private String parent_path;
+    @Cacheable("images")
     public Resource loadFileAsResource(String folder, String filename) throws MalformedURLException {
         Path fileStorageLocation = Paths.get(parent_path + "/" + folder).toAbsolutePath().normalize();
         Path filePath = fileStorageLocation.resolve(filename).normalize();
