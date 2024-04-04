@@ -48,6 +48,17 @@ public class UserService implements UserDetailsService{
 
     public UserDTO update(ProfileDTO profileDTO) {
         User user = findByUsername(profileDTO.getUsername());
+        String exceptionText = "";
+
+        if (!user.getEmail().equals(profileDTO.getEmail()) && userRepo.existsByEmail(profileDTO.getEmail())) {
+            exceptionText += ("Пользователь с таким email уже существует.\n");
+        }
+        if (!user.getPhone().equals(profileDTO.getPhone()) && userRepo.existsByPhone(profileDTO.getPhone())) {
+            exceptionText += ("Пользователь с таким телефоном уже существует.\n");
+        }
+        if (!exceptionText.isEmpty()) {
+            throw new ValidationException(exceptionText);
+        }
         user.setEmail(profileDTO.getEmail());
         user.setPhone(profileDTO.getPhone());
         user.setFirstName(profileDTO.getFirstName());
