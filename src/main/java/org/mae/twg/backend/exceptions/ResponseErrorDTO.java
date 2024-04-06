@@ -3,12 +3,14 @@ package org.mae.twg.backend.exceptions;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Schema(description = "Ответ на ошибку сервера")
+@Log4j2
 public class ResponseErrorDTO {
     @Schema(description = "HTTP статус", example = "404")
     private final HttpStatus status;
@@ -19,6 +21,7 @@ public class ResponseErrorDTO {
     private final LocalDateTime time = LocalDateTime.now();
 
     public ResponseErrorDTO(HttpStatus status, String message) {
+        log.error("HttpStatus: " + status + "; message: " + message);
         this.status = status;
         this.message = message;
     }

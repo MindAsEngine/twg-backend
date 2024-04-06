@@ -32,7 +32,7 @@ public class ImageController {
             log.info("Отправка фотографии: " + "/" + imageFolder + "/" + imageName);
             return ResponseEntity.ok().body(resource.getContentAsByteArray());
         } catch (FileNotFoundException e) {
-            log.error("Файл не найден:" + "/" + imageFolder + "/" + imageName);
+            log.warn("Файл не найден:" + "/" + imageFolder + "/" + imageName);
             return ResponseEntity.notFound().build();
         }
     }

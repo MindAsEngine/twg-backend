@@ -3,6 +3,7 @@ package org.mae.twg.backend.dto.business;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.models.business.TourRequest;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @Schema(description = "Заявка на тур")
+@Log4j2
 public class TourReqResponseDTO {
     @Schema(description = "id заявки", example = "1")
     private Long id;
@@ -30,6 +32,7 @@ public class TourReqResponseDTO {
     @Schema(description = "Время закрытия ", example = "01.01.01")
     private LocalDateTime closedAt;
     public TourReqResponseDTO(TourRequest tourRequest, Localization localization) {
+        log.debug("start TourReqResponseDTO constructor");
         this.id = tourRequest.getId();
         this.tour = TourDTO.getDTO(tourRequest.getTour(), localization);
         this.agency = AgencyDTO.getDTO(tourRequest.getAgency(), localization);
@@ -38,5 +41,6 @@ public class TourReqResponseDTO {
         this.transferNotes = tourRequest.getTransferNotes();
         this.createdAt = tourRequest.getCreatedAt();
         this.closedAt = tourRequest.getClosedAt();
+        log.debug("end TourReqResponseDTO constructor");
     }
 }

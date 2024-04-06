@@ -26,9 +26,10 @@ public class TagController extends BaseController<TagService, TagDTO, TagLocalDT
     }
 
     @GetMapping("/get")
-    @Operation(summary = "Отдать курорт по id")
+    @Operation(summary = "Отдать тег по id")
     public ResponseEntity<TagDTO> getById(@PathVariable Localization local,
                                      @RequestParam Long id) {
+        log.info("Отдать логические данные точки интереса с id: " + id);
         return ResponseEntity.ok(getService().getById(id, local));
     }
 

@@ -42,8 +42,9 @@ public class HospitalController extends BaseController<HospitalService, Hospital
     public ResponseEntity<HospitalDTO> uploadImage(@PathVariable Localization local,
                                                 @PathVariable Long id,
                                                 MultipartFile image) throws IOException {
-        log.info("Добавление обложки к больнице");
+        log.info("Добавление обложки к больнице с id: " + id);
         if (image == null) {
+            log.warn("Нет фотографии");
             throw new ValidationException("Нет фотографии");
         }
         return ResponseEntity.ok(getService().uploadImage(id, local, image));
@@ -57,8 +58,9 @@ public class HospitalController extends BaseController<HospitalService, Hospital
     public ResponseEntity<HospitalDTO> uploadImages(@PathVariable Localization local,
                                                  @PathVariable Long id,
                                                  List<MultipartFile> images) throws IOException {
-        log.info("Добавление фотографий к больнице");
+        log.info("Добавление фотографий к больнице с id: " + id);
         if (images == null) {
+            log.warn("Пустой список фотографий");
             throw new ValidationException("Пустой список фотографий");
         }
         return ResponseEntity.ok(getService().uploadImages(id, local, images));
@@ -75,6 +77,7 @@ public class HospitalController extends BaseController<HospitalService, Hospital
                                                  @RequestBody List<String> images) {
         log.info("Delete images from hospital with id = " + id);
         if (images == null) {
+            log.warn("Empty images list");
             throw new ValidationException("Empty images list");
         }
         return ResponseEntity.ok(getService().deleteImages(id, local, images));
@@ -87,11 +90,14 @@ public class HospitalController extends BaseController<HospitalService, Hospital
                                         @RequestParam(required = false) Long id,
                                         @RequestParam(required = false) String slug) {
         if (id == null && slug == null) {
+            log.warn("One of id or slug is required");
             throw new ValidationException("One of id or slug is required");
         }
         if (id != null) {
+            log.info("Отдать больницу с id: " + id);
             return ResponseEntity.ok(getService().getById(id, local));
         }
+        log.info("Отдать больницу по slug: " + slug);
         return ResponseEntity.ok(getService().getBySlug(slug, local));
     }
 
@@ -117,6 +123,7 @@ public class HospitalController extends BaseController<HospitalService, Hospital
             return ResponseEntity.ok(getService().getAllCommentsById(id));
         }
         if (page == null || size == null) {
+            log.warn("Only both 'page' and 'size' params are required");
             throw new ValidationException("Only both 'page' and 'size' params are required");
         }
         return ResponseEntity.ok(getService().getPaginatedCommentsById(id, page, size));
@@ -140,7 +147,7 @@ public class HospitalController extends BaseController<HospitalService, Hospital
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<String> deleteComment(@PathVariable Long id) {
-        log.info("Удаление отзыва");
+        log.info("Удаление отзыва для больницы с id: " + id);
         getService().deleteComment(id);
         return ResponseEntity.ok("Comment was deleted");
     }
@@ -152,7 +159,7 @@ public class HospitalController extends BaseController<HospitalService, Hospital
     )
     public ResponseEntity<HospitalCommentDTO> updateComment(@PathVariable Long id,
                                                          @RequestBody CommentDTO commentDTO) {
-        log.info("Изменение отзыва");
+        log.info("Изменение отзыва для больницы с id: " + id);
         return ResponseEntity.ok(getService().updateComment(id, commentDTO));
     }
 }

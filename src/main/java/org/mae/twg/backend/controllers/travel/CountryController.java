@@ -49,8 +49,9 @@ public class CountryController extends BaseController<CountryService, CountryDTO
     public ResponseEntity<?> uploadImages(@PathVariable Localization local,
                                           @PathVariable Long id,
                                           List<MultipartFile> images) throws IOException {
-        log.info("Добавление фотографии к стране");
+        log.info("Добавление фотографии к стране c id: " + id);
         if (images == null) {
+            log.warn("Пустой список фотографий");
             throw new ValidationException("Пустой список фотографий");
         }
         return ResponseEntity.ok(getService().uploadImages(id, local, images));

@@ -24,6 +24,7 @@ public class ConfigVisualController {
     @Operation(summary = "Получить всю конфигурацию")
     @GetMapping("/get")
     public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> getAll() {
+        log.info("Отдать всю конфигурацию");
         return ResponseEntity.ok(configVisualService.getAll());
     }
     @Operation(summary = "Обновить конфиг визуала",
@@ -31,6 +32,7 @@ public class ConfigVisualController {
     )    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PutMapping("/put")
     public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
+        log.info("Обновить конфигурацию визуала");
         return ResponseEntity.ok(configVisualService.put(config));
     }
 }

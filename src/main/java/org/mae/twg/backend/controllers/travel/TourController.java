@@ -38,6 +38,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
 
     private void validatePageable(Integer page, Integer size) {
         if (page != null && size == null || page == null && size != null) {
+            log.warn("Only both 'page' and 'size' params required");
             throw new ValidationException("Only both 'page' and 'size' params required");
         }
     }
@@ -49,6 +50,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
                                                      @RequestParam(required = false) Integer size,
                                                      @RequestParam(required = false) String title) {
         validatePageable(page, size);
+        log.info("Туры по координатам");
         return ResponseEntity.ok(getService().findByTitle(title, local, page, size));
     }
 
@@ -69,23 +71,30 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
                                                        @RequestParam(required = false) List<Long> resortIds) {
         validatePageable(page, size);
         if (countryIds == null) {
+            log.warn("countryIds пусто");
             countryIds = List.of();
         }
         if (tagIds == null) {
+            log.warn("tagIds пусто");
             tagIds = List.of();
         }
         if (types == null) {
+            log.warn("types пусто");
             types = List.of();
         }
         if (stars == null) {
+            log.warn("stars пусто");
             stars = List.of();
         }
         if (resortIds == null) {
+            log.warn("resortIds пусто");
             resortIds = List.of();
         }
         if (hospitalIds == null) {
+            log.warn("hospitalIds пусто");
             hospitalIds = List.of();
         }
+        log.info("Туры по координатам");
         return ResponseEntity.ok(getService().findByFilters(
                 countryIds, tagIds, hospitalIds, types,
                 minDuration, maxDuration,
