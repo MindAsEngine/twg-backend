@@ -194,7 +194,8 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         return modelsToDTOs(hotels.stream(), localization);
     }
 
-    public List<HotelDTO> getByFilters(List<Long> resortIds, Localization localization,
+    public List<HotelDTO> getByFilters(List<Long> resortIds, List<Long> countryIds,
+                                       Localization localization,
                                          Integer page, Integer size) {
         log.debug("Start HotelService.getByFilters");
         Pageable pageable = null;
@@ -202,7 +203,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
             pageable = PageRequest.of(page, size);
         }
         log.debug("End HotelService.getByFilters");
-        return modelsToDTOs(hotelRepo.findAllByResort_IdIn(resortIds, pageable).stream(), localization);
+        return modelsToDTOs(hotelRepo.findAllByResort_IdInAndResort_Country_IdIn(resortIds, countryIds, pageable).stream(), localization);
     }
 
     public HotelDTO getById(Long id, Localization localization) {

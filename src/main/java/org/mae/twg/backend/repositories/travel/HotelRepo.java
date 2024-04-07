@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface HotelRepo extends JpaRepository<Hotel, Long> {
     Optional<Hotel> findBySlug(String slug);
-    List<Hotel> findAllByResort_IdIn(List<Long> resortIds, Pageable pageable);
+    List<Hotel> findAllByResort_IdInAndResort_Country_IdIn(List<Long> resortIds, List<Long> countryIds, Pageable pageable);
 }

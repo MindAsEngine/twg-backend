@@ -46,6 +46,7 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
     @Operation(summary = "Получение отелей по фильтрам")
     public ResponseEntity<List<HotelDTO>> getByFilters(@PathVariable Localization local,
                                                          @RequestParam(required = false) List<Long> resortIds,
+                                                         @RequestParam(required = false) List<Long> countryIds,
                                                          @RequestParam(required = false) Integer page,
                                                          @RequestParam(required = false) Integer size) {
         validatePageable(page, size);
@@ -53,8 +54,12 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
             log.warn("resortIds is empty");
             resortIds = List.of();
         }
-        log.info("Get hotels by filters: resortIds = " + resortIds);
-        return ResponseEntity.ok(getService().getByFilters(resortIds, local, page, size));
+        if (countryIds == null) {
+            log.warn("countryIds is empty");
+            countryIds = List.of();
+        }
+        log.info("Get hotels by filters:\nresortIds = " + resortIds + "\ncountryIds = " + countryIds);
+        return ResponseEntity.ok(getService().getByFilters(resortIds, countryIds, local, page, size));
     }
 
     @PostMapping("/{id}/image/upload")
