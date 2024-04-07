@@ -34,6 +34,7 @@ public class HotelDTO implements ModelDTO {
     private List<String> medias;
     private List<PropertyDTO> properties;
     private List<SightLightDTO> sights;
+    private ResortDTO resort;
 
     public HotelDTO(Hotel hotel, Localization localization) {
         this.id = hotel.getId();
@@ -63,6 +64,7 @@ public class HotelDTO implements ModelDTO {
                 .filter(Objects::nonNull)
                 .toList();
         this.localization = localization;
+        this.resort = ResortDTO.getDTO(hotel.getResort(), localization);
     }
 
     static public HotelDTO getDTO(Hotel hotel, Localization localization) {
