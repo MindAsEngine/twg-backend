@@ -11,6 +11,7 @@ import org.mae.twg.backend.dto.travel.request.geo.CountryGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.CountryLocalDTO;
 import org.mae.twg.backend.dto.travel.response.CountryDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
+import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.services.travel.CountryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,12 +30,34 @@ public class CountryController extends BaseController<CountryService, CountryDTO
         super(service);
     }
 
+    private void validatePageable(Integer page, Integer size) {
+        if (page != null && size == null || page == null && size != null) {
+            log.warn("Only both 'page' and 'size' params required");
+            throw new ValidationException("Only both 'page' and 'size' params required");
+        }
+    }
+
+    @GetMapping("/find/filters")
+    @Operation(summary = "Получение стран по фильтрам")
+    public ResponseEntity<List<CountryDTO>> getByFilters(@PathVariable Localization local,
+                                                         @RequestParam(required = false) List<TourType> tourTypes,
+                                                         @RequestParam(required = false) Integer page,
+                                                         @RequestParam(required = false) Integer size) {
+        validatePageable(page, size);
+        if (tourTypes == null) {
+            log.warn("tourTypes is empty");
+            tourTypes = List.of();
+        }
+        log.info("Get countries by filters: tour types = " + tourTypes);
+        return ResponseEntity.ok(getService().getByFilters(tourTypes, local, page, size));
+    }
+
     @PutMapping("/{id}/geo/update")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Установка новых геоднанных",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> updateGeo(@PathVariable Localization local,
+    public ResponseEntity<CountryDTO> updateGeo(@PathVariable Localization local,
                                        @PathVariable Long id,
                                        @RequestBody CountryGeoDTO geoData) {
         log.info("Set geo data for country with id = " + id);
