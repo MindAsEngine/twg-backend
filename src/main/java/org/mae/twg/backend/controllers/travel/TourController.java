@@ -44,13 +44,13 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
     }
 
     @GetMapping("/find/title")
-    @Operation(summary = "Туры по координатам")
+    @Operation(summary = "Туры по фильтрам")
     public ResponseEntity<List<TourDTO>> findByTitle(@PathVariable Localization local,
                                                      @RequestParam(required = false) Integer page,
                                                      @RequestParam(required = false) Integer size,
                                                      @RequestParam(required = false) String title) {
         validatePageable(page, size);
-        log.info("Туры по координатам");
+        log.info("Туры по фильтрам");
         return ResponseEntity.ok(getService().findByTitle(title, local, page, size));
     }
 
