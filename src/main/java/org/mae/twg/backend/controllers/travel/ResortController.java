@@ -29,6 +29,7 @@ public class ResortController extends BaseController<ResortService, ResortDTO, R
     @Operation(summary = "Отдать курорт по id")
     public ResponseEntity<ResortDTO> getById(@PathVariable Localization local,
                                      @RequestParam Long id) {
+        log.info("Отдать курорт по id: " + id);
         return ResponseEntity.ok(getService().getById(id, local));
     }
 

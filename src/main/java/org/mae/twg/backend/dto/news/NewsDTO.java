@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.news;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.news.News;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@Log4j2
 public class NewsDTO implements ModelDTO {
     private Long id;
     private String slug;
@@ -23,6 +25,7 @@ public class NewsDTO implements ModelDTO {
     private Localization localization;
     private List<String> medias;
     public NewsDTO(News news, Localization localization) {
+        log.debug("start NewsDTO constructor");
         this.id = news.getId();
         this.slug = news.getSlug();
         this.createdAt = news.getCreatedAt();
@@ -36,12 +39,15 @@ public class NewsDTO implements ModelDTO {
         this.description = cur_local.getDescription();
         this.medias = news.getMedias().stream().map(NewsMedia::getMediaPath).toList();
         this.localization = localization;
+        log.debug("end NewsDTO constructor");
     }
 
     static public NewsDTO getDTO(News news, Localization localization) {
+        log.debug("start NewsDTO.getDTO");
         if (news == null || news.getIsDeleted()) {
             return null;
         }
+        log.debug("end NewsDTO.getDTO");
         return new NewsDTO(news, localization);
     }
 }

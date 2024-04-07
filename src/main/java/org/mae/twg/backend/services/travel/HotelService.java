@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.HotelGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.HotelLocalDTO;
@@ -47,6 +48,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
     private final HotelRepo hotelRepo;
     private final HotelLocalRepo localRepo;
@@ -59,24 +61,37 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
     private final HotelMediaRepo hotelMediaRepo;
 
     public Hotel findById(Long id) {
+        log.debug("Start HotelService.findById");
         Hotel hotel = hotelRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel with id=" + id + " not found"));
+                .orElseThrow(() -> {
+                    log.error("Hotel with id=" + id + " not found");
+                    return new ObjectNotFoundException("Hotel with id=" + id + " not found");
+                });
         if (hotel.getIsDeleted()) {
+            log.error("Hotel with id=" + id + " marked as deleted");
             throw new ObjectNotFoundException("Hotel with id=" + id + " marked as deleted");
         }
+        log.debug("End HotelService.findById");
         return hotel;
     }
 
     private Hotel findBySlug(String slug) {
+        log.debug("Start HotelService.findBySlug");
         Hotel hotel = hotelRepo.findBySlug(slug)
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel with slug=" + slug + " not found"));
+                .orElseThrow(() -> {
+                    log.error("Hotel with slug=" + slug + " not found");
+                    return new ObjectNotFoundException("Hotel with slug=" + slug + " not found");
+                });
         if (hotel.getIsDeleted()) {
+            log.error("Hotel with slug=" + slug + " marked as deleted");
             throw new ObjectNotFoundException("Hotel with slug=" + slug + " marked as deleted");
         }
+        log.debug("End HotelService.findBySlug");
         return hotel;
     }
 
     private HotelDTO addGrade(HotelDTO hotelDTO) {
+        log.debug("Start HotelService.addGrade");
         GradeData gradeData = commentsRepo.averageGradeByHotelId(hotelDTO.getId());
         if (gradeData == null) {
             hotelDTO.setCommentAmount(0L);
@@ -84,20 +99,24 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         }
         hotelDTO.setGrade(gradeData.getGrade());
         hotelDTO.setCommentAmount(gradeData.getCount());
+        log.debug("End HotelService.addGrade");
         return hotelDTO;
     }
 
     private HotelDTO addGrade(HotelDTO hotelDTO, GradeData gradeData) {
+        log.debug("Start HotelService.addGrade");
         if (gradeData == null) {
             hotelDTO.setCommentAmount(0L);
             return hotelDTO;
         }
         hotelDTO.setGrade(gradeData.getGrade());
         hotelDTO.setCommentAmount(gradeData.getCount());
+        log.debug("End HotelService.addGrade");
         return hotelDTO;
     }
 
     private List<HotelDTO> modelsToDTOs(Stream<Hotel> hotels, Localization localization) {
+        log.debug("Start HotelService.modelsToDTOs");
         Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
                 .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<HotelDTO> hotelDTOs = hotels
@@ -107,29 +126,36 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
                 .map(hotelDTO -> addGrade(hotelDTO, grades.getOrDefault(hotelDTO.getId(), null)))
                 .toList();
         if (hotelDTOs.isEmpty()) {
+            log.error("Hotels with " + localization + " with localization not found");
             throw new ObjectNotFoundException("Hotels with " + localization + " with localization not found");
         }
+        log.debug("End HotelService.modelsToDTOs");
         return hotelDTOs;
     }
 
     public List<HotelDTO> getAll(Localization localization) {
+        log.debug("Start HotelService.getAll");
         List<Hotel> hotels = hotelRepo.findAll();
+        log.debug("End HotelService.getAll");
         return modelsToDTOs(hotels.stream(), localization);
     }
 
     @Transactional
     public HotelDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
+        log.debug("Start HotelService.uploadImage");
         String url = imageService.saveImage(ModelType.HOTEL, image);
         HotelMedia hotelMedia = new HotelMedia(url);
         hotelMediaRepo.saveAndFlush(hotelMedia);
         Hotel hotel = findById(id);
         hotel.addHeader(hotelMedia);
         hotelRepo.saveAndFlush(hotel);
+        log.debug("End HotelService.uploadImage");
         return new HotelDTO(hotel, local);
     }
 
     @Transactional
     public HotelDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
+        log.debug("Start HotelService.uploadImages");
         List<String> urls = imageService.saveImages(ModelType.HOTEL, images);
         List<HotelMedia> hotelMedias = urls.stream().map(HotelMedia::new).toList();
         Hotel hotel = findById(id);
@@ -138,10 +164,12 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
             hotel.addMedia(hotelMedia);
         }
         hotelRepo.saveAndFlush(hotel);
+        log.debug("End HotelService.uploadImages");
         return new HotelDTO(hotel, local);
     }
 
     public HotelDTO deleteImages(Long id, Localization local, List<String> images) {
+        log.debug("Start HotelService.deleteImages");
         imageService.deleteImages(images);
         List<HotelMedia> hotelMedias = hotelMediaRepo.findByHotel_id(id);
         for (HotelMedia hotelMedia : hotelMedias) {
@@ -154,32 +182,40 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
                 hotelMediaRepo.delete(hotelMedia);
             }
         }
+        log.debug("End HotelService.deleteImages");
         return new HotelDTO(findById(id), local);
     }
 
     public List<HotelDTO> getAllPaged(Localization localization, int page, int size) {
+        log.debug("Start HotelService.getAllPaged");
         Pageable hotelPage = PageRequest.of(page, size);
         Page<Hotel> hotels = hotelRepo.findAll(hotelPage);
+        log.debug("End HotelService.getAllPaged");
         return modelsToDTOs(hotels.stream(), localization);
     }
 
     public HotelDTO getById(Long id, Localization localization) {
+        log.debug("Start HotelService.getById");
         return addGrade(new HotelDTO(findById(id), localization));
     }
 
     public HotelDTO getBySlug(String slug, Localization localization) {
+        log.debug("Start HotelService.getBySlug");
         return addGrade(new HotelDTO(findBySlug(slug), localization));
     }
 
     @Transactional
     public void deleteById(Long id) {
+        log.debug("Start HotelService.deleteById");
         Hotel hotel = findById(id);
         hotel.setIsDeleted(true);
         hotelRepo.save(hotel);
+        log.debug("End HotelService.deleteById");
     }
 
     @Transactional
     public HotelDTO create(HotelLocalDTO hotelDTO, Localization localization) {
+        log.debug("Start HotelService.create");
         Hotel hotel = new Hotel();
         hotelRepo.saveAndFlush(hotel);
 
@@ -194,15 +230,18 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
 
         hotel.setSlug(slugUtils.getSlug(hotel));
         hotelRepo.saveAndFlush(hotel);
+        log.debug("End HotelService.create");
         return new HotelDTO(hotel, localization);
     }
 
     @Transactional
     public HotelDTO addLocal(Long id, HotelLocalDTO hotelDTO, Localization localization) {
+        log.debug("Start HotelService.addLocal");
         Hotel hotel = findById(id);
         boolean isExists = hotel.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
+            log.error(localization + " localization for hotel with id=" + id + " already exists");
             throw new ObjectAlreadyExistsException(
                     localization + " localization for hotel with id=" + id + " already exists");
         }
@@ -219,17 +258,22 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
 
         hotel.setSlug(slugUtils.getSlug(hotel));
         hotelRepo.saveAndFlush(hotel);
+        log.debug("End HotelService.addLocal");
         return new HotelDTO(hotel, localization);
     }
 
     @Transactional
     public HotelDTO updateLocal(Long id, HotelLocalDTO hotelDTO, Localization localization) {
+        log.debug("Start HotelService.updateLocal");
         Hotel hotel = findById(id);
         HotelLocal cur_local = hotel.getLocals().stream()
                 .filter(local -> local.getLocalization() == localization)
                 .findFirst()
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        localization + " localization for hotel with id=" + id + " not found"));
+                .orElseThrow(() -> {
+                    log.error(localization + " localization for hotel with id=" + id + " not found");
+                    return new ObjectNotFoundException(
+                            localization + " localization for hotel with id=" + id + " not found");
+                });
 
         cur_local.setName(hotelDTO.getName());
         cur_local.setCity(hotelDTO.getCity());
@@ -239,11 +283,13 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
 
         hotel.setSlug(slugUtils.getSlug(hotel));
         hotelRepo.saveAndFlush(hotel);
+        log.debug("End HotelService.updateLocal");
         return new HotelDTO(hotel, localization);
     }
 
     @Transactional
     public HotelDTO updateLogicData(Long id, HotelLogicDTO hotelDTO, Localization localization) {
+        log.debug("Start HotelService.updateLogicData");
         Hotel hotel = findById(id);
         hotel.setStars(hotelDTO.getStars());
 
@@ -252,7 +298,10 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         }
         for (Long propertyId : hotelDTO.getPropertyIds()) {
             Property property = propertyRepo.findById(propertyId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + propertyId + " not found"));
+                    .orElseThrow(() -> {
+                        log.error("Property with id=" + propertyId + " not found");
+                        return new ObjectNotFoundException("Property with id=" + propertyId + " not found");
+                    });
             hotel.addProperty(property);
         }
 
@@ -264,60 +313,80 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         }
         for (Long sightId : hotelDTO.getSightIds()) {
             Sight sight = sightRepo.findById(sightId)
-                    .orElseThrow(() -> new ObjectNotFoundException("Sight with id=" + sightId + " not found"));
+                    .orElseThrow(() -> {
+                        log.error("Sight with id=" + sightId + " not found");
+                        return new ObjectNotFoundException("Sight with id=" + sightId + " not found");
+                    });
             hotel.addSight(sight);
         }
 
         hotelRepo.saveAndFlush(hotel);
+        log.debug("End HotelService.updateLogicData");
         return new HotelDTO(hotel, localization);
     }
 
     @Transactional
     public HotelDTO updateGeoData(Long id, HotelGeoDTO hotelDTO, Localization localization) {
+        log.debug("Start HotelService.updateGeoData");
         Hotel hotel = findById(id);
 
         hotel.setLatitude(hotelDTO.getLatitude());
         hotel.setLongitude(hotelDTO.getLongitude());
 
         hotelRepo.saveAndFlush(hotel);
+        log.debug("End HotelService.updateGeoData");
         return new HotelDTO(hotel, localization);
     }
 
     private List<HotelCommentDTO> commentsToDTOs(Stream<HotelComment> comments) {
+        log.debug("Start HotelService.commentsToDTOs");
         List<HotelCommentDTO> commentDTOs = comments
                 .filter(comment -> !comment.getIsDeleted())
                 .map(HotelCommentDTO::new)
                 .toList();
         if (commentDTOs.isEmpty()) {
+            log.error("Comments not found");
             throw new ObjectNotFoundException("Comments not found");
         }
+        log.debug("End HotelService.commentsToDTOs");
         return commentDTOs;
     }
 
     private HotelComment findCommentByUserIdAndHotelId(Long authorId, Long hotelId) {
+        log.debug("Start HotelService.findCommentByUserIdAndHotelId");
         HotelComment comment = commentsRepo.findByUser_IdAndHotel_Id(authorId, hotelId)
-                .orElseThrow(() -> new ObjectNotFoundException("Hotel comment with author id=" + authorId + " not found"));
+                .orElseThrow(() -> {
+                    log.error("Hotel comment with author id=" + authorId + " not found");
+                    return new ObjectNotFoundException("Hotel comment with author id=" + authorId + " not found");
+                });
         if (comment.getIsDeleted()) {
+            log.error("Hotel comment with author id=" + authorId + " marked as deleted");
             throw new ObjectNotFoundException("Hotel comment with author id=" + authorId + " marked as deleted");
         }
+        log.debug("End HotelService.findCommentByUserIdAndHotelId");
         return comment;
     }
 
     public List<HotelCommentDTO> getAllCommentsById(Long id) {
+        log.debug("Start HotelService.getAllCommentsById");
         return commentsToDTOs(commentsRepo.findAllByHotel_IdOrderByCreatedAtDesc(id).stream());
     }
 
     public List<HotelCommentDTO> getPaginatedCommentsById(Long id, int page, int size) {
+        log.debug("Start HotelService.getPaginatedCommentsById");
         Pageable commentsPage = PageRequest.of(page, size);
+        log.debug("End HotelService.getPaginatedCommentsById");
         return commentsToDTOs(commentsRepo.findAllByHotel_IdOrderByCreatedAtDesc(id, commentsPage).stream());
     }
 
     @Transactional
     public HotelCommentDTO addComment(Long id, CommentDTO commentDTO) {
+        log.debug("Start HotelService.addComment");
         Hotel hotel = findById(id);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (commentsRepo.existsByUser_IdAndHotel_Id(user.getId(), id)) {
+            log.error("Comment for this hotel already exists");
             throw new ObjectAlreadyExistsException("Comment for this hotel already exists");
         }
 
@@ -326,21 +395,24 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
 
         hotel.addComment(comment);
         hotelRepo.saveAndFlush(hotel);
-
+        log.debug("End HotelService.addComment");
         return new HotelCommentDTO(comment);
     }
 
     @Transactional
     public void deleteComment(Long id) {
+        log.debug("Start HotelService.deleteComment");
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         HotelComment comment = findCommentByUserIdAndHotelId(user.getId(), id);
 
         commentsRepo.delete(comment);
+        log.debug("End HotelService.deleteComment");
     }
 
     @Transactional
     @SneakyThrows
     public HotelCommentDTO updateComment(Long id, CommentDTO commentDTO) {
+        log.debug("Start HotelService.updateComment");
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         HotelComment comment = findCommentByUserIdAndHotelId(user.getId(), id);
 
@@ -348,6 +420,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         comment.setGrade(commentDTO.getGrade());
 
         commentsRepo.saveAndFlush(comment);
+        log.debug("End HotelService.updateComment");
         return new HotelCommentDTO(comment);
     }
 }

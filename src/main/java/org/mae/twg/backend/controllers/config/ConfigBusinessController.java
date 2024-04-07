@@ -30,11 +30,13 @@ public class ConfigBusinessController {
 
     @GetMapping("/currency/history")
     @Operation(summary = "Получить всю историю валют",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )    public ResponseEntity<List<CurrencyHistory>> getHistory(@RequestParam(required = false) Currency currency) {
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>"))
+    public ResponseEntity<List<CurrencyHistory>> getHistory(@RequestParam(required = false) Currency currency) {
         if (currency == null) {
+            log.info("Отдать всю историю валют");
             return ResponseEntity.ok(currencyService.getAllCurrencyHistory());
         }
+        log.info("Отдать историю валют по " + currency.name());
         return ResponseEntity.ok(currencyService.getAllCurrencyHistoryByCurrency(currency));
     }
 
@@ -42,6 +44,7 @@ public class ConfigBusinessController {
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )    @GetMapping()
     public ResponseEntity<List<ConfigDTO>> getAll() {
+        log.info("Отдать всю конфигурацию");
         return ResponseEntity.ok(configBusinessService.getAll());
     }
 
@@ -50,15 +53,17 @@ public class ConfigBusinessController {
     )
     @GetMapping("/{key}")
     public ResponseEntity<ConfigDTO> get(@PathVariable ConfigBusinessEnum key) {
+        log.info("Отдать конфиг по ключу " + key.name());
         return ResponseEntity.ok(configBusinessService.get(key));
     }
 
-    @Operation(summary = "Получить конфиг по ключу",
+    @Operation(summary = "Положить конфиг по ключу",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     @PostMapping("/{key}/put")
     public ResponseEntity<ConfigDTO> put(@PathVariable ConfigBusinessEnum key,
                                          @RequestBody String value) {
+        log.info("Положили конфиг по ключу " + key.name());
         return ResponseEntity.ok(configBusinessService.put(key, value));
     }
 
@@ -67,6 +72,7 @@ public class ConfigBusinessController {
     )
     @DeleteMapping("/{key}/delete")
     public ResponseEntity<String> delete(@PathVariable ConfigBusinessEnum key) {
+        log.info("Удалил конфиг по ключу " + key.name());
         configBusinessService.delete(key);
         return ResponseEntity.ok().body("Config was deleted");
     }

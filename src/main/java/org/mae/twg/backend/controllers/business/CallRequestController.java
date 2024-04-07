@@ -27,8 +27,9 @@ public class CallRequestController {
     @Operation(summary = "Добавить заявку на звонок")
     public ResponseEntity<CallReqResponseDTO> addCall(@PathVariable Localization local,
                                                       @RequestBody CallRequestDTO callRequestDTO)  {
-        log.info("Добавить заявку на звонок");
+        log.info("Добавить заявку на звонок по агентству с id: " + callRequestDTO.getAgencyId());
         if (callRequestDTO == null) {
+            log.warn("Заявка на звонок пустая");
             throw new ValidationException("Заявка пустая");
         }
         return ResponseEntity.ok(callRequestService.addRequest(callRequestDTO, local));
@@ -48,8 +49,9 @@ public class CallRequestController {
     @Operation(summary = "Решить заявку")
     public ResponseEntity<List<CallReqResponseDTO>> resolve(@PathVariable Localization local,
                                                             @RequestBody Long requestId)  {
-        log.info("Решить заявку на звонок");
+        log.info("Решить заявку на звонок с id: " + requestId);
         if (requestId == null) {
+            log.warn("Не передали заявку на звонок");
             throw new ValidationException("Не передали заявку");
         }
         return ResponseEntity.ok(callRequestService.resolve(requestId, local));

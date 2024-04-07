@@ -43,8 +43,9 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
     public ResponseEntity<HotelDTO> uploadImage(@PathVariable Localization local,
                                                 @PathVariable Long id,
                                                 MultipartFile image) throws IOException {
-        log.info("Добавление обложки к отелю");
+        log.info("Добавление обложки к отелю с id: " + id);
         if (image == null) {
+            log.warn("Нет фотографии");
             throw new ValidationException("Нет фотографии");
         }
         return ResponseEntity.ok(getService().uploadImage(id, local, image));
@@ -58,8 +59,9 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
     public ResponseEntity<HotelDTO> uploadImages(@PathVariable Localization local,
                                                  @PathVariable Long id,
                                                  List<MultipartFile> images) throws IOException {
-        log.info("Добавление фотографий к отелю");
+        log.info("Добавление фотографий к отелю с id: " + id);
         if (images == null) {
+            log.warn("Пустой список фотографий");
             throw new ValidationException("Пустой список фотографий");
         }
         return ResponseEntity.ok(getService().uploadImages(id, local, images));
@@ -76,6 +78,7 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
                                                  @RequestBody List<String> images) {
         log.info("Delete images from hotel with id = " + id);
         if (images == null) {
+            log.warn("Empty images list");
             throw new ValidationException("Empty images list");
         }
         return ResponseEntity.ok(getService().deleteImages(id, local, images));
@@ -88,11 +91,14 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
                                         @RequestParam(required = false) Long id,
                                         @RequestParam(required = false) String slug) {
         if (id == null && slug == null) {
+            log.warn("One of id or slug is required");
             throw new ValidationException("One of id or slug is required");
         }
         if (id != null) {
+            log.info("Отдать отель по id: " + id);
             return ResponseEntity.ok(getService().getById(id, local));
         }
+        log.info("Отдать отель по slug: " + slug);
         return ResponseEntity.ok(getService().getBySlug(slug, local));
     }
 
@@ -130,6 +136,7 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
             return ResponseEntity.ok(getService().getAllCommentsById(id));
         }
         if (page == null || size == null) {
+            log.warn("Only both 'page' and 'size' params are required");
             throw new ValidationException("Only both 'page' and 'size' params are required");
         }
         return ResponseEntity.ok(getService().getPaginatedCommentsById(id, page, size));
@@ -153,7 +160,7 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<String> deleteComment(@PathVariable Long id) {
-        log.info("Удаление отзыва");
+        log.info("Удаление отзыва для отеля с id: " + id);
         getService().deleteComment(id);
         return ResponseEntity.ok("Comment was deleted");
     }
@@ -165,7 +172,7 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
     )
     public ResponseEntity<HotelCommentDTO> updateComment(@PathVariable Long id,
                                                          @RequestBody CommentDTO commentDTO) {
-        log.info("Изменение отзыва");
+        log.info("Изменение отзыва для отеля с id: " + id);
         return ResponseEntity.ok(getService().updateComment(id, commentDTO));
     }
 }

@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.travel.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.dto.travel.response.lightDTOs.HospitalLightDTO;
 import org.mae.twg.backend.dto.travel.response.lightDTOs.HotelLightDTO;
@@ -17,6 +18,7 @@ import java.util.Objects;
 
 @Data
 @AllArgsConstructor
+@Log4j2
 public class TourDTO implements ModelDTO {
     private Long id;
     private String slug;
@@ -40,6 +42,7 @@ public class TourDTO implements ModelDTO {
     private Boolean isActive;
 
     public TourDTO(Tour tour, Localization localization) {
+        log.debug("start TourDTO constructor");
         this.id = tour.getId();
         this.slug = tour.getSlug();
         TourLocal cur_local =
@@ -70,6 +73,7 @@ public class TourDTO implements ModelDTO {
         this.duration = tour.getDuration();
         this.route = tour.getRoute();
         this.localization = localization;
+        log.debug("end TourDTO constructor");
     }
 
     static public TourDTO getDTO(Tour tour, Localization localization) {

@@ -1,6 +1,7 @@
 package org.mae.twg.backend.services.auth;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.auth.JwtAuthenticationResponse;
 import org.mae.twg.backend.dto.auth.SignInRequest;
 import org.mae.twg.backend.dto.auth.SignUpRequest;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 @Service("AuthService")
 @AllArgsConstructor
+@Log4j2
 public class AuthService {
     private final UserService userService;
     private final JwtUtils jwtUtils;
@@ -36,6 +38,7 @@ public class AuthService {
     private final RefreshTokenRepo refreshTokenRepo;
 
     public User createUser(SignUpRequest request, UserRole role) {
+        log.debug("Start AuthService.createUser");
         return User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -51,16 +54,20 @@ public class AuthService {
     }
 
     public UserDTO addUserWithRole(SignUpRequest request, UserRole role) {
+        log.debug("Start AuthService.addUserWithRole");
         User user = createUser(request, role);
         userService.create(user);
+        log.debug("End AuthService.addUserWithRole");
         return new UserDTO(user);
     }
 
     public void deleteByUsername(String username) {
+        log.debug("Start AuthService.deleteByUsername");
         userService.deleteByUsername(username);
     }
 
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
+        log.debug("Start AuthService.signUp");
 
         User user = createUser(request, UserRole.USER);
 
@@ -69,10 +76,12 @@ public class AuthService {
 
         var jwt = jwtUtils.generateToken(user);
         var refreshToken = jwtUtils.createRefreshToken(user);
+        log.debug("End AuthService.signUp");
         return new JwtAuthenticationResponse(jwt, refreshToken.getToken());
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
+        log.debug("Start AuthService.signIn");
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
                 request.getPassword()
@@ -85,11 +94,13 @@ public class AuthService {
 
         var jwt = jwtUtils.generateToken(user);
         var refreshToken = jwtUtils.createRefreshToken(user);
+        log.debug("End AuthService.signIn");
         return new JwtAuthenticationResponse(jwt, refreshToken.getToken());
     }
 
     @Transactional
     public JwtAuthenticationResponse refreshToken(TokenRefreshRequest request) {
+        log.debug("Start AuthService.refreshToken");
         String requestRefreshToken = request.getRefreshToken();
 
         RefreshToken token = refreshTokenRepo.findByToken(requestRefreshToken)
@@ -98,6 +109,7 @@ public class AuthService {
         jwtUtils.verifyExpiration(token);
         String accessToken = jwtUtils.generateToken(token.getUser());
         userService.refreshLastLogin(token.getUser());
+        log.debug("End AuthService.refreshToken");
         return new JwtAuthenticationResponse(accessToken, token.getToken());
     }
 
