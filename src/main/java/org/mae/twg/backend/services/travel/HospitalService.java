@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.HospitalGeoDTO;
@@ -41,6 +42,7 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class HospitalService implements TravelService<HospitalDTO, HospitalLocalDTO> {
     private final HospitalRepo hospitalRepo;
     private final HospitalLocalRepo localRepo;
@@ -50,24 +52,37 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
     private final HospitalMediaRepo hospitalMediaRepo;
 
     public Hospital findById(Long id) {
+        log.debug("Start HospitalService.findById");
         Hospital hospital = hospitalRepo.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Hospital with id=" + id + " not found"));
+                .orElseThrow(() -> {
+                    log.error("Hospital with id=" + id + " not found");
+                    return new ObjectNotFoundException("Hospital with id=" + id + " not found");
+                });
         if (hospital.getIsDeleted()) {
+            log.error("Hospital with id=" + id + " marked as deleted");
             throw new ObjectNotFoundException("Hospital with id=" + id + " marked as deleted");
         }
+        log.debug("End HospitalService.findById");
         return hospital;
     }
 
     private Hospital findBySlug(String slug) {
+        log.debug("Start HospitalService.findBySlug");
         Hospital hospital = hospitalRepo.findBySlug(slug)
-                .orElseThrow(() -> new ObjectNotFoundException("Hospital with slug=" + slug + " not found"));
+                .orElseThrow(() -> {
+                    log.error("Hospital with slug=" + slug + " not found");
+                    return new ObjectNotFoundException("Hospital with slug=" + slug + " not found");
+                });
         if (hospital.getIsDeleted()) {
+            log.error("Hospital with slug=" + slug + " marked as deleted");
             throw new ObjectNotFoundException("Hospital with slug=" + slug + " marked as deleted");
         }
+        log.debug("End HospitalService.findBySlug");
         return hospital;
     }
 
     private HospitalDTO addGrade(HospitalDTO hospitalDTO) {
+        log.debug("Start HospitalService.addGrade");
         GradeData gradeData = commentsRepo.averageGradeByHospitalId(hospitalDTO.getId());
         if (gradeData == null) {
             hospitalDTO.setCommentAmount(0L);
@@ -75,20 +90,24 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
         }
         hospitalDTO.setGrade(gradeData.getGrade());
         hospitalDTO.setCommentAmount(gradeData.getCount());
+        log.debug("End HospitalService.addGrade");
         return hospitalDTO;
     }
 
     private HospitalDTO addGrade(HospitalDTO hospitalDTO, GradeData gradeData) {
+        log.debug("Start HospitalService.addGrade");
         if (gradeData == null) {
             hospitalDTO.setCommentAmount(0L);
             return hospitalDTO;
         }
         hospitalDTO.setGrade(gradeData.getGrade());
         hospitalDTO.setCommentAmount(gradeData.getCount());
+        log.debug("End HospitalService.addGrade");
         return hospitalDTO;
     }
 
     private List<HospitalDTO> modelsToDTOs(Stream<Hospital> hospitals, Localization localization) {
+        log.debug("Start HospitalService.modelsToDTOs");
         Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
                 .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<HospitalDTO> hospitalDTOs = hospitals
@@ -98,29 +117,36 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
                 .map(hospitalDTO -> addGrade(hospitalDTO, grades.getOrDefault(hospitalDTO.getId(), null)))
                 .toList();
         if (hospitalDTOs.isEmpty()) {
+            log.error("Hospitals with " + localization + " with localization not found");
             throw new ObjectNotFoundException("Hospitals with " + localization + " with localization not found");
         }
+        log.debug("End HospitalService.modelsToDTOs");
         return hospitalDTOs;
     }
 
     public List<HospitalDTO> getAll(Localization localization) {
+        log.debug("Start HospitalService.getAll");
         List<Hospital> hospitals = hospitalRepo.findAll();
+        log.debug("End HospitalService.getAll");
         return modelsToDTOs(hospitals.stream(), localization);
     }
 
     @Transactional
     public HospitalDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
+        log.debug("Start HospitalService.uploadImage");
         String url = imageService.saveImage(ModelType.HOTEL, image);
         HospitalMedia hospitalMedia = new HospitalMedia(url);
         hospitalMediaRepo.saveAndFlush(hospitalMedia);
         Hospital hospital = findById(id);
         hospital.addHeader(hospitalMedia);
         hospitalRepo.saveAndFlush(hospital);
+        log.debug("End HospitalService.uploadImage");
         return new HospitalDTO(hospital, local);
     }
 
     @Transactional
     public HospitalDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
+        log.debug("Start HospitalService.uploadImages");
         List<String> urls = imageService.saveImages(ModelType.HOTEL, images);
         List<HospitalMedia> hospitalMedias = urls.stream().map(HospitalMedia::new).toList();
         Hospital hospital = findById(id);
@@ -129,10 +155,12 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
             hospital.addMedia(hospitalMedia);
         }
         hospitalRepo.saveAndFlush(hospital);
+        log.debug("End HospitalService.uploadImages");
         return new HospitalDTO(hospital, local);
     }
 
     public HospitalDTO deleteImages(Long id, Localization local, List<String> images) {
+        log.debug("Start HospitalService.deleteImages");
         imageService.deleteImages(images);
         List<HospitalMedia> hospitalMedias = hospitalMediaRepo.findByHospital_id(id);
         for (HospitalMedia hospitalMedia : hospitalMedias) {
@@ -145,32 +173,40 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
                 hospitalMediaRepo.delete(hospitalMedia);
             }
         }
+        log.debug("End HospitalService.deleteImages");
         return new HospitalDTO(findById(id), local);
     }
 
     public List<HospitalDTO> getAllPaged(Localization localization, int page, int size) {
+        log.debug("Start HospitalService.getAllPaged");
         Pageable hospitalPage = PageRequest.of(page, size);
         Page<Hospital> hospitals = hospitalRepo.findAll(hospitalPage);
+        log.debug("End HospitalService.getAllPaged");
         return modelsToDTOs(hospitals.stream(), localization);
     }
 
     public HospitalDTO getById(Long id, Localization localization) {
+        log.debug("Start HospitalService.getById");
         return addGrade(new HospitalDTO(findById(id), localization));
     }
 
     public HospitalDTO getBySlug(String slug, Localization localization) {
+        log.debug("Start HospitalService.getBySlug");
         return addGrade(new HospitalDTO(findBySlug(slug), localization));
     }
 
     @Transactional
     public void deleteById(Long id) {
+        log.debug("Start HospitalService.deleteById");
         Hospital hospital = findById(id);
         hospital.setIsDeleted(true);
         hospitalRepo.save(hospital);
+        log.debug("End HospitalService.deleteById");
     }
 
     @Transactional
     public HospitalDTO create(HospitalLocalDTO hospitalDTO, Localization localization) {
+        log.debug("Start HospitalService.create");
         Hospital hospital = new Hospital();
         hospitalRepo.saveAndFlush(hospital);
 
@@ -185,15 +221,18 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
 
         hospital.setSlug(slugUtils.getSlug(hospital));
         hospitalRepo.saveAndFlush(hospital);
+        log.debug("End HospitalService.create");
         return new HospitalDTO(hospital, localization);
     }
 
     @Transactional
     public HospitalDTO addLocal(Long id, HospitalLocalDTO hospitalDTO, Localization localization) {
+        log.debug("Start HospitalService.addLocal");
         Hospital hospital = findById(id);
         boolean isExists = hospital.getLocalizations().stream()
                 .anyMatch(local -> local.getLocalization() == localization);
         if (isExists) {
+            log.error(localization + " localization for hospital with id=" + id + " already exists");
             throw new ObjectAlreadyExistsException(
                     localization + " localization for hospital with id=" + id + " already exists");
         }
@@ -210,17 +249,22 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
 
         hospital.setSlug(slugUtils.getSlug(hospital));
         hospitalRepo.saveAndFlush(hospital);
+        log.debug("End HospitalService.addLocal");
         return new HospitalDTO(hospital, localization);
     }
 
     @Transactional
     public HospitalDTO updateLocal(Long id, HospitalLocalDTO hospitalDTO, Localization localization) {
+        log.debug("Start HospitalService.updateLocal");
         Hospital hospital = findById(id);
         HospitalLocal cur_local = hospital.getLocals().stream()
                 .filter(local -> local.getLocalization() == localization)
                 .findFirst()
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        localization + " localization for hospital with id=" + id + " not found"));
+                .orElseThrow(() -> {
+                    log.error(localization + " localization for hospital with id=" + id + " not found");
+                    return new ObjectNotFoundException(
+                            localization + " localization for hospital with id=" + id + " not found");
+                });
 
         cur_local.setName(hospitalDTO.getName());
         cur_local.setCity(hospitalDTO.getCity());
@@ -230,55 +274,72 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
 
         hospital.setSlug(slugUtils.getSlug(hospital));
         hospitalRepo.saveAndFlush(hospital);
+        log.debug("End HospitalService.updateLocal");
         return new HospitalDTO(hospital, localization);
     }
 
     @Transactional
     public HospitalDTO updateGeoData(Long id, HospitalGeoDTO hospitalDTO, Localization localization) {
+        log.debug("Start HospitalService.updateGeoData");
         Hospital hospital = findById(id);
 
         hospital.setLatitude(hospitalDTO.getLatitude());
         hospital.setLongitude(hospitalDTO.getLongitude());
 
         hospitalRepo.saveAndFlush(hospital);
+        log.debug("End HospitalService.updateGeoData");
         return new HospitalDTO(hospital, localization);
     }
 
     private List<HospitalCommentDTO> commentsToDTOs(Stream<HospitalComment> comments) {
+        log.debug("Start HospitalService.commentsToDTOs");
         List<HospitalCommentDTO> commentDTOs = comments
                 .filter(comment -> !comment.getIsDeleted())
                 .map(HospitalCommentDTO::new)
                 .toList();
         if (commentDTOs.isEmpty()) {
+            log.error("Comments not found");
             throw new ObjectNotFoundException("Comments not found");
         }
+        log.debug("End HospitalService.commentsToDTOs");
         return commentDTOs;
     }
 
     private HospitalComment findCommentByUserIdAndHospitalId(Long authorId, Long hospitalId) {
+        log.debug("Start HospitalService.findCommentByUserIdAndHospitalId");
         HospitalComment comment = commentsRepo.findByUser_IdAndHospital_Id(authorId, hospitalId)
-                .orElseThrow(() -> new ObjectNotFoundException("Hospital comment with author id=" + authorId + " not found"));
+                .orElseThrow(() -> {
+                    log.error("Hospital comment with author id=" + authorId + " not found");
+                    return new ObjectNotFoundException("Hospital comment with author id=" + authorId + " not found");
+                });
         if (comment.getIsDeleted()) {
+            log.error("Hospital comment with author id=" + authorId + " marked as deleted");
             throw new ObjectNotFoundException("Hospital comment with author id=" + authorId + " marked as deleted");
         }
+        log.debug("End HospitalService.findCommentByUserIdAndHospitalId");
         return comment;
     }
 
     public List<HospitalCommentDTO> getAllCommentsById(Long id) {
+        log.debug("Start HospitalService.getAllCommentsById");
         return commentsToDTOs(commentsRepo.findAllByHospital_IdOrderByCreatedAtDesc(id).stream());
     }
 
     public List<HospitalCommentDTO> getPaginatedCommentsById(Long id, int page, int size) {
+        log.debug("Start HospitalService.getPaginatedCommentsById");
         Pageable commentsPage = PageRequest.of(page, size);
+        log.debug("End HospitalService.getPaginatedCommentsById");
         return commentsToDTOs(commentsRepo.findAllByHospital_IdOrderByCreatedAtDesc(id, commentsPage).stream());
     }
 
     @Transactional
     public HospitalCommentDTO addComment(Long id, CommentDTO commentDTO) {
+        log.debug("Start HospitalService.addComment");
         Hospital hospital = findById(id);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (commentsRepo.existsByUser_IdAndHospital_Id(user.getId(), id)) {
+            log.error("Comment for this hospital already exists");
             throw new ObjectAlreadyExistsException("Comment for this hospital already exists");
         }
 
@@ -287,21 +348,24 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
 
         hospital.addComment(comment);
         hospitalRepo.saveAndFlush(hospital);
-
+        log.debug("End HospitalService.addComment");
         return new HospitalCommentDTO(comment);
     }
 
     @Transactional
     public void deleteComment(Long id) {
+        log.debug("Start HospitalService.deleteComment");
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         HospitalComment comment = findCommentByUserIdAndHospitalId(user.getId(), id);
 
         commentsRepo.delete(comment);
+        log.debug("End HospitalService.deleteComment");
     }
 
     @Transactional
     @SneakyThrows
     public HospitalCommentDTO updateComment(Long id, CommentDTO commentDTO) {
+        log.debug("Start HospitalService.updateComment");
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         HospitalComment comment = findCommentByUserIdAndHospitalId(user.getId(), id);
 
@@ -309,6 +373,7 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
         comment.setGrade(commentDTO.getGrade());
 
         commentsRepo.saveAndFlush(comment);
+        log.debug("End HospitalService.updateComment");
         return new HospitalCommentDTO(comment);
     }
 }

@@ -71,37 +71,46 @@ public class ConfigBusinessService {
     }
 
     public ConfigDTO put(ConfigBusinessEnum key, String value) {
+        log.debug("Start ConfigBusinessService.put");
         if (key == ConfigBusinessEnum.USD_TO_USD) {
+            log.error("У нас так не принято");
             throw new ValidationException("У нас так не принято");
         }
         if (key == ConfigBusinessEnum.USD_TO_UZS || key == ConfigBusinessEnum.USD_TO_RUB) {
             currencyService.putCurrency(key, value);
         }
         configRepo.add(key.name(), value);
+        log.debug("End ConfigBusinessService.put");
         return new ConfigDTO(key, value);
     }
 
     public ConfigDTO get(ConfigBusinessEnum key) {
+        log.debug("Start ConfigBusinessService.get");
         if (key == ConfigBusinessEnum.USD_TO_USD) {
+            log.debug("End ConfigBusinessService.get");
             return new ConfigDTO(key, "1.0");
         }
         if (!configRepo.exists(key.name())) {
             init();
             if (!configRepo.exists(key.name())) {
+                log.error("ObjectNotFoundException");
                 throw new ObjectNotFoundException("Config " + key + " not found");
             }
         }
+        log.debug("End ConfigBusinessService.get");
         return new ConfigDTO(key, configRepo.find(key.name()));
     }
 
     public List<ConfigDTO> getAll() {
         Map<String, String> configs = configRepo.findAll();
+        log.debug("Start ConfigBusinessService.getAll");
         return configs.entrySet().stream()
                 .map(entry -> new ConfigDTO(ConfigBusinessEnum.valueOf(entry.getKey()), entry.getValue()))
                 .toList();
     }
 
     public void delete(ConfigBusinessEnum key) {
+        log.debug("Start ConfigBusinessService.delete");
         configRepo.delete(key.name());
     }
 }
