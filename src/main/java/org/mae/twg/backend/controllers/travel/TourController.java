@@ -66,7 +66,8 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
                                                        @RequestParam(required = false) Long minCost,
                                                        @RequestParam(required = false) Long maxCost,
                                                        @RequestParam(required = false) List<Stars> stars,
-                                                       @RequestParam(required = false) List<Long> resortIds) {
+                                                       @RequestParam(required = false) List<Long> resortIds,
+                                                       @RequestParam(required = false) List<Long> hotelsIds) {
         validatePageable(page, size);
         if (countryIds == null) {
             countryIds = List.of();
@@ -86,8 +87,11 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
         if (hospitalIds == null) {
             hospitalIds = List.of();
         }
+        if (hotelsIds == null) {
+            hotelsIds = List.of();
+        }
         return ResponseEntity.ok(getService().findByFilters(
-                countryIds, tagIds, hospitalIds, types,
+                countryIds, tagIds, hospitalIds, hotelsIds, types,
                 minDuration, maxDuration,
                 minCost, maxCost,
                 stars, resortIds,
