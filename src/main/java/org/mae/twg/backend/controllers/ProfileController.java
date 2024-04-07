@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.auth.PasswordDTO;
 import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
 import org.mae.twg.backend.dto.profile.ProfileDTO;
 import org.mae.twg.backend.dto.profile.TelegramDataDTO;
@@ -14,6 +15,7 @@ import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.enums.Localization;
+import org.mae.twg.backend.services.auth.AuthService;
 import org.mae.twg.backend.services.auth.UserService;
 import org.mae.twg.backend.utils.BotUtils;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,7 @@ import java.util.List;
 @Log4j2
 public class ProfileController {
     private final UserService userService;
+    private final AuthService authService;
     private final BotUtils botUtils;
 
     @ResponseBody
@@ -52,6 +55,38 @@ public class ProfileController {
         return ResponseEntity.ok(userDTO);
     }
 
+    @ResponseBody
+    @Operation(
+            summary = "Проверка пароля",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>")
+    )
+    @PostMapping("/password/check")
+    public ResponseEntity<String> checkPassword(@RequestBody PasswordDTO passwordDTO) {
+        log.info("Проверка пароля");
+        authService.checkPassword(passwordDTO);
+        return ResponseEntity.ok("Password is correct");
+    }
+
+    @ResponseBody
+    @Operation(
+            summary = "Обновление пароля",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>")
+    )
+    @PostMapping("/password/update")
+    public ResponseEntity<String> updatePassword(@RequestBody PasswordDTO passwordDTO) {
+        log.info("Обновление пароля");
+        authService.updatePassword(passwordDTO);
+        return ResponseEntity.ok("Password was updated");
+    }
+
     @PostMapping("/image/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     @Operation(summary = "Добавить фотографии",
@@ -67,6 +102,7 @@ public class ProfileController {
         }
         return ResponseEntity.ok(userService.uploadImages(image));
     }
+
 
     @PostMapping("/update")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")

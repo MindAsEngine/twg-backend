@@ -2,10 +2,7 @@ package org.mae.twg.backend.services.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.mae.twg.backend.dto.auth.JwtAuthenticationResponse;
-import org.mae.twg.backend.dto.auth.SignInRequest;
-import org.mae.twg.backend.dto.auth.SignUpRequest;
-import org.mae.twg.backend.dto.auth.TokenRefreshRequest;
+import org.mae.twg.backend.dto.auth.*;
 import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.exceptions.TokenValidationException;
 import org.mae.twg.backend.models.auth.RefreshToken;
@@ -51,6 +48,28 @@ public class AuthService {
                 .lastLogin(LocalDateTime.now())
                 .isEnabled(true)
                 .build();
+    }
+
+    public void checkPassword(PasswordDTO passwordDTO) {
+        log.debug("Start UserService.checkPassword");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Check password for user with username = " + username);
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                username,
+                passwordDTO.getPassword()
+        ));
+        log.debug("End UserService.checkPassword");
+    }
+
+    public void updatePassword(PasswordDTO passwordDTO) {
+        log.debug("Start UserService.updatePassword");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Check password for user with username = " + username);
+        User user = userService.loadUserByUsername(username);
+        String encoded = passwordEncoder.encode(passwordDTO.getPassword());
+        user.setPassword(encoded);
+        userService.save(user);
+        log.debug("End UserService.updatePassword");
     }
 
     public UserDTO addUserWithRole(SignUpRequest request, UserRole role) {
