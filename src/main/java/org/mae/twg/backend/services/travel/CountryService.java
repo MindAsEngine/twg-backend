@@ -9,6 +9,7 @@ import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Country;
 import org.mae.twg.backend.models.travel.enums.Localization;
+import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.CountryLocal;
 import org.mae.twg.backend.repositories.travel.CountryRepo;
 import org.mae.twg.backend.repositories.travel.localization.CountryLocalRepo;
@@ -119,6 +120,18 @@ public class CountryService implements TravelService<CountryDTO, CountryLocalDTO
         Page<Country> countries = countryRepo.findAll(countryPage);
         log.debug("End CountryService.getAllPaged");
         return modelsToDTOs(countries.stream(), localization);
+    }
+
+    public List<CountryDTO> getByFilters(List<TourType> types, Localization localization,
+                                         Integer page, Integer size) {
+        log.debug("Start CountryService.getByFilters");
+        Pageable pageable = null;
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size);
+        }
+        log.debug("End CountryService.getByFilters");
+        return modelsToDTOs(countryRepo.findAllByTourType(
+                types.stream().map(TourType::name).toList(), pageable).stream(), localization);
     }
 
     @Transactional

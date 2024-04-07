@@ -3,6 +3,7 @@ package org.mae.twg.backend.services.travel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.HotelGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.HotelLocalDTO;
@@ -23,7 +24,6 @@ import org.mae.twg.backend.models.travel.media.HotelMedia;
 import org.mae.twg.backend.repositories.travel.HotelRepo;
 import org.mae.twg.backend.repositories.travel.PropertyRepo;
 import org.mae.twg.backend.repositories.travel.SightRepo;
-import org.mae.twg.backend.dto.GradeData;
 import org.mae.twg.backend.repositories.travel.comments.HotelCommentsRepo;
 import org.mae.twg.backend.repositories.travel.images.HotelMediaRepo;
 import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
@@ -192,6 +192,17 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         Page<Hotel> hotels = hotelRepo.findAll(hotelPage);
         log.debug("End HotelService.getAllPaged");
         return modelsToDTOs(hotels.stream(), localization);
+    }
+
+    public List<HotelDTO> getByFilters(List<Long> resortIds, Localization localization,
+                                         Integer page, Integer size) {
+        log.debug("Start HotelService.getByFilters");
+        Pageable pageable = null;
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size);
+        }
+        log.debug("End HotelService.getByFilters");
+        return modelsToDTOs(hotelRepo.findAllByResort_IdIn(resortIds, pageable).stream(), localization);
     }
 
     public HotelDTO getById(Long id, Localization localization) {
