@@ -13,6 +13,7 @@ import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.travel.Hotel;
 import org.mae.twg.backend.models.travel.Property;
+import org.mae.twg.backend.models.travel.Resort;
 import org.mae.twg.backend.models.travel.Sight;
 import org.mae.twg.backend.models.travel.comments.HotelComment;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -51,6 +52,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
     private final HotelLocalRepo localRepo;
     private final HotelCommentsRepo commentsRepo;
     private final PropertyRepo propertyRepo;
+    private final ResortService resortService;
     private final SightRepo sightRepo;
     private final SlugUtils slugUtils;
     private final ImageService imageService;
@@ -253,6 +255,9 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
                     .orElseThrow(() -> new ObjectNotFoundException("Property with id=" + propertyId + " not found"));
             hotel.addProperty(property);
         }
+
+        Resort resort = resortService.findById(hotelDTO.getResortId());
+        hotel.setResort(resort);
 
         for (Sight sight : hotel.getSights().stream().toList()) {
             hotel.removeSight(sight);

@@ -30,7 +30,7 @@ public class ResortService implements TravelService<ResortDTO, ResortLocalDTO> {
     private final ResortLocalRepo localRepo;
     private final CountryService countryService;
 
-    private Resort findById(Long id) {
+    public Resort findById(Long id) {
         Resort resort = resortRepo.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Resort with id=" + id + " not found"));
         if (resort.getIsDeleted()) {
