@@ -68,7 +68,8 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
                                                        @RequestParam(required = false) Long minCost,
                                                        @RequestParam(required = false) Long maxCost,
                                                        @RequestParam(required = false) List<Stars> stars,
-                                                       @RequestParam(required = false) List<Long> resortIds) {
+                                                       @RequestParam(required = false) List<Long> resortIds,
+                                                       @RequestParam(required = false) List<Long> hotelsIds) {
         validatePageable(page, size);
         if (countryIds == null) {
             log.warn("countryIds пусто");
@@ -94,9 +95,13 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
             log.warn("hospitalIds пусто");
             hospitalIds = List.of();
         }
+        if (hotelsIds == null) {
+            log.warn("hotelsIds пусто");
+            hotelsIds = List.of();
+        }
         log.info("Туры по координатам");
         return ResponseEntity.ok(getService().findByFilters(
-                countryIds, tagIds, hospitalIds, types,
+                countryIds, tagIds, hospitalIds, hotelsIds, types,
                 minDuration, maxDuration,
                 minCost, maxCost,
                 stars, resortIds,

@@ -16,4 +16,6 @@ public class HotelLogicDTO implements RequestDTO {
     private List<Long> propertyIds;
     @Schema(description = "Массив точек интереса", example = "1, 2, 3")
     private List<Long> sightIds;
+    @Schema(description = "Id курорта", example = "1, 2, 3")
+    private Long resortId;
 }

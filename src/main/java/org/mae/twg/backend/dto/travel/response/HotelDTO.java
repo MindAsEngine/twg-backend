@@ -2,7 +2,6 @@ package org.mae.twg.backend.dto.travel.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.dto.travel.response.lightDTOs.SightLightDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
@@ -17,7 +16,6 @@ import java.util.Objects;
 
 @Data
 @AllArgsConstructor
-@Log4j2
 public class HotelDTO implements ModelDTO {
     private Long id;
     private String slug;
@@ -36,6 +34,7 @@ public class HotelDTO implements ModelDTO {
     private List<String> medias;
     private List<PropertyDTO> properties;
     private List<SightLightDTO> sights;
+    private ResortDTO resort;
 
     public HotelDTO(Hotel hotel, Localization localization) {
         log.debug("start HotelDTO constructor");
@@ -66,6 +65,7 @@ public class HotelDTO implements ModelDTO {
                 .filter(Objects::nonNull)
                 .toList();
         this.localization = localization;
+        this.resort = ResortDTO.getDTO(hotel.getResort(), localization);
         log.debug("end HotelDTO constructor");
     }
 

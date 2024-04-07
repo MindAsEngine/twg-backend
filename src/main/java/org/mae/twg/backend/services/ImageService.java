@@ -22,7 +22,7 @@ import java.util.UUID;
 public class ImageService {
     @Value("${upload.path}")
     private String parent_path;
-    @Cacheable("images")
+    //@Cacheable("images")
     public Resource loadFileAsResource(String folder, String filename) throws MalformedURLException {
         Path fileStorageLocation = Paths.get(parent_path + "/" + folder).toAbsolutePath().normalize();
         Path filePath = fileStorageLocation.resolve(filename).normalize();

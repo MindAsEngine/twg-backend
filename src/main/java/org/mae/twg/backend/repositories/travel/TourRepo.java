@@ -50,6 +50,8 @@ where regexp_like(l.title, :title, 'i')
             where 
                 (:countries is null or t.country_id in :countries)
                 and
+                (:hotels is null or h.hotel_id in :hotels)
+                and
                 (:tags is null or tt.tag_id in :tags)
                 and
                 (:types is null or t.type in :types)
@@ -71,6 +73,7 @@ where regexp_like(l.title, :title, 'i')
     Page<Tour> findFilteredFours(@Param("countries") List<Long> countryIds,
                                  @Param("tags") List<Long> tagIds,
                                  @Param("hospitals") List<Long> hospitalIds,
+                                 @Param("hotels") List<Long> hotelId,
                                  @Param("types") List<String> types,
                                  @Param("minDur") Integer minDuration,
                                  @Param("maxDur") Integer maxDuration,
