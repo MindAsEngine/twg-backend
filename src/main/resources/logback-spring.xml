@@ -1,27 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!--
-    consoleAppender — пишет записи согласно указанному нами паттерну в привычную нам консоль
-    -->
+    <!-- consoleAppender -->
     <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <!--
-            %d: Дата и время лога.
-            [%thread]: Имя потока.
-            %-5level: Уровень лога (например, INFO, DEBUG).
-            %logger{35}: Имя логгера (с ограничением в 35 символов).
-            [%mdc]: Контекст Mapped Diagnostic Context, если есть.
-            %msg: Сообщение лога.
-            %n: Перевод строки.
-            -->
             <pattern>%d [%thread] %-5level  %logger{35} - [%mdc] - %msg%n</pattern>
         </encoder>
     </appender>
-    <!--
-    filebeatAppender — пишет записи в файл, причем в качестве енкодера используется LogstashEncoder из той самой библиотеки logstash-logback-encoder
-    -->
+    <!-- filebeatAppender -->
     <appender name="filebeatAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- Путь -->
         <file>./log/application.log</file>
         <append>true</append>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
@@ -30,9 +16,20 @@
             <maxFileSize>100MB</maxFileSize>
         </rollingPolicy>
     </appender>
-
-    <root level="INFO">
+    <!-- hibernateAppender -->
+    <appender name="hibernateAppender" class="ch.qos.logback.core.FileAppender">
+        <file>./log/hibernate.log</file>
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!-- root logger -->
+    <root level="DEBUG">
         <appender-ref ref="consoleAppender" />
         <appender-ref ref="filebeatAppender" />
     </root>
+    <!-- Hibernate logger -->
+    <logger name="org.hibernate" level="DEBUG">
+        <appender-ref ref="hibernateAppender" />
+    </logger>
 </configuration>
