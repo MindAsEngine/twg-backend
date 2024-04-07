@@ -34,8 +34,9 @@ public class NewsController extends BaseController<NewsService, NewsDTO, NewsLoc
     public ResponseEntity<NewsDTO> uploadImages(@PathVariable Localization local,
                                           @PathVariable Long id,
                                           List<MultipartFile> images) throws IOException {
-        log.info("Добавление фотографий к новости");
+        log.info("Добавление фотографий к новости с id: " + id);
         if (images == null) {
+            log.warn("Пустой список фотографий");
             throw new ValidationException("Пустой список фотографий");
         }
         return ResponseEntity.ok(getService().uploadImages(id, local, images));
@@ -51,6 +52,7 @@ public class NewsController extends BaseController<NewsService, NewsDTO, NewsLoc
                                           @RequestBody List<String> images) {
         log.info("Delete images from news with id = " + id);
         if (images == null) {
+            log.warn("Empty images list");
             throw new ValidationException("Empty images list");
         }
         return ResponseEntity.ok(getService().deleteImages(id, local, images));
@@ -58,16 +60,19 @@ public class NewsController extends BaseController<NewsService, NewsDTO, NewsLoc
 
 
     @GetMapping("/get")
-    @Operation(summary = "Отдать новость по id")
+    @Operation(summary = "Отдать новость по id или по slug")
     public ResponseEntity<NewsDTO> get(@PathVariable Localization local,
                                  @RequestParam(required = false) Long id,
                                  @RequestParam(required = false) String slug) {
         if (id == null && slug == null) {
+            log.warn("One of id or slug is required");
             throw new ValidationException("One of id or slug is required");
         }
         if (id != null) {
+            log.info("Отдать новость по id: " + id);
             return ResponseEntity.ok(getService().getById(id, local));
         }
+        log.info("Отдать новость по slug: " + slug);
         return ResponseEntity.ok(getService().getBySlug(slug, local));
     }
 }

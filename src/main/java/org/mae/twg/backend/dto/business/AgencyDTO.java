@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.business;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.business.Agency;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
+@Log4j2
 public class AgencyDTO implements Serializable, ModelDTO {
     private Long id;
     private String name;
@@ -21,6 +23,7 @@ public class AgencyDTO implements Serializable, ModelDTO {
     private Localization localization;
 
     public AgencyDTO(Agency agency, Localization localization) {
+        log.debug("start AgencyDTO constructor");
         this.id = agency.getId();
         AgencyLocal cur_local =
                 agency.getLocals().stream()
@@ -33,12 +36,15 @@ public class AgencyDTO implements Serializable, ModelDTO {
         this.address = cur_local.getAddress();
         this.contacts = cur_local.getContacts();
         this.localization = localization;
+        log.debug("end AgencyDTO constructor");
     }
 
     static public AgencyDTO getDTO(Agency agency, Localization localization) {
+        log.debug("start AgencyDTO.getDTO");
         if (agency == null || agency.getIsDeleted()) {
             return null;
         }
+        log.debug("end AgencyDTO.getDTO");
         return new AgencyDTO(agency, localization);
     }
 }

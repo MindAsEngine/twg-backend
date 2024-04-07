@@ -45,19 +45,23 @@ public class ConfigVisualService {
         }
     }
     public Map<ConfigDisplayEnum, Boolean> put(Map<ConfigDisplayEnum, Boolean> config) {
+        log.debug("Start ConfigVisualRepo.put");
         for (Map.Entry<ConfigDisplayEnum, Boolean> entry : config.entrySet()) {
             String key = entry.getKey().name();
             String value = entry.getValue().toString();
             configRepo.add(key, value);
         }
+        log.debug("End ConfigVisualRepo.put");
         return getAll();
     }
     public Map<ConfigDisplayEnum, Boolean> getAll() {
+        log.debug("Start ConfigVisualRepo.getAll");
         Map<String, String> configs = configRepo.findAll();
         Map<ConfigDisplayEnum, Boolean> result = new HashMap<>();
         for (Map.Entry<String, String> entry : configs.entrySet()) {
             result.put(ConfigDisplayEnum.valueOf(entry.getKey()), Boolean.valueOf(entry.getValue()));
         }
+        log.debug("End ConfigVisualRepo.getAll");
         return result;
     }
 }

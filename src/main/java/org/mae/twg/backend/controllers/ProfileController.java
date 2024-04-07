@@ -47,7 +47,9 @@ public class ProfileController {
     @GetMapping("/me")
     public ResponseEntity<UserDTO> currentUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok((new UserDTO((User) authentication.getPrincipal())));
+        UserDTO userDTO = new UserDTO((User) authentication.getPrincipal());
+        log.info("Профиль пользователя: " + userDTO.getUsername());
+        return ResponseEntity.ok(userDTO);
     }
 
     @PostMapping("/image/upload")
@@ -60,6 +62,7 @@ public class ProfileController {
         Long id = ((User) authentication.getPrincipal()).getId();
         log.info("Добавление фотографии к профилю c id = " + id);
         if (image == null) {
+            log.warn("Пустой список фотографий к профилю c id: " + id);
             throw new ValidationException("Пустой список фотографий");
         }
         return ResponseEntity.ok(userService.uploadImages(image));
@@ -85,6 +88,7 @@ public class ProfileController {
         Long id = ((User) authentication.getPrincipal()).getId();
         log.info("Delete images from user profile with id = " + id);
         if (image == null) {
+            log.warn("Empty images list from user profile with id: " + id);
             throw new ValidationException("Empty images list");
         }
         return ResponseEntity.ok(userService.deleteImages(image));
@@ -165,7 +169,7 @@ public class ProfileController {
             summary = "Установка telegram id"
     )
     public ResponseEntity<String> setTelegramId(@RequestBody TelegramDataDTO telegramData) {
-        log.info("Получение ссылки для привязки телеграма");
+        log.info("Получение ссылки для привязки телеграмма");
         userService.setTelegramId(telegramData);
         return ResponseEntity.ok("Telegram id was updated");
     }

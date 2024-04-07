@@ -30,14 +30,14 @@ public class AuthController {
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
     public ResponseEntity<JwtAuthenticationResponse> signUp(@RequestBody @Valid SignUpRequest request) {
-        log.info("Регистрация пользователя");
+        log.info("Регистрация пользователя: " + request.getUsername());
         return ResponseEntity.ok(authService.signUp(request));
     }
 
     @Operation(summary = "Вход пользователя")
     @PostMapping("/sign-in")
     public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody @Valid SignInRequest request) {
-        log.info("Вход пользователя");
+        log.info("Вход пользователя: " + request.getUsername());
         return ResponseEntity.ok(authService.signIn(request));
     }
 
@@ -72,7 +72,7 @@ public class AuthController {
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @PostMapping("/create/agent")
     public ResponseEntity<UserDTO> createAgent(@RequestBody SignUpRequest request) {
-        log.info("Создание агента");
+        log.info("Создание агента: " + request.getUsername());
         return ResponseEntity.ok(authService.addUserWithRole(request, UserRole.AGENT));
     }
 
@@ -86,7 +86,7 @@ public class AuthController {
     @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PostMapping("/create/admin")
     public ResponseEntity<UserDTO> createAdmin(@RequestBody SignUpRequest request) {
-        log.info("Создание админа");
+        log.info("Создание админа: " + request.getUsername());
         return ResponseEntity.ok(authService.addUserWithRole(request, UserRole.TWG_ADMIN));
     }
 
@@ -100,7 +100,7 @@ public class AuthController {
     @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PostMapping("/delete")
     public ResponseEntity<String> deleteUserByUsername(@RequestBody UserDeleteDTO request) {
-        log.info("Удаление пользователя");
+        log.info("Удаление пользователя: " + request.getUsername());
         authService.deleteByUsername(request.getUsername());
         return ResponseEntity.ok("User marked as disabled");
     }

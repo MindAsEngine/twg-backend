@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.travel.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.dto.travel.response.lightDTOs.SightLightDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
@@ -16,6 +17,7 @@ import java.util.Objects;
 
 @Data
 @AllArgsConstructor
+@Log4j2
 public class HotelDTO implements ModelDTO {
     private Long id;
     private String slug;
@@ -37,6 +39,7 @@ public class HotelDTO implements ModelDTO {
     private ResortDTO resort;
 
     public HotelDTO(Hotel hotel, Localization localization) {
+        log.debug("start HotelDTO constructor");
         this.id = hotel.getId();
         this.slug = hotel.getSlug();
         HotelLocal cur_local =
@@ -65,12 +68,15 @@ public class HotelDTO implements ModelDTO {
                 .toList();
         this.localization = localization;
         this.resort = ResortDTO.getDTO(hotel.getResort(), localization);
+        log.debug("end HotelDTO constructor");
     }
 
     static public HotelDTO getDTO(Hotel hotel, Localization localization) {
+        log.debug("start HotelDTO.getDTO");
         if (hotel == null || hotel.getIsDeleted()) {
             return null;
         }
+        log.debug("end HotelDTO.getDTO");
         return new HotelDTO(hotel, localization);
     }
 }

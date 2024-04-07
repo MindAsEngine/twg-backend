@@ -32,8 +32,9 @@ public class TourRequestController {
     )
     public ResponseEntity<TourReqResponseDTO> addRequest(@PathVariable Localization local,
                                                          @RequestBody TourRequestDTO tourRequestDTO)  {
-        log.info("Добавить заявку на тур");
+        log.info("Добавить заявку на тур с id: " + tourRequestDTO.getTourId());
         if (tourRequestDTO == null) {
+            log.warn("Заявка на тур пустая");
             throw new ValidationException("Заявка пустая");
         }
         return ResponseEntity.ok(tourRequestService.addRequest(tourRequestDTO, local));
@@ -41,12 +42,12 @@ public class TourRequestController {
 
     @GetMapping("/get")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
-    @Operation(summary = "Отдать все заявки агенству",
+    @Operation(summary = "Отдать все заявки агентству",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<List<TourReqResponseDTO>> getRequests(@PathVariable Localization local,
                                                                 @RequestParam (required = false) Long agencyId)  {
-        log.info("Отдать все заявки по агенству");
+        log.info("Отдать все заявки по агентству");
         return ResponseEntity.ok(tourRequestService.getAll(agencyId, null, local));
     }
 
@@ -56,8 +57,8 @@ public class TourRequestController {
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<List<TourReqResponseDTO>> getRequestsByUser(@PathVariable Localization local)  {
-        log.info("Отдать все заявки авторизованного пользователя");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Отдать все заявки авторизованного пользователя: " + username);
         return ResponseEntity.ok(tourRequestService.getAll(null, username, local));
     }
 
@@ -68,8 +69,9 @@ public class TourRequestController {
     )
     public ResponseEntity<List<TourReqResponseDTO>> resolve(@PathVariable Localization local,
                                                             @RequestBody Long requestId)  {
-        log.info("Решить заявку на тур");
+        log.info("Решить заявку на тур с id: " + requestId);
         if (requestId == null) {
+            log.warn("Не передали заявку на тур");
             throw new ValidationException("Не передали заявку");
         }
         return ResponseEntity.ok(tourRequestService.resolve(requestId, local));

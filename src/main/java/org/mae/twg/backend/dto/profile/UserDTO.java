@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.auth.UserRole;
 
 @Data
 @AllArgsConstructor
 @Schema(description = "Профиль пользователя")
+@Log4j2
 public class UserDTO {
     @Schema(description = "Логин пользователя", example = "Sapipa")
     private String username;
@@ -32,6 +34,7 @@ public class UserDTO {
     private String media;
 
     public UserDTO(User user) {
+        log.debug("start UserDTO constructor");
         this.username = user.getUsername();
         this.telegramId = user.getTelegramId();
         this.email = user.getEmail();
@@ -41,5 +44,6 @@ public class UserDTO {
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
         this.media = user.getMediaPath();
+        log.debug("end UserDTO constructor");
     }
 }

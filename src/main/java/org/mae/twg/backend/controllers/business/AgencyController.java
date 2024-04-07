@@ -24,7 +24,7 @@ public class AgencyController extends BaseController<AgencyService, AgencyDTO, A
     @Operation(summary = "Отдать агенство по id")
     public ResponseEntity<AgencyDTO> getById(@PathVariable Long id,
                                      @PathVariable Localization local) {
-        log.info("Отдать агенство по id");
+        log.info("Отдача агентства с id " + id);
         return ResponseEntity.ok(getService().getById(id, local));
     }
 }

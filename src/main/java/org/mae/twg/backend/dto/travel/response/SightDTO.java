@@ -2,6 +2,7 @@ package org.mae.twg.backend.dto.travel.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.ModelDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Sight;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@Log4j2
 public class SightDTO implements ModelDTO {
     private Long id;
     private String slug;
@@ -30,6 +32,7 @@ public class SightDTO implements ModelDTO {
     private List<String> medias;
 
     public SightDTO(Sight sight, Localization localization) {
+        log.debug("start SightDTO constructor");
         this.id = sight.getId();
         this.slug = sight.getSlug();
         this.type = SightTypeDTO.getDTO(sight.getSightType(), localization);
@@ -48,6 +51,7 @@ public class SightDTO implements ModelDTO {
         this.header = (sight.getHeader() != null ? sight.getHeader().getMediaPath() : null);
         this.medias = sight.getMedias().stream().map(SightMedia::getMediaPath).toList();
         this.localization = localization;
+        log.debug("end SightDTO constructor");
     }
 
     static public SightDTO getDTO(Sight sight, Localization localization) {
