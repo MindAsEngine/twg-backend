@@ -35,6 +35,28 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
         super(service);
     }
 
+    private void validatePageable(Integer page, Integer size) {
+        if (page != null && size == null || page == null && size != null) {
+            log.warn("Only both 'page' and 'size' params required");
+            throw new ValidationException("Only both 'page' and 'size' params required");
+        }
+    }
+
+    @GetMapping("/find/filters")
+    @Operation(summary = "Получение отелей по фильтрам")
+    public ResponseEntity<List<HotelDTO>> getByFilters(@PathVariable Localization local,
+                                                         @RequestParam(required = false) List<Long> resortIds,
+                                                         @RequestParam(required = false) Integer page,
+                                                         @RequestParam(required = false) Integer size) {
+        validatePageable(page, size);
+        if (resortIds == null) {
+            log.warn("resortIds is empty");
+            resortIds = List.of();
+        }
+        log.info("Get hotels by filters: resortIds = " + resortIds);
+        return ResponseEntity.ok(getService().getByFilters(resortIds, local, page, size));
+    }
+
     @PostMapping("/{id}/image/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить обложку",
