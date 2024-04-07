@@ -2,9 +2,9 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.travel.request.locals.ResortLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.ResortLogicDTO;
 import org.mae.twg.backend.dto.travel.response.ResortDTO;
-import org.mae.twg.backend.dto.travel.request.locals.ResortLocalDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.travel.Country;
@@ -75,6 +75,17 @@ public class ResortService implements TravelService<ResortDTO, ResortLocalDTO> {
         Page<Resort> resorts = resortRepo.findAll(resortPage);
         log.debug("End ResortService.getAllPaged");
         return modelsToDTOs(resorts.stream(), localization);
+    }
+
+    public List<ResortDTO> getByFilters(List<Long> countryIds, Localization localization,
+                                       Integer page, Integer size) {
+        log.debug("Start ResortService.getByFilters");
+        Pageable pageable = null;
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size);
+        }
+        log.debug("End ResortService.getByFilters");
+        return modelsToDTOs(resortRepo.findAllByCountry_IdIn(countryIds, pageable).stream(), localization);
     }
 
     public ResortDTO getById(Long id, Localization local) {
