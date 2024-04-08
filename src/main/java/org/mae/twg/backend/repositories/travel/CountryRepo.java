@@ -19,6 +19,13 @@ public interface CountryRepo extends JpaRepository<Country, Long> {
             from countries c
             join tours t using (country_id)
             where (:types is null or t.type in :types)
-    """, nativeQuery = true)
+    """, nativeQuery = true,
+    countQuery = """
+    select count(*) from (select distinct on (c.country_id)
+                c.*
+            from countries c
+            join tours t using (country_id)
+            where (:types is null or t.type in :types)) as src
+    """)
     Page<Country> findAllByTourType(@Param("types") List<String> tourTypes, Pageable pageable);
 }
