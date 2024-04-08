@@ -18,30 +18,12 @@ public class ConfigVisualService {
     private final ConfigVisualRepo configRepo;
     @PostConstruct
     public void init() {
-        if (!configRepo.exists(ConfigDisplayEnum.MAP.name())) {
-            log.info("Init MAP visibility: true");
-            configRepo.add(ConfigDisplayEnum.MAP.name(),
-                    String.valueOf(true));
-        }
-        if (!configRepo.exists(ConfigDisplayEnum.ABOUT_US.name())) {
-            log.info("Init ABOUT_US visibility: true");
-            configRepo.add(ConfigDisplayEnum.ABOUT_US.name(),
-                    String.valueOf(true));
-        }
-        if (!configRepo.exists(ConfigDisplayEnum.AUTHOR_TOURS.name())) {
-            log.info("Init AUTHOR_TOURS visibility: true");
-            configRepo.add(ConfigDisplayEnum.AUTHOR_TOURS.name(),
-                    String.valueOf(true));
-        }
-        if (!configRepo.exists(ConfigDisplayEnum.NO_TUR.name())) {
-            log.info("Init NO_TUR visibility: true");
-            configRepo.add(ConfigDisplayEnum.NO_TUR.name(),
-                    String.valueOf(true));
-        }
-        if (!configRepo.exists(ConfigDisplayEnum.NEWS.name())) {
-            log.info("Init NEWS visibility: true");
-            configRepo.add(ConfigDisplayEnum.NEWS.name(),
-                    String.valueOf(true));
+        for (ConfigDisplayEnum displayEnum : ConfigDisplayEnum.values()) {
+            if (!configRepo.exists(displayEnum.name())) {
+                log.info("Init " + displayEnum.name() + " visibility: true");
+                configRepo.add(displayEnum.name(),
+                        String.valueOf(true));
+            }
         }
     }
     public Map<ConfigDisplayEnum, Boolean> put(Map<ConfigDisplayEnum, Boolean> config) {

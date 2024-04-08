@@ -5,5 +5,6 @@ public enum ConfigDisplayEnum {
     ABOUT_US,
     AUTHOR_TOURS,
     NO_TUR,
-    NEWS;
+    NEWS,
+    THEMATIC_TOURS
 }
