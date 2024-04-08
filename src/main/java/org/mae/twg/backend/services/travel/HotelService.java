@@ -203,7 +203,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
             pageable = PageRequest.of(page, size);
         }
         log.debug("End HotelService.getByFilters");
-        return modelsToDTOs(hotelRepo.findAllByResort_IdInAndResort_Country_IdIn(resortIds, countryIds, pageable).stream(), localization);
+        return modelsToDTOs(hotelRepo.findAllByFilters(resortIds, countryIds, pageable).stream(), localization);
     }
 
     public HotelDTO getById(Long id, Localization localization) {
