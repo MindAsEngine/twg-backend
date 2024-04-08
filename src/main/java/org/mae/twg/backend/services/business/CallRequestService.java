@@ -4,19 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.business.CallReqResponseDTO;
 import org.mae.twg.backend.dto.business.CallRequestDTO;
-import org.mae.twg.backend.dto.business.TourReqResponseDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
 import org.mae.twg.backend.models.business.Agency;
 import org.mae.twg.backend.models.business.CallRequest;
-import org.mae.twg.backend.models.business.TourRequest;
 import org.mae.twg.backend.models.travel.enums.Localization;
-import org.mae.twg.backend.repositories.business.AgencyRepo;
 import org.mae.twg.backend.repositories.business.CallRequestRepo;
+import org.mae.twg.backend.utils.BotUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,6 +24,7 @@ import java.util.stream.Stream;
 public class CallRequestService {
     private final CallRequestRepo callRequestRepo;
     private final AgencyService agencyService;
+    private final BotUtils botUtils;
     private CallRequest findById(Long id) {
         log.debug("Start CallRequestService.findById");
         CallRequest callRequest = callRequestRepo.findById(id)
@@ -49,6 +47,7 @@ public class CallRequestService {
         Agency agency = agencyService.findById(callRequestDTO.getAgencyId());
         CallRequest callRequest = new CallRequest(callRequestDTO.getFullName(), callRequestDTO.getPhone(), agency, callRequestDTO.getText());
         callRequestRepo.saveAndFlush(callRequest);
+        botUtils.sendCallNotifications();
         log.debug("End CallRequestService.addRequest");
         return new CallReqResponseDTO(callRequest, localization);
     }

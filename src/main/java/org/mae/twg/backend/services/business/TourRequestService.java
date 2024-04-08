@@ -56,7 +56,7 @@ public class TourRequestService {
         TourRequest tourRequest = new TourRequest(user, agency, tour, tourRequestDTO.getAdults(), tourRequestDTO.getChildren(), tourRequestDTO.getTransferNotes());
         tourRequestRepo.saveAndFlush(tourRequest);
 
-        botUtils.sendNotifications();
+        botUtils.sendTourNotifications();
         log.debug("End TourRequestService.addRequest");
         return new TourReqResponseDTO(tourRequest, localization);
     }
