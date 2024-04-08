@@ -85,7 +85,7 @@ public class ResortService implements TravelService<ResortDTO, ResortLocalDTO> {
             pageable = PageRequest.of(page, size);
         }
         log.debug("End ResortService.getByFilters");
-        return modelsToDTOs(resortRepo.findAllByCountry_IdIn(countryIds, pageable).stream(), localization);
+        return modelsToDTOs(resortRepo.findAllByFilters(countryIds, pageable).stream(), localization);
     }
 
     public ResortDTO getById(Long id, Localization local) {
