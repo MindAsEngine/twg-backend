@@ -62,27 +62,18 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
             left join tour_hotels th using (tour_id)
             left join hotels h using (hotel_id)
             left join resorts r on h.resort_id = r.resort_id
-            where 
-                (:countries is null or t.country_id in :countries)
-                and
-                (:hotels is null or h.hotel_id in :hotels)
-                and
-                (:tags is null or tt.tag_id in :tags)
-                and
-                (:types is null or t.type in :types)
-                and
-                (:stars is null or h.stars in :stars)
-                and
-                (:resorts is null or r.resort_id in :resorts)
-                and
-                (:hospitals is null or t.hospital_id in :hospitals)
-                and
-                (:minDur is null or :maxDur is null 
-                    or t.duration is not null 
+            where (:countries is null or t.country_id in :countries)
+                and (:hotels is null or h.hotel_id in :hotels)
+                and (:tags is null or tt.tag_id in :tags)
+                and (:types is null or t.type in :types)
+                and (:stars is null or h.stars in :stars)
+                and (:resorts is null or r.resort_id in :resorts)
+                and (:hospitals is null or t.hospital_id in :hospitals)
+                and (:minDur is null or :maxDur is null
+                    or t.duration is not null
                     and coalesce(:minDur <= t.duration, true) and coalesce(:maxDur >= t.duration, true))
-                and
-                (:minCost is null and :maxCost is null 
-                    or t.price is not null 
+                and (:minCost is null and :maxCost is null
+                    or t.price is not null
                     and coalesce(:minCost <= t.price, true) and coalesce(:maxCost >= t.price, true))
             """, nativeQuery = true,
             countQuery = """
@@ -92,27 +83,18 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
             left join tour_hotels th using (tour_id)
             left join hotels h using (hotel_id)
             left join resorts r on h.resort_id = r.resort_id
-            where 
-                (:countries is null or t.country_id in :countries)
-                and
-                (:hotels is null or h.hotel_id in :hotels)
-                and
-                (:tags is null or tt.tag_id in :tags)
-                and
-                (:types is null or t.type in :types)
-                and
-                (:stars is null or h.stars in :stars)
-                and
-                (:resorts is null or r.resort_id in :resorts)
-                and
-                (:hospitals is null or t.hospital_id in :hospitals)
-                and
-                (:minDur is null or :maxDur is null 
-                    or t.duration is not null 
+            where (:countries is null or t.country_id in :countries)
+                and (:hotels is null or h.hotel_id in :hotels)
+                and (:tags is null or tt.tag_id in :tags)
+                and (:types is null or t.type in :types)
+                and (:stars is null or h.stars in :stars)
+                and (:resorts is null or r.resort_id in :resorts)
+                and (:hospitals is null or t.hospital_id in :hospitals)
+                and (:minDur is null or :maxDur is null
+                    or t.duration is not null
                     and coalesce(:minDur <= t.duration, true) and coalesce(:maxDur >= t.duration, true))
-                and
-                (:minCost is null and :maxCost is null 
-                    or t.price is not null 
+                and (:minCost is null and :maxCost is null
+                    or t.price is not null
                     and coalesce(:minCost <= t.price, true) and coalesce(:maxCost >= t.price, true))) as src
     """)
     Page<Tour> findFilteredFours(@Param("countries") List<Long> countryIds,

@@ -19,19 +19,15 @@ public interface HotelRepo extends JpaRepository<Hotel, Long> {
             select distinct on (h.hotel_id) h.*
             from hotels h
             left join resorts r on h.resort_id = r.resort_id
-            where 
-                (:countries is null or r.country_id in :countries)
-                and
-                (:resorts is null or r.resort_id in :resorts)
+            where (:countries is null or r.country_id in :countries)
+                and (:resorts is null or r.resort_id in :resorts)
             """, nativeQuery = true,
             countQuery = """
             select count(*) from (select distinct on (h.hotel_id) h.*
             from hotels h
             left join resorts r on h.resort_id = r.resort_id
-            where 
-                (:countries is null or r.country_id in :countries)
-                and
-                (:resorts is null or r.resort_id in :resorts)) as src
+            where (:countries is null or r.country_id in :countries)
+                and (:resorts is null or r.resort_id in :resorts)) as src
     """)
     Page<Hotel> findAllByFilters(@Param("resorts") List<Long> resortIds,
                                  @Param("countries") List<Long> countryIds,
