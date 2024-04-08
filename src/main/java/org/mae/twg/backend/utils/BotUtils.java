@@ -40,7 +40,7 @@ public class BotUtils {
         try {
             restTemplate.postForEntity(requestUrl, userIds, String.class);
         } catch (RestClientException e) {
-            log.warn("An error occurred while sending notifications");
+            log.warn("An error occurred while sending notifications: " + e);
         }
     }
 
@@ -51,7 +51,7 @@ public class BotUtils {
         try {
             restTemplate.postForEntity(requestUrl, userIds, String.class);
         } catch (RestClientException e) {
-            log.warn("An error occurred while sending notifications");
+            log.warn("An error occurred while sending notifications: " + e);
         }
     }
 }
