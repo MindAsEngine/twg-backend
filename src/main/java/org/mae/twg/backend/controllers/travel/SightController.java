@@ -34,6 +34,13 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
         super(service);
     }
 
+    private void validatePageable(Integer page, Integer size) {
+        if (page != null && size == null || page == null && size != null) {
+            log.warn("Only both 'page' and 'size' params required");
+            throw new ValidationException("Only both 'page' and 'size' params required");
+        }
+    }
+
     @GetMapping("/get")
     @Operation(summary = "Отдать точку интереса по id или по slug")
     public ResponseEntity<SightDTO> get(@PathVariable Localization local,
@@ -51,6 +58,22 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
         return ResponseEntity.ok(getService().getBySlug(slug, local));
     }
 
+
+    @GetMapping("/find/geo")
+    @Operation(summary = "Точки интереса по координатам")
+    public ResponseEntity<List<SightDTO>> findByGeo(@PathVariable Localization local,
+                                                   @RequestParam(required = false) Integer page,
+                                                   @RequestParam(required = false) Integer size,
+                                                   @RequestParam Double minLongitude,
+                                                   @RequestParam Double maxLongitude,
+                                                   @RequestParam Double minLatitude,
+                                                   @RequestParam Double maxLatitude) {
+        validatePageable(page, size);
+        return ResponseEntity.ok(getService().findByGeoData(
+                minLongitude, maxLongitude,
+                minLatitude, maxLatitude,
+                local, page, size));
+    }
 
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @PutMapping("/{id}/geo/update")

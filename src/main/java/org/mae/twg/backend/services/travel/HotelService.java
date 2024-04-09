@@ -90,6 +90,16 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         return hotel;
     }
 
+    public Pageable getPageable(Integer page, Integer size) {
+        log.debug("Start HotelService.getPageable");
+        if (page != null && size != null) {
+            log.debug("End HotelService.getPageable");
+            return PageRequest.of(page, size);
+        }
+        log.debug("End HotelService.getPageable");
+        return null;
+    }
+
     private HotelDTO addGrade(HotelDTO hotelDTO) {
         log.debug("Start HotelService.addGrade");
         GradeData gradeData = commentsRepo.averageGradeByHotelId(hotelDTO.getId());
@@ -335,6 +345,22 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         hotelRepo.saveAndFlush(hotel);
         log.debug("End HotelService.updateLogicData");
         return new HotelDTO(hotel, localization);
+    }
+
+    public List<HotelDTO> findByGeoData(Double minLongitude,
+                                        Double maxLongitude,
+                                        Double minLatitude,
+                                        Double maxLatitude,
+                                        Localization localization,
+                                        Integer page, Integer size) {
+        log.debug("Start HotelService.findByGeoData");
+
+        return modelsToDTOs(
+                hotelRepo.findByGeoData(
+                        minLongitude,
+                        maxLongitude,
+                        minLatitude,
+                        maxLatitude, getPageable(page, size)).stream(), localization);
     }
 
     @Transactional

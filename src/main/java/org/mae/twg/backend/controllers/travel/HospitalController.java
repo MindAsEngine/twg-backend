@@ -34,6 +34,13 @@ public class HospitalController extends BaseController<HospitalService, Hospital
         super(service);
     }
 
+    private void validatePageable(Integer page, Integer size) {
+        if (page != null && size == null || page == null && size != null) {
+            log.warn("Only both 'page' and 'size' params required");
+            throw new ValidationException("Only both 'page' and 'size' params required");
+        }
+    }
+
     @PostMapping("/{id}/image/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить обложку",
@@ -99,6 +106,22 @@ public class HospitalController extends BaseController<HospitalService, Hospital
         }
         log.info("Отдать больницу по slug: " + slug);
         return ResponseEntity.ok(getService().getBySlug(slug, local));
+    }
+
+    @GetMapping("/find/geo")
+    @Operation(summary = "Больницы по координатам")
+    public ResponseEntity<List<HospitalDTO>> findByGeo(@PathVariable Localization local,
+                                                    @RequestParam(required = false) Integer page,
+                                                    @RequestParam(required = false) Integer size,
+                                                    @RequestParam Double minLongitude,
+                                                    @RequestParam Double maxLongitude,
+                                                    @RequestParam Double minLatitude,
+                                                    @RequestParam Double maxLatitude) {
+        validatePageable(page, size);
+        return ResponseEntity.ok(getService().findByGeoData(
+                minLongitude, maxLongitude,
+                minLatitude, maxLatitude,
+                local, page, size));
     }
 
     @PutMapping("/{id}/geo/update")

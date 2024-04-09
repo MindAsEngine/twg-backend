@@ -42,6 +42,22 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
         }
     }
 
+    @GetMapping("/find/geo")
+    @Operation(summary = "Отели по координатам")
+    public ResponseEntity<List<HotelDTO>> findByGeo(@PathVariable Localization local,
+                                                    @RequestParam(required = false) Integer page,
+                                                    @RequestParam(required = false) Integer size,
+                                                    @RequestParam Double minLongitude,
+                                                    @RequestParam Double maxLongitude,
+                                                    @RequestParam Double minLatitude,
+                                                    @RequestParam Double maxLatitude) {
+        validatePageable(page, size);
+        return ResponseEntity.ok(getService().findByGeoData(
+                minLongitude, maxLongitude,
+                minLatitude, maxLatitude,
+                local, page, size));
+    }
+
     @GetMapping("/find/filters")
     @Operation(summary = "Получение отелей по фильтрам")
     public ResponseEntity<List<HotelDTO>> getByFilters(@PathVariable Localization local,

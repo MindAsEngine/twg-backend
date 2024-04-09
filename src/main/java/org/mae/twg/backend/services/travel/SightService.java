@@ -85,6 +85,16 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         return sight;
     }
 
+    public Pageable getPageable(Integer page, Integer size) {
+        log.debug("Start SightService.getPageable");
+        if (page != null && size != null) {
+            log.debug("End SightService.getPageable");
+            return PageRequest.of(page, size);
+        }
+        log.debug("End SightService.getPageable");
+        return null;
+    }
+
     private SightDTO addGrade(SightDTO sightDTO) {
         log.debug("Start SightService.addGrade");
         GradeData gradeData = commentsRepo.averageGradeBySightId(sightDTO.getId());
@@ -277,6 +287,22 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         sightRepo.saveAndFlush(sight);
         log.debug("End SightService.updateLocal");
         return new SightDTO(sight, localization);
+    }
+
+    public List<SightDTO> findByGeoData(Double minLongitude,
+                                       Double maxLongitude,
+                                       Double minLatitude,
+                                       Double maxLatitude,
+                                       Localization localization,
+                                       Integer page, Integer size) {
+        log.debug("Start SightService.findByGeoData");
+
+        return modelsToDTOs(
+                sightRepo.findByGeoData(
+                        minLongitude,
+                        maxLongitude,
+                        minLatitude,
+                        maxLatitude, getPageable(page, size)).stream(), localization);
     }
 
     @Transactional
