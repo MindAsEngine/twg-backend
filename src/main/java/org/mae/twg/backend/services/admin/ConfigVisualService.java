@@ -22,7 +22,7 @@ public class ConfigVisualService {
             if (!configRepo.exists(displayEnum.name())) {
                 log.info("Init " + displayEnum.name() + " visibility: true");
                 configRepo.add(displayEnum.name(),
-                        String.valueOf(true));
+                        Boolean.valueOf(true).toString());
             }
         }
     }
