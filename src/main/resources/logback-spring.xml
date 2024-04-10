@@ -17,11 +17,16 @@
         </rollingPolicy>
     </appender>
     <!-- hibernateAppender -->
-    <appender name="hibernateAppender" class="ch.qos.logback.core.FileAppender">
+    <appender name="hibernateAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>./log/hibernate.log</file>
-        <encoder>
-            <pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
+        <!-- <encoder> -->
+            <!-- <pattern>%d [%thread] %-5level %logger{35} - %msg%n</pattern> -->
+        <!-- </encoder> -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./log/hibernate.%d.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
     </appender>
     <!-- root logger -->
     <root level="DEBUG">
