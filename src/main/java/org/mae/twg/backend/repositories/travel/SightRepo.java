@@ -20,6 +20,7 @@ public interface SightRepo extends JpaRepository<Sight, Long> {
                 from sights s
                 where (s.longitude between :minLo and :maxLo)
                     and (s.latitude between :minLa and :maxLa)
+                order by s.slug
             """, nativeQuery = true)
     Page<Sight> findByGeoData(@Param("minLo") Double minLongitude, @Param("maxLo") Double maxLongitude,
                               @Param("minLa") Double minLatitude, @Param("maxLa") Double maxLatitude,

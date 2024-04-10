@@ -34,6 +34,7 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -145,7 +146,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
 
     public List<HotelDTO> getAll(Localization localization) {
         log.debug("Start HotelService.getAll");
-        List<Hotel> hotels = hotelRepo.findAll();
+        List<Hotel> hotels = hotelRepo.findAll(Sort.by("slug"));
         log.debug("End HotelService.getAll");
         return modelsToDTOs(hotels.stream(), localization);
     }

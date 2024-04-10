@@ -20,6 +20,7 @@ public interface HospitalRepo extends JpaRepository<Hospital, Long> {
                 from hospitals h
                 where (h.longitude between :minLo and :maxLo)
                     and (h.latitude between :minLa and :maxLa)
+                order by h.slug
             """, nativeQuery = true)
     Page<Hospital> findByGeoData(@Param("minLo") Double minLongitude, @Param("maxLo") Double maxLongitude,
                                  @Param("minLa") Double minLatitude, @Param("maxLa") Double maxLatitude,

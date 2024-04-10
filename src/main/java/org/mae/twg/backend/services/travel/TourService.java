@@ -33,6 +33,7 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -225,7 +226,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
 
     public List<TourDTO> getAll(Localization localization) {
         log.debug("Start TourService.getAll");
-        List<Tour> tours = tourRepo.findAll();
+        List<Tour> tours = tourRepo.findAll(Sort.by("slug"));
         log.debug("End TourService.getAll");
         return modelsToDTOs(tours.stream(), localization);
     }

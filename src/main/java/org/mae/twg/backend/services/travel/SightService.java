@@ -30,6 +30,7 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -186,7 +187,7 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
 
     public List<SightDTO> getAll(Localization localization) {
         log.debug("Start SightService.getAll");
-        List<Sight> sights = sightRepo.findAll();
+        List<Sight> sights = sightRepo.findAll(Sort.by("slug"));
         log.debug("End SightService.getAll");
         return modelsToDTOs(sights.stream(), localization);
     }

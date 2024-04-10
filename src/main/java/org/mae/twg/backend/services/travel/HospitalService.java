@@ -28,6 +28,7 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -136,7 +137,7 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
 
     public List<HospitalDTO> getAll(Localization localization) {
         log.debug("Start HospitalService.getAll");
-        List<Hospital> hospitals = hospitalRepo.findAll();
+        List<Hospital> hospitals = hospitalRepo.findAll(Sort.by("slug"));
         log.debug("End HospitalService.getAll");
         return modelsToDTOs(hospitals.stream(), localization);
     }

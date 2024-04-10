@@ -13,14 +13,16 @@ import java.util.Optional;
 
 @Repository
 public interface HotelRepo extends JpaRepository<Hotel, Long> {
+
     Optional<Hotel> findBySlug(String slug);
 
     @Query(value = """
-            select distinct on (h.hotel_id) h.*
+            select distinct on (h.slug) h.*
             from hotels h
             left join resorts r on h.resort_id = r.resort_id
             where (:countries is null or r.country_id in :countries)
                 and (:resorts is null or r.resort_id in :resorts)
+            order by h.slug
             """, nativeQuery = true,
             countQuery = """
                             select count(*) from (select distinct on (h.hotel_id) h.*
@@ -39,6 +41,7 @@ public interface HotelRepo extends JpaRepository<Hotel, Long> {
                 from hotels h
                 where (h.longitude between :minLo and :maxLo)
                     and (h.latitude between :minLa and :maxLa)
+                order by h.slug
             """, nativeQuery = true)
     Page<Hotel> findByGeoData(@Param("minLo") Double minLongitude, @Param("maxLo") Double maxLongitude,
                               @Param("minLa") Double minLatitude, @Param("maxLa") Double maxLatitude,

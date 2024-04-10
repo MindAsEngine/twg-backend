@@ -16,7 +16,7 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
     Optional<Tour> findBySlug(String slug);
 
     @Query(value = """
-    select distinct on (t.tour_id)
+    select distinct on (t.slug)
         t.*
     from tours t
     join tour_hotels th on th.tour_id = t.tour_id
@@ -24,6 +24,7 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
     where\s
         (h.longitude between :minLo and :maxLo) and
         (h.latitude between :minLa and :maxLa)
+    order by t.slug
 """, nativeQuery = true,
     countQuery = """
     select count(*) from (select distinct on (t.tour_id)
@@ -44,6 +45,7 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
     from tours t
     join tour_local l on t.tour_id = l.tour_id and l.localization = :local
     where regexp_like(l.title, :title, 'i')
+    order by t.slug
     """, nativeQuery = true,
     countQuery = """
     select count(*) from (select t.*
@@ -56,7 +58,7 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
                            Pageable pageable);
 
     @Query(value = """
-            select distinct on (t.tour_id) t.*
+            select distinct on (t.slug) t.*
             from tours t
             left join tour_tags tt using (tour_id)
             left join tour_hotels th using (tour_id)
@@ -75,6 +77,7 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
                 and (:minCost is null and :maxCost is null
                     or t.price is not null
                     and coalesce(:minCost <= t.price, true) and coalesce(:maxCost >= t.price, true))
+            order by t.slug
             """, nativeQuery = true,
             countQuery = """
             select count(*) from (select distinct on (t.tour_id) t.*
