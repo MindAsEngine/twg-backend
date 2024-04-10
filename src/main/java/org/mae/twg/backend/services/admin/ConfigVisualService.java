@@ -38,6 +38,7 @@ public class ConfigVisualService {
     }
     public Map<ConfigDisplayEnum, Boolean> getAll() {
         log.debug("Start ConfigVisualRepo.getAll");
+        init();
         Map<String, String> configs = configRepo.findAll();
         Map<ConfigDisplayEnum, Boolean> result = new HashMap<>();
         for (Map.Entry<String, String> entry : configs.entrySet()) {
