@@ -233,12 +233,10 @@ public class UserService implements UserDetailsService{
     @Transactional
     public Boolean checkInFavourite(Long tourId) {
         log.debug("Start UserService.checkInFavourite");
-        Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-        User user = userRepo.getReferenceById(id);
-
-        Tour tour = tourService.findById(tourId);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Boolean result = userRepo.checkForFavourite(tourId, username);
         log.debug("End UserService.checkInFavourite");
-        return user.getFavourites().contains(tour);
+        return result;
     }
 
 
