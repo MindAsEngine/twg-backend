@@ -172,6 +172,21 @@ public class ProfileController {
         return ResponseEntity.ok("Tour with id = " + tourDTO.getTourId() + " was added to favourites");
     }
 
+    @DeleteMapping("/{local}/favourites/{tourId}/delete")
+    @Operation(
+            summary = "Избранные туры",
+            parameters = @Parameter(in = ParameterIn.HEADER,
+                    name = "Authorization",
+                    description = "JWT токен",
+                    required = true,
+                    example = "Bearer <token>")
+    )
+    public ResponseEntity<String> deleteFromFavourites(@PathVariable Long tourId) {
+        log.info("Удаление тура из избранного");
+        userService.deleteTourFromFavourite(tourId);
+        return ResponseEntity.ok("Tour with id = " + tourId + " was deleted from favourites");
+    }
+
     @GetMapping("/{local}/favourites/check")
     @Operation(
             summary = "Избранные туры",
@@ -208,22 +223,5 @@ public class ProfileController {
         log.info("Получение ссылки для привязки телеграмма");
         userService.setTelegramId(telegramData);
         return ResponseEntity.ok("Telegram id was updated");
-    }
-
-
-
-    @DeleteMapping("/{local}/favourites/delete")
-    @Operation(
-            summary = "Избранные туры",
-            parameters = @Parameter(in = ParameterIn.HEADER,
-                    name = "Authorization",
-                    description = "JWT токен",
-                    required = true,
-                    example = "Bearer <token>")
-    )
-    public ResponseEntity<String> deleteFromFavourites(@RequestBody FavouriteTourDTO tourDTO) {
-        log.info("Удаление тура из избранного");
-        userService.deleteTourFromFavourite(tourDTO);
-        return ResponseEntity.ok("Tour with id = " + tourDTO.getTourId() + " was deleted from favourites");
     }
 }

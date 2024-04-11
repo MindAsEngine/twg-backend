@@ -220,12 +220,12 @@ public class UserService implements UserDetailsService{
     }
 
     @Transactional
-    public void deleteTourFromFavourite(FavouriteTourDTO tourDTO) {
+    public void deleteTourFromFavourite(Long tourId) {
         log.debug("Start UserService.deleteTourFromFavourite");
         Long id = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         User user = userRepo.getReferenceById(id);
 
-        Tour tour = tourService.findById(tourDTO.getTourId());
+        Tour tour = tourService.findById(tourId);
         user.getFavourites().remove(tour);
         log.debug("End UserService.deleteTourFromFavourite");
     }
