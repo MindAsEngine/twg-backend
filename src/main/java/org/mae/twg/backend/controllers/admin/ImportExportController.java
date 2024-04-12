@@ -11,7 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +31,15 @@ public class ImportExportController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tours.csv")
                 .contentType(MediaType.parseMediaType("application/csv"))
                 .body(service.loadToursToCSV());
+    }
+
+    @GetMapping("/tours/csv/upload")
+    @Operation(summary = "Получить CSV файл с турами",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<String> csvToTours(@RequestParam MultipartFile file) {
+        service.loadToursFromCSV(file);
+        return ResponseEntity.ok("Tours was successfully uploaded");
     }
 
 }
