@@ -35,14 +35,6 @@ public class TourRow {
     private Long price;
     @CsvBindByName(column = "type")
     private String tourType;
-    @CsvBindByName(column = "hospital name")
-    private String hospitalName;
-    @CsvBindByName(column = "country name")
-    private String countryName;
     @CsvBindByName
     private Integer duration;
-    @CsvBindByName(column = "hotel names")
-    private String hotelList;
-    @CsvBindByName(column = "tag names")
-    private String tagList;
 }

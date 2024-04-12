@@ -59,13 +59,7 @@ public class ImportExportService {
 //                Set logic fields
                 .price(tour.getPrice())
                 .tourType(tour.getType() == null ? "Undefined" : tour.getType().name())
-                .duration(tour.getDuration())
-//                Set single model names
-                .countryName(getName(tour.getCountry()))
-                .hospitalName(getName(tour.getHospital()))
-//                Set list model names
-                .hotelList(buildListString(tour.getHotels()))
-                .tagList(buildListString(tour.getTags()));
+                .duration(tour.getDuration());
 //
         List<TourLocal> locals = tour.getLocals();
         for (TourLocal local : locals) {
