@@ -1,41 +1,39 @@
 package org.mae.twg.backend.utils.csv;
 
 import com.opencsv.bean.CsvBindByName;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
-import java.util.List;
-
-@AllArgsConstructor
 @Data
+@Builder
 public class TourRow {
-    @CsvBindByName
+    @CsvBindByName(column = "RU title")
     private String titleRU;
-    @CsvBindByName
+    @CsvBindByName(column = "RU introduction")
     private String introductionRU;
-    @CsvBindByName
+    @CsvBindByName(column = "RU description")
     private String descriptionRU;
-    @CsvBindByName
+    @CsvBindByName(column = "RU additional")
     private String additionalRU;
-    @CsvBindByName
+    @CsvBindByName(column = "EN title")
     private String titleEN;
-    @CsvBindByName
+    @CsvBindByName(column = "EN introduction")
     private String introductionEN;
-    @CsvBindByName
+    @CsvBindByName(column = "EN description")
     private String descriptionEN;
-    @CsvBindByName
+    @CsvBindByName(column = "EN additional")
     private String additionalEN;
-    @CsvBindByName
+    @CsvBindByName(column = "UZ title")
     private String titleUZ;
-    @CsvBindByName
+    @CsvBindByName(column = "UZ introduction")
     private String introductionUZ;
-    @CsvBindByName
+    @CsvBindByName(column = "UZ description")
     private String descriptionUZ;
-    @CsvBindByName
+    @CsvBindByName(column = "UZ additional")
     private String additionalUZ;
     @CsvBindByName
     private Long price;
-    @CsvBindByName(column = "type", required = true)
+    @CsvBindByName(column = "type")
     private String tourType;
     @CsvBindByName(column = "hospital name")
     private String hospitalName;

@@ -1,4 +1,4 @@
-package org.mae.twg.backend.controllers.config;
+package org.mae.twg.backend.controllers.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +29,8 @@ public class ConfigVisualController {
     }
     @Operation(summary = "Обновить конфиг визуала",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
+    )
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.GOD)")
     @PutMapping("/put")
     public ResponseEntity<Map<ConfigDisplayEnum, Boolean>> putAll(@RequestBody Map<ConfigDisplayEnum, Boolean> config) {
         log.info("Обновить конфигурацию визуала");
