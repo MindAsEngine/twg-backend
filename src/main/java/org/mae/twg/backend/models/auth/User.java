@@ -3,6 +3,7 @@ package org.mae.twg.backend.models.auth;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.mae.twg.backend.models.business.Agency;
 import org.mae.twg.backend.models.travel.Tour;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -77,6 +78,10 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(referencedColumnName = "tour_id"))
     private Set<Tour> favourites = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

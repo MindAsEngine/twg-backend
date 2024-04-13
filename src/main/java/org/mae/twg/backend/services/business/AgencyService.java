@@ -6,12 +6,14 @@ import org.mae.twg.backend.dto.business.AgencyDTO;
 import org.mae.twg.backend.dto.business.AgencyRequestDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
+import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.business.Agency;
 import org.mae.twg.backend.models.business.AgencyLocal;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.repositories.business.AgencyLocalRepo;
 import org.mae.twg.backend.repositories.business.AgencyRepo;
 import org.mae.twg.backend.services.TravelService;
+import org.mae.twg.backend.services.auth.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ import java.util.stream.Stream;
 public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO> {
     private final AgencyRepo agencyRepo;
     private final AgencyLocalRepo localRepo;
+    private final UserService userService;
 
     public Agency findById(Long id) {
         log.debug("Start AgencyService.findById");
@@ -146,6 +149,16 @@ public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO>
         cur_local.setAddress(agencyDTO.getAddress());
         localRepo.saveAndFlush(cur_local);
         log.debug("End AgencyService.updateLocal");
+        return new AgencyDTO(agency, localization);
+    }
+
+    public AgencyDTO addAgent(Long id, String username, Localization localization) {
+        log.debug("Start AgencyService.addAgent");
+        Agency agency = findById(id);
+        User agent = userService.loadUserByUsername(username);
+        agency.addAgent(agent);
+        agencyRepo.saveAndFlush(agency);
+        log.debug("End AgencyService.addAgent");
         return new AgencyDTO(agency, localization);
     }
 }
