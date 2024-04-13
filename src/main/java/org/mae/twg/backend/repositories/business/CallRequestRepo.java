@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface CallRequestRepo extends JpaRepository<CallRequest, Long> {
     List<CallRequest> findByAgency_idAndClosedAtIsNull(Long id);
-    List<CallRequest> findByClosedAtIsNull();
+    List<CallRequest> findByAgent_UsernameAndClosedAtIsNull(String username);
+    List<CallRequest> findByAgentIsNullAndClosedAtIsNull();
 }
