@@ -4,27 +4,28 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.models.Local;
 import org.mae.twg.backend.models.Model;
-import org.mae.twg.backend.models.travel.Tour;
+import org.mae.twg.backend.models.travel.*;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
-import org.mae.twg.backend.repositories.travel.TourRepo;
-import org.mae.twg.backend.utils.excel.ExcelUtils;
-import org.mae.twg.backend.utils.excel.TourRow;
+import org.mae.twg.backend.repositories.travel.*;
+import org.mae.twg.backend.utils.excel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class ImportExportService {
     private final TourRepo tourRepo;
+    private final HotelRepo hotelRepo;
+    private final HospitalRepo hospitalRepo;
+    private final SightRepo sightRepo;
+    private final ResortRepo resortRepo;
     private final ExcelUtils excelUtils;
-
     private String getName(Model model) {
         log.debug("Start ImportExportService.getName");
         if (model == null) {
@@ -92,6 +93,38 @@ public class ImportExportService {
         return builder.build();
     }
 
+    private HotelRow hotelToRow(Hotel hotel) {
+        return null;
+    }
+
+    private ResortRow resortToRow(Resort resort) {
+        return null;
+    }
+
+    private SightRow sightToRow(Sight sight) {
+        return null;
+    }
+
+    private HospitalRow hospitalToRow(Hospital hospital) {
+        return null;
+    }
+
+    private Hotel rowToHotel(HotelRow row) {
+        return null;
+    }
+
+    private Resort rowToResort(ResortRow row) {
+        return null;
+    }
+
+    private Sight rowToSight(SightRow row) {
+        return null;
+    }
+
+    private Hospital rowToHospital(HospitalRow row) {
+        return null;
+    }
+
     private Tour rowToTour(TourRow row) {
         log.debug("Start ImportExportService.rowToTour");
         log.debug("End ImportExportService.rowToTour");
@@ -109,6 +142,50 @@ public class ImportExportService {
         //tourRepo.saveAll(tours);
     }
 
+    @Transactional
+    public void loadHotelsFromExcel(MultipartFile file) throws IOException {
+        log.debug("Start ImportExportService.loadToursFromExcel");
+        List<HotelRow> hotelRows = excelUtils.parseHotelExcel(file);
+        List<Hotel> hotels = hotelRows.stream()
+                .map(this::rowToHotel)
+                .toList();
+        log.debug("End ImportExportService.loadToursFromExcel");
+        //tourRepo.saveAll(tours);
+    }
+
+    @Transactional
+    public void loadHospitalsFromExcel(MultipartFile file) throws IOException {
+        log.debug("Start ImportExportService.loadHospitalsFromExcel");
+        List<HospitalRow> hospitalRows = excelUtils.parseHospitalExcel(file);
+        List<Hospital> hospitals = hospitalRows.stream()
+                .map(this::rowToHospital)
+                .toList();
+        log.debug("End ImportExportService.loadHospitalsFromExcel");
+        //tourRepo.saveAll(tours);
+    }
+
+    @Transactional
+    public void loadSightsFromExcel(MultipartFile file) throws IOException {
+        log.debug("Start ImportExportService.loadSightsFromExcel");
+        List<SightRow> sightRows = excelUtils.parseSightExcel(file);
+        List<Sight> sights = sightRows.stream()
+                .map(this::rowToSight)
+                .toList();
+        log.debug("End ImportExportService.loadSightsFromExcel");
+        //tourRepo.saveAll(tours);
+    }
+
+    @Transactional
+    public void loadResortsFromExcel(MultipartFile file) throws IOException {
+        log.debug("Start ImportExportService.loadResortsFromExcel");
+        List<ResortRow> resortRows = excelUtils.parseResortExcel(file);
+        List<Resort> resorts = resortRows.stream()
+                .map(this::rowToResort)
+                .toList();
+        log.debug("End ImportExportService.loadResortsFromExcel");
+        //tourRepo.saveAll(tours);
+    }
+
     public String loadToursToExcel() throws IOException {
         log.debug("Start ImportExportService.loadToursToExcel");
         List<TourRow> tourRows = tourRepo.findAll().stream()
@@ -116,5 +193,41 @@ public class ImportExportService {
                 .map(this::tourToRow).toList();
         log.debug("End ImportExportService.loadToursToExcel");
         return excelUtils.convertToursToExcel(tourRows);
+    }
+
+    public String loadHotelsToExcel() throws IOException {
+        log.debug("Start ImportExportService.loadHotelsToExcel");
+        List<HotelRow> hotelRows = hotelRepo.findAll().stream()
+                .filter(hotel -> !hotel.getIsDeleted())
+                .map(this::hotelToRow).toList();
+        log.debug("End ImportExportService.loadHotelsToExcel");
+        return excelUtils.convertHotelsToExcel(hotelRows);
+    }
+
+    public String loadHospitalsToExcel() throws IOException {
+        log.debug("Start ImportExportService.loadHospitalsToExcel");
+        List<HospitalRow> hospitalRows = hospitalRepo.findAll().stream()
+                .filter(hospital -> !hospital.getIsDeleted())
+                .map(this::hospitalToRow).toList();
+        log.debug("End ImportExportService.loadHospitalsToExcel");
+        return excelUtils.convertHospitalsToExcel(hospitalRows);
+    }
+
+    public String loadSightsToExcel() throws IOException {
+        log.debug("Start ImportExportService.loadSightsToExcel");
+        List<SightRow> sightRows = sightRepo.findAll().stream()
+                .filter(sight -> !sight.getIsDeleted())
+                .map(this::sightToRow).toList();
+        log.debug("End ImportExportService.loadSightsToExcel");
+        return excelUtils.convertSightsToExcel(sightRows);
+    }
+
+    public String loadResortsToExcel() throws IOException {
+        log.debug("Start ImportExportService.loadResortsToExcel");
+        List<ResortRow> resortRows = resortRepo.findAll().stream()
+                .filter(resort -> !resort.getIsDeleted())
+                .map(this::resortToRow).toList();
+        log.debug("End ImportExportService.loadResortsToExcel");
+        return excelUtils.convertResortsToExcel(resortRows);
     }
 }

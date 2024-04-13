@@ -51,4 +51,99 @@ public class ImportExportController {
         return ResponseEntity.ok("Tours was successfully uploaded");
     }
 
+    @GetMapping("/hotels/excel/download")
+    @Operation(summary = "Получить Excel файл с отелями",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<FileSystemResource> hotelsToExcel() throws IOException {
+        log.info("Получить Excel файл с отелями");
+        FileSystemResource fileResource = new FileSystemResource(service.loadHotelsToExcel());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=hotels.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(fileResource);
+    }
+
+    @GetMapping("/hotels/excel/upload")
+    @Operation(summary = "Загрузить Excel файл с отелями",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<String> excelToHotels(@RequestParam MultipartFile file) throws IOException {
+        log.info("Отдать excel по отелями");
+        service.loadHotelsFromExcel(file);
+        return ResponseEntity.ok("Hotels was successfully uploaded");
+    }
+
+    @GetMapping("/hospitals/excel/download")
+    @Operation(summary = "Получить Excel файл с больницами",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<FileSystemResource> hospitalsToExcel() throws IOException {
+        log.info("Получить Excel файл с больницами");
+        FileSystemResource fileResource = new FileSystemResource(service.loadHospitalsToExcel());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=hospitals.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(fileResource);
+    }
+
+    @GetMapping("/hospitals/excel/upload")
+    @Operation(summary = "Загрузить Excel файл с больницами",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<String> excelToHospitals(@RequestParam MultipartFile file) throws IOException {
+        log.info("Отдать excel по больницам");
+        service.loadHospitalsFromExcel(file);
+        return ResponseEntity.ok("Hospitals was successfully uploaded");
+    }
+
+    @GetMapping("/sights/excel/download")
+    @Operation(summary = "Получить Excel файл с достопримечательностями",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<FileSystemResource> sightsToExcel() throws IOException {
+        log.info("Получить Excel файл с достопримечательностями");
+        FileSystemResource fileResource = new FileSystemResource(service.loadSightsToExcel());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=sights.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(fileResource);
+    }
+
+    @GetMapping("/sights/excel/upload")
+    @Operation(summary = "Загрузить Excel файл с достопримечательностями",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<String> excelToSights(@RequestParam MultipartFile file) throws IOException {
+        log.info("Отдать excel по достопримечательностям");
+        service.loadSightsFromExcel(file);
+        return ResponseEntity.ok("Sights was successfully uploaded");
+    }
+
+    @GetMapping("/resorts/excel/download")
+    @Operation(summary = "Получить Excel файл с курортами",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<FileSystemResource> resortsToExcel() throws IOException {
+        log.info("Получить Excel файл с курортами");
+        FileSystemResource fileResource = new FileSystemResource(service.loadResortsToExcel());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=resorts.xlsx");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(fileResource);
+    }
+
+    @GetMapping("/resorts/excel/upload")
+    @Operation(summary = "Загрузить Excel файл с курортами",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<String> excelToResorts(@RequestParam MultipartFile file) throws IOException {
+        log.info("Отдать excel по курортам");
+        service.loadResortsFromExcel(file);
+        return ResponseEntity.ok("Resorts was successfully uploaded");
+    }
 }

@@ -1,6 +1,7 @@
 package org.mae.twg.backend.utils.excel;
 
 import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
@@ -20,58 +21,12 @@ import java.util.stream.Stream;
 
 @Component
 @Log4j2
+@RequiredArgsConstructor
 public class ExcelUtils {
+    private final ExcelValidation excelValidation;
 
     @Value("${upload.excel}")
     private String parent_path;
-
-    private void excelTourValidation(List<String> header) {
-        if (!Objects.equals(header.get(0), "titleRU")) {
-            throw new ValidationException("В файле отсутствует titleRU");
-        }
-        if (!Objects.equals(header.get(1), "introductionRU")) {
-            throw new ValidationException("В файле отсутствует introductionRU");
-        }
-        if (!Objects.equals(header.get(2), "descriptionRU")) {
-            throw new ValidationException("В файле отсутствует descriptionRU");
-        }
-        if (!Objects.equals(header.get(3), "additionalRU")) {
-            throw new ValidationException("В файле отсутствует additionalRU");
-        }
-        if (!Objects.equals(header.get(4), "titleEN")) {
-            throw new ValidationException("В файле отсутствует titleEN");
-        }
-        if (!Objects.equals(header.get(5), "introductionEN")) {
-            throw new ValidationException("В файле отсутствует introductionEN");
-        }
-        if (!Objects.equals(header.get(6), "descriptionEN")) {
-            throw new ValidationException("В файле отсутствует descriptionEN");
-        }
-        if (!Objects.equals(header.get(7), "additionalEN")) {
-            throw new ValidationException("В файле отсутствует additionalEN");
-        }
-        if (!Objects.equals(header.get(8), "titleUZ")) {
-            throw new ValidationException("В файле отсутствует titleUZ");
-        }
-        if (!Objects.equals(header.get(9), "introductionUZ")) {
-            throw new ValidationException("В файле отсутствует introductionUZ");
-        }
-        if (!Objects.equals(header.get(10), "descriptionUZ")) {
-            throw new ValidationException("В файле отсутствует descriptionUZ");
-        }
-        if (!Objects.equals(header.get(11), "additionalUZ")) {
-            throw new ValidationException("В файле отсутствует additionalUZ");
-        }
-        if (!Objects.equals(header.get(12), "price")) {
-            throw new ValidationException("В файле отсутствует price");
-        }
-        if (!Objects.equals(header.get(13), "tourType")) {
-            throw new ValidationException("В файле отсутствует tourType");
-        }
-        if (!Objects.equals(header.get(14), "duration")) {
-            throw new ValidationException("В файле отсутствует duration");
-        }
-    }
 
     private Map<Integer, List<String>> readExcel(String fileLocation) throws IOException {
         log.debug("Start ExcelUtils.readExcel");
@@ -92,7 +47,7 @@ public class ExcelUtils {
                 });
             }
         }
-        excelTourValidation(data.get(1));
+        excelValidation.excelTourValidation(data.get(1));
         data.remove(1);
         log.debug("End ExcelUtils.readExcel");
         return data;
@@ -131,6 +86,22 @@ public class ExcelUtils {
         }
     }
 
+    private HotelRow createHotel(List<String> attributes) {
+        return null;
+    }
+
+    private HospitalRow createHospital(List<String> attributes) {
+        return null;
+    }
+
+    private ResortRow createResort(List<String> attributes) {
+        return null;
+    }
+
+    private SightRow createSight(List<String> attributes) {
+        return null;
+    }
+
     public List<TourRow> parseTourExcel(MultipartFile file) throws IOException {
         log.debug("Start ExcelUtils.parseTourExcel");
         File tempFile = File.createTempFile("temp", null);
@@ -145,6 +116,70 @@ public class ExcelUtils {
         tempFile.delete();
         log.debug("End ExcelUtils.parseTourExcel");
         return tourRows;
+    }
+
+    public List<HotelRow> parseHotelExcel(MultipartFile file) throws IOException {
+        log.debug("Start ExcelUtils.parseHotelExcel");
+        File tempFile = File.createTempFile("temp", null);
+        file.transferTo(tempFile);
+        Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
+        List<HotelRow> hotelRows = new ArrayList<>();
+        for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
+            List<String> rowData = entry.getValue();
+            HotelRow hotelRow = createHotel(rowData);
+            hotelRows.add(hotelRow);
+        }
+        tempFile.delete();
+        log.debug("End ExcelUtils.parseHotelExcel");
+        return hotelRows;
+    }
+
+    public List<HospitalRow> parseHospitalExcel(MultipartFile file) throws IOException {
+        log.debug("Start ExcelUtils.parseHospitalExcel");
+        File tempFile = File.createTempFile("temp", null);
+        file.transferTo(tempFile);
+        Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
+        List<HospitalRow> hospitalRows = new ArrayList<>();
+        for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
+            List<String> rowData = entry.getValue();
+            HospitalRow hospitalRow = createHospital(rowData);
+            hospitalRows.add(hospitalRow);
+        }
+        tempFile.delete();
+        log.debug("End ExcelUtils.parseHospitalExcel");
+        return hospitalRows;
+    }
+
+    public List<SightRow> parseSightExcel(MultipartFile file) throws IOException {
+        log.debug("Start ExcelUtils.parseSightExcel");
+        File tempFile = File.createTempFile("temp", null);
+        file.transferTo(tempFile);
+        Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
+        List<SightRow> sightRows = new ArrayList<>();
+        for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
+            List<String> rowData = entry.getValue();
+            SightRow sightRow = createSight(rowData);
+            sightRows.add(sightRow);
+        }
+        tempFile.delete();
+        log.debug("End ExcelUtils.parseSightExcel");
+        return sightRows;
+    }
+
+    public List<ResortRow> parseResortExcel(MultipartFile file) throws IOException {
+        log.debug("Start ExcelUtils.parseResortExcel");
+        File tempFile = File.createTempFile("temp", null);
+        file.transferTo(tempFile);
+        Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
+        List<ResortRow> resortRows = new ArrayList<>();
+        for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
+            List<String> rowData = entry.getValue();
+            ResortRow resortRow = createResort(rowData);
+            resortRows.add(resortRow);
+        }
+        tempFile.delete();
+        log.debug("End ExcelUtils.parseResortExcel");
+        return resortRows;
     }
 
     public String convertToursToExcel(List<TourRow> tourRows) throws IOException {
@@ -192,5 +227,20 @@ public class ExcelUtils {
         } finally {
             log.debug("Somethings wrong");
         }
+    }
+
+    public String convertHotelsToExcel(List<HotelRow> tourRows) throws IOException {
+        return null;
+    }
+
+    public String convertHospitalsToExcel(List<HospitalRow> tourRows) throws IOException {
+        return null;
+    }
+    public String convertSightsToExcel(List<SightRow> tourRows) throws IOException {
+        return null;
+    }
+
+    public String convertResortsToExcel(List<ResortRow> tourRows) throws IOException {
+        return null;
     }
 }
