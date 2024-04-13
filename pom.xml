@@ -112,6 +112,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+        <!-- Apache POI -->
+        <dependency>
+            <groupId>org.dhatim</groupId>
+            <artifactId>fastexcel-reader</artifactId>
+            <version>0.15.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dhatim</groupId>
+            <artifactId>fastexcel</artifactId>
+            <version>0.15.3</version>
+        </dependency>
     </dependencies>
     <!--
     <dependencies>
