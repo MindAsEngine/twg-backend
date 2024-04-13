@@ -46,4 +46,14 @@ public class UserDTO {
         this.media = user.getMediaPath();
         log.debug("end UserDTO constructor");
     }
+
+
+    static public UserDTO getDTO(User user) {
+        log.debug("start UserDTO.getDTO");
+        if (user == null || !user.getIsEnabled()) {
+            return null;
+        }
+        log.debug("end UserDTO.getDTO");
+        return new UserDTO(user);
+    }
 }
