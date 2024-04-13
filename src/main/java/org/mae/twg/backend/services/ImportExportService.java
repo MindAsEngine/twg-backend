@@ -106,7 +106,7 @@ public class ImportExportService {
                 .map(this::rowToTour)
                 .toList();
         log.debug("End ImportExportService.loadToursFromExcel");
-        tourRepo.saveAll(tours);
+        //tourRepo.saveAll(tours);
     }
 
     public String loadToursToExcel() throws IOException {

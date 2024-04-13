@@ -1,5 +1,6 @@
 package org.mae.twg.backend.utils.excel;
 
+import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
@@ -14,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Component
@@ -26,6 +24,54 @@ public class ExcelUtils {
 
     @Value("${upload.excel}")
     private String parent_path;
+
+    private void excelTourValidation(List<String> header) {
+        if (!Objects.equals(header.get(0), "titleRU")) {
+            throw new ValidationException("В файле отсутствует titleRU");
+        }
+        if (!Objects.equals(header.get(1), "introductionRU")) {
+            throw new ValidationException("В файле отсутствует introductionRU");
+        }
+        if (!Objects.equals(header.get(2), "descriptionRU")) {
+            throw new ValidationException("В файле отсутствует descriptionRU");
+        }
+        if (!Objects.equals(header.get(3), "additionalRU")) {
+            throw new ValidationException("В файле отсутствует additionalRU");
+        }
+        if (!Objects.equals(header.get(4), "titleEN")) {
+            throw new ValidationException("В файле отсутствует titleEN");
+        }
+        if (!Objects.equals(header.get(5), "introductionEN")) {
+            throw new ValidationException("В файле отсутствует introductionEN");
+        }
+        if (!Objects.equals(header.get(6), "descriptionEN")) {
+            throw new ValidationException("В файле отсутствует descriptionEN");
+        }
+        if (!Objects.equals(header.get(7), "additionalEN")) {
+            throw new ValidationException("В файле отсутствует additionalEN");
+        }
+        if (!Objects.equals(header.get(8), "titleUZ")) {
+            throw new ValidationException("В файле отсутствует titleUZ");
+        }
+        if (!Objects.equals(header.get(9), "introductionUZ")) {
+            throw new ValidationException("В файле отсутствует introductionUZ");
+        }
+        if (!Objects.equals(header.get(10), "descriptionUZ")) {
+            throw new ValidationException("В файле отсутствует descriptionUZ");
+        }
+        if (!Objects.equals(header.get(11), "additionalUZ")) {
+            throw new ValidationException("В файле отсутствует additionalUZ");
+        }
+        if (!Objects.equals(header.get(12), "price")) {
+            throw new ValidationException("В файле отсутствует price");
+        }
+        if (!Objects.equals(header.get(13), "tourType")) {
+            throw new ValidationException("В файле отсутствует tourType");
+        }
+        if (!Objects.equals(header.get(14), "duration")) {
+            throw new ValidationException("В файле отсутствует duration");
+        }
+    }
 
     private Map<Integer, List<String>> readExcel(String fileLocation) throws IOException {
         log.debug("Start ExcelUtils.readExcel");
@@ -46,6 +92,7 @@ public class ExcelUtils {
                 });
             }
         }
+        excelTourValidation(data.get(1));
         data.remove(1);
         log.debug("End ExcelUtils.readExcel");
         return data;
@@ -57,26 +104,31 @@ public class ExcelUtils {
             attributes.add(null);
         }
         log.debug("Start ExcelUtils.createTour");
-        return  TourRow.builder()
-                .titleRU(attributes.get(0))
-                .introductionRU(attributes.get(1))
-                .descriptionRU(attributes.get(2))
-                .additionalRU(attributes.get(3))
-        
-                .titleEN(attributes.get(4))
-                .introductionEN(attributes.get(5))
-                .descriptionEN(attributes.get(6))
-                .additionalEN(attributes.get(7))
-        
-                .titleUZ(attributes.get(8))
-                .introductionUZ(attributes.get(9))
-                .descriptionUZ(attributes.get(10))
-                .additionalUZ(attributes.get(11))
+        try {
 
-                .price(attributes.get(12) == null ? null : Long.valueOf(attributes.get(12)))
-                .tourType(attributes.get(13))
-                .duration(attributes.get(14) == null ? null : Integer.valueOf(attributes.get(14)))
-                .build();
+            return TourRow.builder()
+                    .titleRU(attributes.get(0))
+                    .introductionRU(attributes.get(1))
+                    .descriptionRU(attributes.get(2))
+                    .additionalRU(attributes.get(3))
+
+                    .titleEN(attributes.get(4))
+                    .introductionEN(attributes.get(5))
+                    .descriptionEN(attributes.get(6))
+                    .additionalEN(attributes.get(7))
+
+                    .titleUZ(attributes.get(8))
+                    .introductionUZ(attributes.get(9))
+                    .descriptionUZ(attributes.get(10))
+                    .additionalUZ(attributes.get(11))
+                    .price(attributes.get(12) == null ? null : Long.valueOf(attributes.get(12)))
+                    .tourType(attributes.get(13))
+                    .duration(attributes.get(14) == null ? null : Integer.valueOf(attributes.get(14)))
+                    .build();
+        } catch (Exception e) {
+            log.error("Вы не передали число, где это необходимо");
+            throw new ValidationException("Вы не передали число, где это необходимо");
+        }
     }
 
     public List<TourRow> parseTourExcel(MultipartFile file) throws IOException {
