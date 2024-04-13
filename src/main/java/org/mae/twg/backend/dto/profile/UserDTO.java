@@ -5,8 +5,10 @@ import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.business.AgencyDTO;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.auth.UserRole;
+import org.mae.twg.backend.models.travel.enums.Localization;
 
 @Data
 @AllArgsConstructor
@@ -32,6 +34,8 @@ public class UserDTO {
     private String patronymic;
     @Schema(description = "Фотография пользователя", example = "/user/test.png")
     private String media;
+    @Schema(description = "Место работы агента")
+    private AgencyDTO agency;
 
     public UserDTO(User user) {
         log.debug("start UserDTO constructor");
@@ -44,6 +48,17 @@ public class UserDTO {
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
         this.media = user.getMediaPath();
+        this.agency = AgencyDTO.getDTO(user.getAgency(), Localization.RU);
         log.debug("end UserDTO constructor");
+    }
+
+
+    static public UserDTO getDTO(User user) {
+        log.debug("start UserDTO.getDTO");
+        if (user == null || !user.getIsEnabled()) {
+            return null;
+        }
+        log.debug("end UserDTO.getDTO");
+        return new UserDTO(user);
     }
 }

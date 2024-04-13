@@ -26,4 +26,13 @@ public class UserLightDTO implements Serializable {
         this.media = user.getMediaPath();
         log.debug("end UserLightDTO constructor");
     }
+
+    static public UserLightDTO getDTO(User user) {
+        log.debug("start UserLightDTO.getDTO");
+        if (user == null || !user.getIsEnabled()) {
+            return null;
+        }
+        log.debug("end UserLightDTO.getDTO");
+        return new UserLightDTO(user);
+    }
 }

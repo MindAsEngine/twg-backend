@@ -48,7 +48,7 @@ public class TourRequestController {
     public ResponseEntity<List<TourReqResponseDTO>> getRequests(@PathVariable Localization local,
                                                                 @RequestParam (required = false) Long agencyId)  {
         log.info("Отдать все заявки по агентству");
-        return ResponseEntity.ok(tourRequestService.getAll(agencyId, null, local));
+        return ResponseEntity.ok(tourRequestService.getAll(agencyId, null, null, local));
     }
 
     @GetMapping("/getMy")
@@ -56,14 +56,29 @@ public class TourRequestController {
     @Operation(summary = "Отдать все заявки авторизованного пользователя",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<List<TourReqResponseDTO>> getRequestsByUser(@PathVariable Localization local)  {
+    public ResponseEntity<List<TourReqResponseDTO>> getRequestsByUser(@PathVariable Localization local,
+                                                                      @RequestParam (required = false, defaultValue = "false") Boolean isAgent)  {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("Отдать все заявки авторизованного пользователя: " + username);
-        return ResponseEntity.ok(tourRequestService.getAll(null, username, local));
+        return ResponseEntity.ok(tourRequestService.getAll(null, username, isAgent, local));
+    }
+
+
+    @PostMapping("/set-agent")
+//    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
+    @Operation(summary = "Установать агента заявке")
+    public ResponseEntity<TourReqResponseDTO> setAgent(@PathVariable Localization local,
+                                                       @RequestBody Long requestId)  {
+        log.info("Установать агента заявке на тур с id: " + requestId);
+        if (requestId == null) {
+            log.warn("Не передали заявку на звонок");
+            throw new ValidationException("Не передали заявку");
+        }
+        return ResponseEntity.ok(tourRequestService.setAgent(requestId, local));
     }
 
     @PostMapping("/resolve")
-    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
     @Operation(summary = "Решить заявку",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )

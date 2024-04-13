@@ -1,8 +1,12 @@
 package org.mae.twg.backend.models.business;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.mae.twg.backend.models.Model;
+import org.mae.twg.backend.models.auth.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +32,14 @@ public class Agency implements Model {
     private Double longitude;
 
     @OneToMany(mappedBy = "agency",
-            cascade = CascadeType.ALL)
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
     private List<AgencyLocal> locals = new ArrayList<>();
+
+    @OneToMany(mappedBy = "agency",
+            cascade = CascadeType.DETACH,
+            fetch = FetchType.EAGER)
+    private List<User> agents = new ArrayList<>();
 
     public void addLocal(AgencyLocal local) {
         locals.add(local);
@@ -39,6 +49,16 @@ public class Agency implements Model {
     public void removeLocal(AgencyLocal local) {
         locals.remove(local);
         local.setAgency(null);
+    }
+
+    public void addAgent(User user) {
+        agents.add(user);
+        user.setAgency(this);
+    }
+
+    public void removeAgent(User user) {
+        agents.remove(user);
+        user.setAgency(null);
     }
 
     @Override

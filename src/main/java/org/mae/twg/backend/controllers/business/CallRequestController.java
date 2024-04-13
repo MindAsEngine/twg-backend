@@ -11,6 +11,7 @@ import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.business.CallRequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,11 +42,35 @@ public class CallRequestController {
     public ResponseEntity<List<CallReqResponseDTO>> getCall(@PathVariable Localization local,
                                                             @RequestParam (required = false) Long agencyId)  {
         log.info("Отдать все заявки агентства");
-        return ResponseEntity.ok(callRequestService.getAll(agencyId, local));
+        return ResponseEntity.ok(callRequestService.getAll(agencyId, null, local));
+    }
+
+    @GetMapping("/getMy")
+//    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
+    @Operation(summary = "Отдать все заявки агента")
+    public ResponseEntity<List<CallReqResponseDTO>> getCallByAgent(@PathVariable Localization local)  {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Отдать все заявки агентства пользователя с username: " + username);
+        return ResponseEntity.ok(callRequestService.getAll(null, username, local));
+    }
+
+
+
+    @PostMapping("/set-agent")
+//    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
+    @Operation(summary = "Установать агента заявке")
+    public ResponseEntity<CallReqResponseDTO> setAgent(@PathVariable Localization local,
+                                                            @RequestBody Long requestId)  {
+        log.info("Установать агента заявке на звонок с id: " + requestId);
+        if (requestId == null) {
+            log.warn("Не передали заявку на звонок");
+            throw new ValidationException("Не передали заявку");
+        }
+        return ResponseEntity.ok(callRequestService.setAgent(requestId, local));
     }
 
     @PostMapping("/resolve")
-    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
     @Operation(summary = "Решить заявку")
     public ResponseEntity<List<CallReqResponseDTO>> resolve(@PathVariable Localization local,
                                                             @RequestBody Long requestId)  {
