@@ -15,6 +15,7 @@ public class UserLightDTO implements Serializable {
     private String firstName;
     private String lastName;
     private String patronymic;
+    private String media;
 
     public UserLightDTO(User user) {
         log.debug("start UserLightDTO constructor");
@@ -22,6 +23,7 @@ public class UserLightDTO implements Serializable {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
+        this.media = user.getMediaPath();
         log.debug("end UserLightDTO constructor");
     }
 }
