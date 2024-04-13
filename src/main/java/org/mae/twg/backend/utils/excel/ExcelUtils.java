@@ -92,7 +92,7 @@ public class ExcelUtils {
     public String convertToursToExcel(List<TourRow> tourRows) throws IOException {
         log.debug("Start ExcelUtils.convertToursToExcel");
 
-        String fileLocation = "C:\\Users\\SAPIPA\\Desktop\\fastexcel.xlsx";
+        String fileLocation = "~/Desktop/tours.xlsx";
 
         try (OutputStream os = new FileOutputStream(fileLocation); Workbook wb = new Workbook(os, "MyApplication", "1.0")) {
             Worksheet sheet = wb.newWorksheet("Tours");
