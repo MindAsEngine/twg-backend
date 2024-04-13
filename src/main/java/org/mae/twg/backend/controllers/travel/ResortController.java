@@ -38,7 +38,7 @@ public class ResortController extends BaseController<ResortService, ResortDTO, R
     @GetMapping("/get")
     @Operation(summary = "Отдать курорт по id")
     public ResponseEntity<ResortDTO> getById(@PathVariable Localization local,
-                                     @RequestParam Long id) {
+                                             @RequestParam Long id) {
         log.info("Отдать курорт по id: " + id);
         return ResponseEntity.ok(getService().getById(id, local));
     }
@@ -46,9 +46,9 @@ public class ResortController extends BaseController<ResortService, ResortDTO, R
     @GetMapping("/find/filters")
     @Operation(summary = "Получение курортов по фильтрам")
     public ResponseEntity<List<ResortDTO>> getByFilters(@PathVariable Localization local,
-                                                       @RequestParam(required = false) List<Long> countryIds,
-                                                       @RequestParam(required = false) Integer page,
-                                                       @RequestParam(required = false) Integer size) {
+                                                        @RequestParam(required = false) List<Long> countryIds,
+                                                        @RequestParam(required = false) Integer page,
+                                                        @RequestParam(required = false) Integer size) {
         validatePageable(page, size);
         if (countryIds == null) {
             log.warn("countryIds is empty");
@@ -64,8 +64,8 @@ public class ResortController extends BaseController<ResortService, ResortDTO, R
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<ResortDTO> updateLogicData(@PathVariable Localization local,
-                                             @RequestParam Long id,
-                                             @RequestBody ResortLogicDTO resortDTO) {
+                                                     @PathVariable Long id,
+                                                     @RequestBody ResortLogicDTO resortDTO) {
         log.info("Установка курорту с id = " + id + " страны с id = " + resortDTO.getCountryId());
         return ResponseEntity.ok(getService().updateLogicData(id, resortDTO, local));
     }
