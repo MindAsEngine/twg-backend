@@ -11,6 +11,7 @@ import org.mae.twg.backend.models.business.TourRequest;
 import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.repositories.business.TourRequestRepo;
+import org.mae.twg.backend.services.auth.UserService;
 import org.mae.twg.backend.services.travel.TourService;
 import org.mae.twg.backend.utils.BotUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +30,7 @@ public class TourRequestService {
     private final TourRequestRepo tourRequestRepo;
     private final TourService tourService;
     private final AgencyService agencyService;
+    private final UserService userService;
     private final BotUtils botUtils;
 
     private TourRequest findById(Long id) {
@@ -61,27 +63,46 @@ public class TourRequestService {
         return new TourReqResponseDTO(tourRequest, localization);
     }
 
-    public List<TourReqResponseDTO> getAll(Long agencyId, String username, Localization localization) {
+    public List<TourReqResponseDTO> getAll(Long agencyId,
+                                           String username,
+                                           Boolean isAgent,
+                                           Localization localization) {
         log.debug("Start TourRequestService.getAll");
         if (agencyId != null) {
             log.debug("End TourRequestService.getAll");
-            return modelsToDTOs(tourRequestRepo.findByAgency_IdAndClosedAtIsNull(agencyId).stream(), localization);
+            return modelsToDTOs(tourRequestRepo.findByAgency_IdAndAgentIsNullAndClosedAtIsNull(agencyId).stream(), localization);
         }
         if (username != null) {
+            if (isAgent) {
+                log.debug("End TourRequestService.getAll");
+                return modelsToDTOs(tourRequestRepo.findAllByAgent_Username(username).stream(), localization);
+            }
             log.debug("End TourRequestService.getAll");
-            return modelsToDTOs((tourRequestRepo.findAllByUser_Username(username)).stream(), localization);
+            return modelsToDTOs(tourRequestRepo.findAllByUser_Username(username).stream(), localization);
         }
         log.debug("End TourRequestService.getAll");
-        return modelsToDTOs(tourRequestRepo.findByClosedAtIsNull().stream(), localization);
+        return modelsToDTOs(tourRequestRepo.findByAgentIsNullAndClosedAtIsNull().stream(), localization);
     }
 
-    public List<TourReqResponseDTO> resolve(Long request_id, Localization localization) {
+    public TourReqResponseDTO setAgent(Long requestId, Localization localization) {
+        log.debug("Start TourRequestService.setAgent");
+        TourRequest tourRequest = findById(requestId);
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User agent = userService.loadUserByUsername(username);
+        tourRequest.setAgent(agent);
+        tourRequestRepo.saveAndFlush(tourRequest);
+        log.debug("End TourRequestService.setAgent");
+        return new TourReqResponseDTO(tourRequest, localization);
+    }
+
+    public List<TourReqResponseDTO> resolve(Long requestId, Localization localization) {
         log.debug("Start TourRequestService.resolve");
-        TourRequest tourRequest = findById(request_id);
+        TourRequest tourRequest = findById(requestId);
         tourRequest.setClosedAt(LocalDateTime.now());
         tourRequestRepo.saveAndFlush(tourRequest);
         log.debug("End TourRequestService.resolve");
-        return getAll(null, null, localization);
+        return getAll(null, null, null, localization);
     }
 
 

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.profile.UserLightDTO;
 import org.mae.twg.backend.models.business.CallRequest;
 import org.mae.twg.backend.models.travel.enums.Localization;
 
@@ -22,6 +23,8 @@ public class CallReqResponseDTO {
     private String phone;
     @Schema(description = "Агентство", example = "1")
     private AgencyDTO agency;
+    @Schema(description = "Агент исполнитель")
+    private UserLightDTO agent;
     @Schema(description = "Вопрос", example = "Как какать?")
     private String text;
     @Schema(description = "Дата создания", example = "01.01.01")
@@ -33,6 +36,7 @@ public class CallReqResponseDTO {
         this.fullName = callRequest.getUser();
         this.phone = callRequest.getNumber();
         this.agency = AgencyDTO.getDTO(callRequest.getAgency(), localization);
+        this.agent = UserLightDTO.getDTO(callRequest.getAgent());
         this.text = callRequest.getText();
         this.createdAt = callRequest.getCreatedAt();
         log.debug("end CallReqResponseDTO constructor");

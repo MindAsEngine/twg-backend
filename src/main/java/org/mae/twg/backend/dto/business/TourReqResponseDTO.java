@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.profile.UserLightDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.models.business.TourRequest;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -21,6 +22,8 @@ public class TourReqResponseDTO {
     private TourDTO tour;
     @Schema(description = "Агентство", example = "1")
     private AgencyDTO agency;
+    @Schema(description = "Агент исполнитель")
+    private UserLightDTO agent;
     @Schema(description = "Количество взрослых", example = "1")
     private Integer adults;
     @Schema(description = "Количество детей", example = "1")
@@ -36,6 +39,7 @@ public class TourReqResponseDTO {
         this.id = tourRequest.getId();
         this.tour = TourDTO.getDTO(tourRequest.getTour(), localization);
         this.agency = AgencyDTO.getDTO(tourRequest.getAgency(), localization);
+        this.agent = UserLightDTO.getDTO(tourRequest.getAgent());
         this.adults = tourRequest.getAdults();
         this.children = tourRequest.getChildren();
         this.transferNotes = tourRequest.getTransferNotes();

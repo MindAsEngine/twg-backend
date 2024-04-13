@@ -21,11 +21,6 @@ public class CallRequest {
     @Column(name = "call_request_id")
     private Long id;
 
-/*    @NonNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;*/
-
     @NonNull
     @Column(name = "user_fio")
     private String user;
@@ -38,6 +33,10 @@ public class CallRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id")
     private Agency agency;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agent_id")
+    private User agent;
 
     @NonNull
     @Column(name = "text")
