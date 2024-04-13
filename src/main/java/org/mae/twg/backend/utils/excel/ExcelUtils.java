@@ -7,10 +7,13 @@ import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +23,9 @@ import java.util.stream.Stream;
 @Component
 @Log4j2
 public class ExcelUtils {
+
+    @Value("${upload.excel}")
+    private String parent_path;
 
     private Map<Integer, List<String>> readExcel(String fileLocation) throws IOException {
         log.debug("Start ExcelUtils.readExcel");
@@ -92,9 +98,11 @@ public class ExcelUtils {
     public String convertToursToExcel(List<TourRow> tourRows) throws IOException {
         log.debug("Start ExcelUtils.convertToursToExcel");
 
-        String fileLocation = "~/Desktop/tours.xlsx";
+        File currDir = new File(parent_path);
+        String path = currDir.getAbsolutePath();
+        String fileLocation = path + "/tours.xlsx";
 
-        try (OutputStream os = new FileOutputStream(fileLocation); Workbook wb = new Workbook(os, "MyApplication", "1.0")) {
+        try (OutputStream os = Files.newOutputStream(Paths.get(fileLocation)); Workbook wb = new Workbook(os, "MyApplication", "1.0")) {
             Worksheet sheet = wb.newWorksheet("Tours");
             String[] headers = {"titleRU", "introductionRU", "descriptionRU", "additionalRU",
                     "titleEN", "introductionEN", "descriptionEN", "additionalEN",
