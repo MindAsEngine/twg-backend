@@ -145,7 +145,7 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
     @Transactional
     public HospitalDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
         log.debug("Start HospitalService.uploadImage");
-        String url = imageService.saveImage(ModelType.HOTEL, image);
+        String url = imageService.saveImage(ModelType.HOSPITAL, image);
         HospitalMedia hospitalMedia = new HospitalMedia(url);
         hospitalMediaRepo.saveAndFlush(hospitalMedia);
         Hospital hospital = findById(id);
@@ -158,7 +158,7 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
     @Transactional
     public HospitalDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
         log.debug("Start HospitalService.uploadImages");
-        List<String> urls = imageService.saveImages(ModelType.HOTEL, images);
+        List<String> urls = imageService.saveImages(ModelType.HOSPITAL, images);
         List<HospitalMedia> hospitalMedias = urls.stream().map(HospitalMedia::new).toList();
         Hospital hospital = findById(id);
         for (HospitalMedia hospitalMedia : hospitalMedias) {

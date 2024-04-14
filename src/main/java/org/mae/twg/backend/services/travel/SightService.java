@@ -142,7 +142,7 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
     @Transactional
     public SightDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
         log.debug("Start SightService.uploadImage");
-        String url = imageService.saveImage(ModelType.HOTEL, image);
+        String url = imageService.saveImage(ModelType.SIGHT, image);
         SightMedia sightMedia = new SightMedia(url);
         sightMediaRepo.saveAndFlush(sightMedia);
         Sight sight = findById(id);
