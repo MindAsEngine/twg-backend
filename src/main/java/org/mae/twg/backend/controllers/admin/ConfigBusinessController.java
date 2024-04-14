@@ -1,4 +1,4 @@
-package org.mae.twg.backend.controllers.config;
+package org.mae.twg.backend.controllers.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

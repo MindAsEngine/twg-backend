@@ -6,18 +6,5 @@ public enum Stars {
     TWO,
     THREE,
     FOUR,
-    FIVE;
-
-    @Override
-    public String toString() {
-        switch (this) {
-            case NULL -> {return "Без звезд";}
-            case ONE -> {return "⭐️";}
-            case TWO -> {return "⭐️⭐️";}
-            case THREE -> {return "⭐️⭐️⭐️";}
-            case FOUR -> {return "⭐️⭐️⭐️⭐️";}
-            case FIVE -> {return "⭐️⭐️⭐️⭐️⭐️";}
-        }
-        return "";
-    }
+    FIVE
 }
