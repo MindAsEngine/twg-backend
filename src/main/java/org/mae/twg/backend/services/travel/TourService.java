@@ -119,6 +119,18 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
 
     public List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
         log.debug("Start TourService.modelsToDTOs");
+        List<TourDTO> tourDTOs = modelsToAdminDTOs(tours, localization)
+                .stream().filter(TourDTO::getIsActive).toList();
+        if (tourDTOs.isEmpty()) {
+            log.error("Tours with " + localization + " with localization not found");
+            throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
+        }
+        log.debug("End TourService.modelsToDTOs");
+        return tourDTOs;
+    }
+
+    public List<TourDTO> modelsToAdminDTOs(Stream<Tour> tours, Localization localization) {
+        log.debug("Start TourService.modelsToAdminDTOs");
         Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
                 .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<TourDTO> tourDTOs = tours
@@ -131,7 +143,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
             log.error("Tours with " + localization + " with localization not found");
             throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
         }
-        log.debug("End TourService.modelsToDTOs");
+        log.debug("End TourService.modelsToAdminDTOs");
         return tourDTOs;
     }
 
@@ -229,6 +241,22 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         List<Tour> tours = tourRepo.findAll(Sort.by("slug"));
         log.debug("End TourService.getAll");
         return modelsToDTOs(tours.stream(), localization);
+    }
+
+    public List<TourDTO> getAllAdmins(Localization localization, Integer page, Integer size) {
+        log.debug("Start TourService.getAll");
+        Pageable toursPage = null;
+        if (page != null && size != null) {
+            toursPage = PageRequest.of(page, size);
+        }
+        List<Tour> tours;
+        if (toursPage == null) {
+            tours = tourRepo.findAll(Sort.by("slug"));
+        } else {
+            tours = tourRepo.findAll(toursPage).stream().toList();
+        }
+        log.debug("End TourService.getAll");
+        return modelsToAdminDTOs(tours.stream(), localization);
     }
 
     public List<TourDTO> getAllPaged(Localization localization, int page, int size) {

@@ -43,6 +43,19 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
         }
     }
 
+    @GetMapping("/all-admin")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
+    @Operation(summary = "Получить все туры админом",
+            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
+    )
+    public ResponseEntity<List<TourDTO>> getAllAdmin(@PathVariable Localization local,
+                                                     @RequestParam(required = false) Integer page,
+                                                     @RequestParam(required = false) Integer size) {
+        log.info("Все туры и не активные тоже");
+        validatePageable(page, size);
+        return ResponseEntity.ok(getService().getAllAdmins(local, page, size));
+    }
+
     @GetMapping("/find/title")
     @Operation(summary = "Туры по фильтрам")
     public ResponseEntity<List<TourDTO>> findByTitle(@PathVariable Localization local,
