@@ -99,7 +99,7 @@ public class ImportExportService {
         log.debug("Start ImportExportService.hotelToRow");
         HotelRow.HotelRowBuilder builder = HotelRow.builder();
         builder
-                .stars(hotel.getStars().name())
+                .stars(hotel.getStars() == null ? "Undefined" : hotel.getStars().name())
                 .longitude(hotel.getLongitude())
                 .latitude(hotel.getLatitude());
         List<HotelLocal> locals = hotel.getLocals();

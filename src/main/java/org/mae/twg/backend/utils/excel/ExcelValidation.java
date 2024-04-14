@@ -56,7 +56,7 @@ public class ExcelValidation {
         if (!Objects.equals(header.get(14), "duration")) {
             exceptionMsg.append("В файле отсутствует duration\n");
         }
-        if (exceptionMsg.isEmpty()) {
+        if (!exceptionMsg.isEmpty()) {
             throw new ValidationException(exceptionMsg.toString());
         }
     }
@@ -116,7 +116,7 @@ public class ExcelValidation {
         if (!Objects.equals(header.get(17), "longitude")) {
             exceptionMsg.append("В файле отсутствует longitude\n");
         }
-        if (exceptionMsg.isEmpty()) {
+        if (!exceptionMsg.isEmpty()) {
             throw new ValidationException(exceptionMsg.toString());
         }
     }
@@ -173,7 +173,7 @@ public class ExcelValidation {
         if (!Objects.equals(header.get(16), "longitude")) {
             exceptionMsg.append("В файле отсутствует longitude\n");
         }
-        if (exceptionMsg.isEmpty()) {
+        if (!exceptionMsg.isEmpty()) {
             throw new ValidationException(exceptionMsg.toString());
         }
     }
@@ -221,7 +221,7 @@ public class ExcelValidation {
         if (!Objects.equals(header.get(13), "longitude")) {
             exceptionMsg.append("В файле отсутствует longitude\n");
         }
-        if (exceptionMsg.isEmpty()) {
+        if (!exceptionMsg.isEmpty()) {
             throw new ValidationException(exceptionMsg.toString());
         }
     }
