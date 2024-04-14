@@ -31,7 +31,6 @@ public class ImportExportService {
     private final HotelRepo hotelRepo;
     private final HospitalRepo hospitalRepo;
     private final SightRepo sightRepo;
-    private final ResortRepo resortRepo;
     private final ExcelUtils excelUtils;
     private final SlugUtils slugUtils;
     private String getName(Model model) {
