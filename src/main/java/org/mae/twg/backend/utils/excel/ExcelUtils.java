@@ -48,8 +48,6 @@ public class ExcelUtils {
                 });
             }
         }
-        excelValidation.excelTourValidation(data.get(1));
-        data.remove(1);
         log.debug("End ExcelUtils.readExcel");
         return data;
     }
@@ -194,6 +192,8 @@ public class ExcelUtils {
         File tempFile = File.createTempFile("temp", null);
         file.transferTo(tempFile);
         Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
+        excelValidation.excelTourValidation(excelData.get(1));
+        excelData.remove(1);
         List<TourRow> tourRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
@@ -210,6 +210,8 @@ public class ExcelUtils {
         File tempFile = File.createTempFile("temp", null);
         file.transferTo(tempFile);
         Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
+        excelValidation.excelHotelValidation(excelData.get(1));
+        excelData.remove(1);
         List<HotelRow> hotelRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
@@ -226,6 +228,8 @@ public class ExcelUtils {
         File tempFile = File.createTempFile("temp", null);
         file.transferTo(tempFile);
         Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
+        excelValidation.excelHospitalValidation(excelData.get(1));
+        excelData.remove(1);
         List<HospitalRow> hospitalRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
@@ -242,6 +246,8 @@ public class ExcelUtils {
         File tempFile = File.createTempFile("temp", null);
         file.transferTo(tempFile);
         Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
+        excelValidation.excelSightValidation(excelData.get(1));
+        excelData.remove(1);
         List<SightRow> sightRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
