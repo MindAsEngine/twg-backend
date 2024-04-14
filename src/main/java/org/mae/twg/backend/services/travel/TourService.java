@@ -119,12 +119,12 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
 
     public List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
         log.debug("Start TourService.modelsToDTOs");
-//        List<TourDTO> tourDTOs = modelsToAdminDTOs(tours, localization)
-//                .stream().filter(TourDTO::getIsActive).toList();
-//        if (tourDTOs.isEmpty()) {
-//            log.error("Tours with " + localization + " with localization not found");
-//            throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
-//        }
+        List<TourDTO> tourDTOs = modelsToAdminDTOs(tours, localization)
+                .stream().filter(TourDTO::getIsActive).toList();
+        if (tourDTOs.isEmpty()) {
+            log.error("Tours with " + localization + " with localization not found");
+            throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
+        }
         log.debug("End TourService.modelsToDTOs");
         return modelsToAdminDTOs(tours, localization);
     }
