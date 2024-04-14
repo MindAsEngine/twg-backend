@@ -10,50 +10,54 @@ import java.util.Objects;
 public class ExcelValidation {
 
     public void excelTourValidation(List<String> header) {
+        StringBuilder exceptionMsg = new StringBuilder();
         if (!Objects.equals(header.get(0), "titleRU")) {
-            throw new ValidationException("В файле отсутствует titleRU");
+            exceptionMsg.append("В файле отсутствует titleRU\n");
         }
         if (!Objects.equals(header.get(1), "introductionRU")) {
-            throw new ValidationException("В файле отсутствует introductionRU");
+            exceptionMsg.append("В файле отсутствует introductionRU\n");
         }
         if (!Objects.equals(header.get(2), "descriptionRU")) {
-            throw new ValidationException("В файле отсутствует descriptionRU");
+            exceptionMsg.append("В файле отсутствует descriptionRU\n");
         }
         if (!Objects.equals(header.get(3), "additionalRU")) {
-            throw new ValidationException("В файле отсутствует additionalRU");
+            exceptionMsg.append("В файле отсутствует additionalRU\n");
         }
         if (!Objects.equals(header.get(4), "titleEN")) {
-            throw new ValidationException("В файле отсутствует titleEN");
+            exceptionMsg.append("В файле отсутствует titleEN\n");
         }
         if (!Objects.equals(header.get(5), "introductionEN")) {
-            throw new ValidationException("В файле отсутствует introductionEN");
+            exceptionMsg.append("В файле отсутствует introductionEN\n");
         }
         if (!Objects.equals(header.get(6), "descriptionEN")) {
-            throw new ValidationException("В файле отсутствует descriptionEN");
+            exceptionMsg.append("В файле отсутствует descriptionEN\n");
         }
         if (!Objects.equals(header.get(7), "additionalEN")) {
-            throw new ValidationException("В файле отсутствует additionalEN");
+            exceptionMsg.append("В файле отсутствует additionalEN\n");
         }
         if (!Objects.equals(header.get(8), "titleUZ")) {
-            throw new ValidationException("В файле отсутствует titleUZ");
+            exceptionMsg.append("В файле отсутствует titleUZ\n");
         }
         if (!Objects.equals(header.get(9), "introductionUZ")) {
-            throw new ValidationException("В файле отсутствует introductionUZ");
+            exceptionMsg.append("В файле отсутствует introductionUZ\n");
         }
         if (!Objects.equals(header.get(10), "descriptionUZ")) {
-            throw new ValidationException("В файле отсутствует descriptionUZ");
+            exceptionMsg.append("В файле отсутствует descriptionUZ\n");
         }
         if (!Objects.equals(header.get(11), "additionalUZ")) {
-            throw new ValidationException("В файле отсутствует additionalUZ");
+            exceptionMsg.append("В файле отсутствует additionalUZ\n");
         }
         if (!Objects.equals(header.get(12), "price")) {
-            throw new ValidationException("В файле отсутствует price");
+            exceptionMsg.append("В файле отсутствует price\n");
         }
         if (!Objects.equals(header.get(13), "tourType")) {
-            throw new ValidationException("В файле отсутствует tourType");
+            exceptionMsg.append("В файле отсутствует tourType\n");
         }
         if (!Objects.equals(header.get(14), "duration")) {
-            throw new ValidationException("В файле отсутствует duration");
+            exceptionMsg.append("В файле отсутствует duration\n");
+        }
+        if (exceptionMsg.isEmpty()) {
+            throw new ValidationException(exceptionMsg.toString());
         }
     }
     public void excelHotelValidation(List<String> header) {
