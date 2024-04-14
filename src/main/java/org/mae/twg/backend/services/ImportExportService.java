@@ -1,13 +1,17 @@
 package org.mae.twg.backend.services;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.models.Local;
 import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.*;
 import org.mae.twg.backend.models.travel.enums.Localization;
+import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.repositories.travel.*;
+import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
+import org.mae.twg.backend.utils.SlugUtils;
 import org.mae.twg.backend.utils.excel.*;
 import org.mae.twg.backend.utils.excel.models.*;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,11 +27,13 @@ import java.util.List;
 @Log4j2
 public class ImportExportService {
     private final TourRepo tourRepo;
+    private final TourLocalRepo tourLocalRepo;
     private final HotelRepo hotelRepo;
     private final HospitalRepo hospitalRepo;
     private final SightRepo sightRepo;
     private final ResortRepo resortRepo;
     private final ExcelUtils excelUtils;
+    private final SlugUtils slugUtils;
     private String getName(Model model) {
         log.debug("Start ImportExportService.getName");
         if (model == null) {
@@ -128,8 +135,50 @@ public class ImportExportService {
 
     private Tour rowToTour(TourRow row) {
         log.debug("Start ImportExportService.rowToTour");
+        Tour tour = new Tour();
+        tourRepo.save(tour);
+        tour.setDuration(row.getDuration());
+        tour.setIsActive(false);
+        tour.setPrice(row.getPrice());
+        try {
+            tour.setType(TourType.valueOf(row.getTourType()));
+        } catch (Exception e) {
+            log.error("Could not parse tour type: " + row.getTourType());
+            throw new ValidationException("Could not parse tour type: " + row.getTourType());
+        }
+
+        List<TourLocal> locals = new ArrayList<>();
+        if (row.getTitleRU() != null) {
+            locals.add(new TourLocal(
+                    row.getTitleRU(),
+                    row.getIntroductionRU(),
+                    row.getDescriptionRU(),
+                    row.getAdditionalRU(),
+                    Localization.RU));
+        }
+        if (row.getTitleEN() != null) {
+            locals.add(new TourLocal(
+                    row.getTitleEN(),
+                    row.getIntroductionEN(),
+                    row.getDescriptionEN(),
+                    row.getAdditionalEN(),
+                    Localization.EN));
+        }
+        if (row.getTitleUZ() != null) {
+            locals.add(new TourLocal(
+                    row.getTitleUZ(),
+                    row.getIntroductionUZ(),
+                    row.getDescriptionUZ(),
+                    row.getAdditionalUZ(),
+                    Localization.UZ));
+        }
+        tourLocalRepo.saveAll(locals);
+        for (TourLocal local : locals) {
+            tour.addLocal(local);
+        }
+        tour.setSlug(slugUtils.getSlug(tour));
         log.debug("End ImportExportService.rowToTour");
-        return null;
+        return tour;
     }
 
     @Transactional
@@ -139,8 +188,8 @@ public class ImportExportService {
         List<Tour> tours = tourRows.stream()
                 .map(this::rowToTour)
                 .toList();
+        tourRepo.saveAll(tours);
         log.debug("End ImportExportService.loadToursFromExcel");
-        //tourRepo.saveAll(tours);
     }
 
     @Transactional

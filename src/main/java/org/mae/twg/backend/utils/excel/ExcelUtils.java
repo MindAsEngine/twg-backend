@@ -54,7 +54,7 @@ public class ExcelUtils {
         return data;
     }
 
-    private TourRow createTour(List<String> attributes) {
+    private TourRow createTourRow(List<String> attributes) {
         log.debug("Start ExcelUtils.createTour");
         while(attributes.size() < 16) {
             attributes.add(null);
@@ -87,19 +87,19 @@ public class ExcelUtils {
         }
     }
 
-    private HotelRow createHotel(List<String> attributes) {
+    private HotelRow createHotelRow(List<String> attributes) {
         return null;
     }
 
-    private HospitalRow createHospital(List<String> attributes) {
+    private HospitalRow createHospitalRow(List<String> attributes) {
         return null;
     }
 
-    private ResortRow createResort(List<String> attributes) {
+    private ResortRow createResortRow(List<String> attributes) {
         return null;
     }
 
-    private SightRow createSight(List<String> attributes) {
+    private SightRow createSightRow(List<String> attributes) {
         return null;
     }
 
@@ -111,7 +111,7 @@ public class ExcelUtils {
         List<TourRow> tourRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
-            TourRow tourRow = createTour(rowData);
+            TourRow tourRow = createTourRow(rowData);
             tourRows.add(tourRow);
         }
         tempFile.delete();
@@ -127,7 +127,7 @@ public class ExcelUtils {
         List<HotelRow> hotelRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
-            HotelRow hotelRow = createHotel(rowData);
+            HotelRow hotelRow = createHotelRow(rowData);
             hotelRows.add(hotelRow);
         }
         tempFile.delete();
@@ -143,7 +143,7 @@ public class ExcelUtils {
         List<HospitalRow> hospitalRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
-            HospitalRow hospitalRow = createHospital(rowData);
+            HospitalRow hospitalRow = createHospitalRow(rowData);
             hospitalRows.add(hospitalRow);
         }
         tempFile.delete();
@@ -159,7 +159,7 @@ public class ExcelUtils {
         List<SightRow> sightRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
-            SightRow sightRow = createSight(rowData);
+            SightRow sightRow = createSightRow(rowData);
             sightRows.add(sightRow);
         }
         tempFile.delete();
@@ -175,7 +175,7 @@ public class ExcelUtils {
         List<ResortRow> resortRows = new ArrayList<>();
         for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
             List<String> rowData = entry.getValue();
-            ResortRow resortRow = createResort(rowData);
+            ResortRow resortRow = createResortRow(rowData);
             resortRows.add(resortRow);
         }
         tempFile.delete();
