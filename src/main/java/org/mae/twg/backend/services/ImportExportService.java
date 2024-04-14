@@ -3,9 +3,10 @@ package org.mae.twg.backend.services;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.mae.twg.backend.models.Local;
-import org.mae.twg.backend.models.Model;
-import org.mae.twg.backend.models.travel.*;
+import org.mae.twg.backend.models.travel.Hospital;
+import org.mae.twg.backend.models.travel.Hotel;
+import org.mae.twg.backend.models.travel.Sight;
+import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.enums.TourType;
@@ -13,14 +14,20 @@ import org.mae.twg.backend.models.travel.localization.HospitalLocal;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
-import org.mae.twg.backend.repositories.travel.*;
+import org.mae.twg.backend.repositories.travel.HospitalRepo;
+import org.mae.twg.backend.repositories.travel.HotelRepo;
+import org.mae.twg.backend.repositories.travel.SightRepo;
+import org.mae.twg.backend.repositories.travel.TourRepo;
 import org.mae.twg.backend.repositories.travel.localization.HospitalLocalRepo;
 import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
 import org.mae.twg.backend.repositories.travel.localization.SightLocalRepo;
 import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
 import org.mae.twg.backend.utils.SlugUtils;
-import org.mae.twg.backend.utils.excel.*;
-import org.mae.twg.backend.utils.excel.models.*;
+import org.mae.twg.backend.utils.excel.ExcelUtils;
+import org.mae.twg.backend.utils.excel.models.HospitalRow;
+import org.mae.twg.backend.utils.excel.models.HotelRow;
+import org.mae.twg.backend.utils.excel.models.SightRow;
+import org.mae.twg.backend.utils.excel.models.TourRow;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -425,7 +432,7 @@ public class ImportExportService {
         List<Hotel> hotels = hotelRows.stream()
                 .map(this::rowToHotel)
                 .toList();
-        //tourRepo.saveAll(tours);
+        hotelRepo.saveAll(hotels);
         log.debug("End ImportExportService.loadToursFromExcel");
     }
 
@@ -436,8 +443,8 @@ public class ImportExportService {
         List<Hospital> hospitals = hospitalRows.stream()
                 .map(this::rowToHospital)
                 .toList();
+        hospitalRepo.saveAll(hospitals);
         log.debug("End ImportExportService.loadHospitalsFromExcel");
-        //tourRepo.saveAll(tours);
     }
 
     @Transactional
@@ -447,8 +454,8 @@ public class ImportExportService {
         List<Sight> sights = sightRows.stream()
                 .map(this::rowToSight)
                 .toList();
+        sightRepo.saveAll(sights);
         log.debug("End ImportExportService.loadSightsFromExcel");
-        //tourRepo.saveAll(tours);
     }
 
     public String loadToursToExcel() throws IOException {
