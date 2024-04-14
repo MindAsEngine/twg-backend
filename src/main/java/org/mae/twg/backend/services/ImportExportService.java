@@ -11,6 +11,7 @@ import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.enums.TourType;
 import org.mae.twg.backend.models.travel.localization.HospitalLocal;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
+import org.mae.twg.backend.models.travel.localization.SightLocal;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.repositories.travel.*;
 import org.mae.twg.backend.repositories.travel.localization.HospitalLocalRepo;
@@ -42,28 +43,6 @@ public class ImportExportService {
     private final SightLocalRepo sightLocalRepo;
     private final ExcelUtils excelUtils;
     private final SlugUtils slugUtils;
-    private String getName(Model model) {
-        log.debug("Start ImportExportService.getName");
-        if (model == null) {
-            return null;
-        }
-        List<? extends Local> locals = model.getLocalizations();
-        List<Localization> localizations = locals.stream().map(Local::getLocalization).toList();
-        if (localizations.contains(Localization.RU)) {
-            log.debug("End ImportExportService.getName");
-            return locals.get(localizations.indexOf(Localization.RU)).getString();
-        }
-        if (localizations.contains(Localization.EN)) {
-            log.debug("End ImportExportService.getName");
-            return locals.get(localizations.indexOf(Localization.EN)).getString();
-        }
-        if (localizations.contains(Localization.UZ)) {
-            log.debug("End ImportExportService.getName");
-            return locals.get(localizations.indexOf(Localization.UZ)).getString();
-        }
-        log.debug("End ImportExportService.getName");
-        return null;
-    }
 
     private TourRow tourToRow(Tour tour) {
         log.debug("Start ImportExportService.tourToRow");
@@ -160,7 +139,46 @@ public class ImportExportService {
     }
 
     private SightRow sightToRow(Sight sight) {
-        return null;
+        log.debug("Start ImportExportService.sightToRow");
+        SightRow.SightRowBuilder builder = SightRow.builder();
+        builder
+                .longitude(sight.getLongitude())
+                .latitude(sight.getLatitude());
+        List<SightLocal> locals = sight.getLocals();
+        for (SightLocal local : locals) {
+            if (local.getIntroduction() == null) {
+                local.setIntroduction("");
+            }
+            if (local.getDescription() == null) {
+                local.setDescription("");
+            }
+            if (local.getAddress() == null) {
+                local.setAddress("");
+            }
+            if (local.getLocalization() == Localization.RU) {
+                builder
+                        .nameRU(local.getName())
+                        .introductionRU(local.getIntroduction())
+                        .descriptionRU(local.getDescription())
+                        .addressRU(local.getAddress());
+            }
+            if (local.getLocalization() == Localization.EN) {
+                builder
+                        .nameEN(local.getName())
+                        .introductionEN(local.getIntroduction())
+                        .descriptionEN(local.getDescription())
+                        .addressEN(local.getAddress());
+            }
+            if (local.getLocalization() == Localization.UZ) {
+                builder
+                        .nameUZ(local.getName())
+                        .introductionUZ(local.getIntroduction())
+                        .descriptionUZ(local.getDescription())
+                        .addressUZ(local.getAddress());
+            }
+        }
+        log.debug("End ImportExportService.sightToRow");
+        return builder.build();
     }
 
     private HospitalRow hospitalToRow(Hospital hospital) {
@@ -261,7 +279,42 @@ public class ImportExportService {
     }
 
     private Sight rowToSight(SightRow row) {
-        return null;
+        log.debug("Start ImportExportService.rowToSight");
+        Sight hospital = new Sight();
+        sightRepo.save(hospital);
+
+        List<SightLocal> locals = new ArrayList<>();
+        if (row.getNameRU() != null) {
+            locals.add(new SightLocal(
+                    row.getNameRU(),
+                    row.getIntroductionRU(),
+                    row.getDescriptionRU(),
+                    row.getAddressRU(),
+                    Localization.RU));
+        }
+        if (row.getNameEN() != null) {
+            locals.add(new SightLocal(
+                    row.getNameEN(),
+                    row.getIntroductionEN(),
+                    row.getDescriptionEN(),
+                    row.getAddressEN(),
+                    Localization.EN));
+        }
+        if (row.getNameUZ() != null) {
+            locals.add(new SightLocal(
+                    row.getNameUZ(),
+                    row.getIntroductionUZ(),
+                    row.getDescriptionUZ(),
+                    row.getAddressUZ(),
+                    Localization.UZ));
+        }
+        sightLocalRepo.saveAll(locals);
+        for (SightLocal local : locals) {
+            hospital.addLocal(local);
+        }
+        hospital.setSlug(slugUtils.getSlug(hospital));
+        log.debug("End ImportExportService.rowToSight");
+        return hospital;
     }
 
     private Hospital rowToHospital(HospitalRow row) {
