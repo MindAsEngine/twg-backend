@@ -118,18 +118,6 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     }
 
     public List<TourDTO> modelsToDTOs(Stream<Tour> tours, Localization localization) {
-        log.debug("Start TourService.modelsToDTOs");
-        List<TourDTO> tourDTOs = modelsToAdminDTOs(tours, localization)
-                .stream().filter(TourDTO::getIsActive).toList();
-        if (tourDTOs.isEmpty()) {
-            log.error("Tours with " + localization + " with localization not found");
-            throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
-        }
-        log.debug("End TourService.modelsToDTOs");
-        return modelsToAdminDTOs(tours, localization);
-    }
-
-    public List<TourDTO> modelsToAdminDTOs(Stream<Tour> tours, Localization localization) {
         log.debug("Start TourService.modelsToAdminDTOs");
         Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
                 .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
@@ -256,7 +244,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
             tours = tourRepo.findAll(toursPage).stream().toList();
         }
         log.debug("End TourService.getAll");
-        return modelsToAdminDTOs(tours.stream(), localization);
+        return modelsToDTOs(tours.stream(), localization);
     }
 
     public List<TourDTO> getAllPaged(Localization localization, int page, int size) {
