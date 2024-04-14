@@ -95,10 +95,6 @@ public class ExcelUtils {
         return null;
     }
 
-    private ResortRow createResortRow(List<String> attributes) {
-        return null;
-    }
-
     private SightRow createSightRow(List<String> attributes) {
         return null;
     }
@@ -167,22 +163,6 @@ public class ExcelUtils {
         return sightRows;
     }
 
-    public List<ResortRow> parseResortExcel(MultipartFile file) throws IOException {
-        log.debug("Start ExcelUtils.parseResortExcel");
-        File tempFile = File.createTempFile("temp", null);
-        file.transferTo(tempFile);
-        Map<Integer, List<String>> excelData = readExcel(tempFile.getAbsolutePath());
-        List<ResortRow> resortRows = new ArrayList<>();
-        for (Map.Entry<Integer, List<String>> entry : excelData.entrySet()) {
-            List<String> rowData = entry.getValue();
-            ResortRow resortRow = createResortRow(rowData);
-            resortRows.add(resortRow);
-        }
-        tempFile.delete();
-        log.debug("End ExcelUtils.parseResortExcel");
-        return resortRows;
-    }
-
     public String convertToursToExcel(List<TourRow> tourRows) throws IOException {
         log.debug("Start ExcelUtils.convertToursToExcel");
 
@@ -238,10 +218,6 @@ public class ExcelUtils {
         return null;
     }
     public String convertSightsToExcel(List<SightRow> tourRows) throws IOException {
-        return null;
-    }
-
-    public String convertResortsToExcel(List<ResortRow> tourRows) throws IOException {
         return null;
     }
 }

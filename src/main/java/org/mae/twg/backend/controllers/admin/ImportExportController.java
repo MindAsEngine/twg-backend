@@ -122,28 +122,4 @@ public class ImportExportController {
         service.loadSightsFromExcel(file);
         return ResponseEntity.ok("Sights was successfully uploaded");
     }
-
-    @GetMapping("/resorts/download")
-    @Operation(summary = "Получить Excel файл с курортами",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
-    public ResponseEntity<FileSystemResource> resortsToExcel() throws IOException {
-        log.info("Получить Excel файл с курортами");
-        FileSystemResource fileResource = new FileSystemResource(service.loadResortsToExcel());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=resorts.xlsx");
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(fileResource);
-    }
-
-    @GetMapping("/resorts/upload")
-    @Operation(summary = "Загрузить Excel файл с курортами",
-            parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
-    )
-    public ResponseEntity<String> excelToResorts(@RequestParam MultipartFile file) throws IOException {
-        log.info("Отдать excel по курортам");
-        service.loadResortsFromExcel(file);
-        return ResponseEntity.ok("Resorts was successfully uploaded");
-    }
 }

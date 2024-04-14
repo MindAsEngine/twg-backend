@@ -105,10 +105,6 @@ public class ImportExportService {
         return null;
     }
 
-    private ResortRow resortToRow(Resort resort) {
-        return null;
-    }
-
     private SightRow sightToRow(Sight sight) {
         return null;
     }
@@ -118,10 +114,6 @@ public class ImportExportService {
     }
 
     private Hotel rowToHotel(HotelRow row) {
-        return null;
-    }
-
-    private Resort rowToResort(ResortRow row) {
         return null;
     }
 
@@ -225,17 +217,6 @@ public class ImportExportService {
         //tourRepo.saveAll(tours);
     }
 
-    @Transactional
-    public void loadResortsFromExcel(MultipartFile file) throws IOException {
-        log.debug("Start ImportExportService.loadResortsFromExcel");
-        List<ResortRow> resortRows = excelUtils.parseResortExcel(file);
-        List<Resort> resorts = resortRows.stream()
-                .map(this::rowToResort)
-                .toList();
-        log.debug("End ImportExportService.loadResortsFromExcel");
-        //tourRepo.saveAll(tours);
-    }
-
     public String loadToursToExcel() throws IOException {
         log.debug("Start ImportExportService.loadToursToExcel");
         List<TourRow> tourRows = tourRepo.findAll().stream()
@@ -270,14 +251,5 @@ public class ImportExportService {
                 .map(this::sightToRow).toList();
         log.debug("End ImportExportService.loadSightsToExcel");
         return excelUtils.convertSightsToExcel(sightRows);
-    }
-
-    public String loadResortsToExcel() throws IOException {
-        log.debug("Start ImportExportService.loadResortsToExcel");
-        List<ResortRow> resortRows = resortRepo.findAll().stream()
-                .filter(resort -> !resort.getIsDeleted())
-                .map(this::resortToRow).toList();
-        log.debug("End ImportExportService.loadResortsToExcel");
-        return excelUtils.convertResortsToExcel(resortRows);
     }
 }
