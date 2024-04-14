@@ -9,6 +9,7 @@ import org.mae.twg.backend.models.travel.*;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.enums.TourType;
+import org.mae.twg.backend.models.travel.localization.HospitalLocal;
 import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.repositories.travel.*;
@@ -163,7 +164,52 @@ public class ImportExportService {
     }
 
     private HospitalRow hospitalToRow(Hospital hospital) {
-        return null;
+        log.debug("Start ImportExportService.hospitalToRow");
+        HospitalRow.HospitalRowBuilder builder = HospitalRow.builder();
+        builder
+                .longitude(hospital.getLongitude())
+                .latitude(hospital.getLatitude());
+        List<HospitalLocal> locals = hospital.getLocals();
+        for (HospitalLocal local : locals) {
+            if (local.getIntroduction() == null) {
+                local.setIntroduction("");
+            }
+            if (local.getDescription() == null) {
+                local.setDescription("");
+            }
+            if (local.getAddress() == null) {
+                local.setAddress("");
+            }
+            if (local.getCity() == null) {
+                local.setCity("");
+            }
+            if (local.getLocalization() == Localization.RU) {
+                builder
+                        .nameRU(local.getName())
+                        .introductionRU(local.getIntroduction())
+                        .descriptionRU(local.getDescription())
+                        .cityRU(local.getCity())
+                        .addressRU(local.getAddress());
+            }
+            if (local.getLocalization() == Localization.EN) {
+                builder
+                        .nameEN(local.getName())
+                        .introductionEN(local.getIntroduction())
+                        .descriptionEN(local.getDescription())
+                        .cityEN(local.getCity())
+                        .addressEN(local.getAddress());
+            }
+            if (local.getLocalization() == Localization.UZ) {
+                builder
+                        .nameUZ(local.getName())
+                        .introductionUZ(local.getIntroduction())
+                        .descriptionUZ(local.getDescription())
+                        .cityUZ(local.getCity())
+                        .addressUZ(local.getAddress());
+            }
+        }
+        log.debug("End ImportExportService.hospitalToRow");
+        return builder.build();
     }
 
     private Hotel rowToHotel(HotelRow row) {
@@ -219,7 +265,45 @@ public class ImportExportService {
     }
 
     private Hospital rowToHospital(HospitalRow row) {
-        return null;
+        log.debug("Start ImportExportService.rowToHotel");
+        Hospital hospital = new Hospital();
+        hospitalRepo.save(hospital);
+
+        List<HospitalLocal> locals = new ArrayList<>();
+        if (row.getNameRU() != null) {
+            locals.add(new HospitalLocal(
+                    row.getNameRU(),
+                    row.getCityRU(),
+                    row.getIntroductionRU(),
+                    row.getDescriptionRU(),
+                    row.getAddressRU(),
+                    Localization.RU));
+        }
+        if (row.getNameEN() != null) {
+            locals.add(new HospitalLocal(
+                    row.getNameEN(),
+                    row.getCityEN(),
+                    row.getIntroductionEN(),
+                    row.getDescriptionEN(),
+                    row.getAddressEN(),
+                    Localization.EN));
+        }
+        if (row.getNameUZ() != null) {
+            locals.add(new HospitalLocal(
+                    row.getNameUZ(),
+                    row.getCityUZ(),
+                    row.getIntroductionUZ(),
+                    row.getDescriptionUZ(),
+                    row.getAddressUZ(),
+                    Localization.UZ));
+        }
+        hospitalLocalRepo.saveAll(locals);
+        for (HospitalLocal local : locals) {
+            hospital.addLocal(local);
+        }
+        hospital.setSlug(slugUtils.getSlug(hospital));
+        log.debug("End ImportExportService.rowToHotel");
+        return hospital;
     }
 
     private Tour rowToTour(TourRow row) {
