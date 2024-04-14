@@ -78,23 +78,23 @@ public class ImportExportService {
             if (local.getLocalization() == Localization.RU) {
                 builder
                         .titleRU(local.getTitle())
-                        .introductionRU(local.getIntroduction().replaceAll("\n", "|"))
-                        .descriptionRU(local.getDescription().replaceAll("\n", "|"))
-                        .additionalRU(local.getAdditional().replaceAll("\n", "|"));
+                        .introductionRU(local.getIntroduction())
+                        .descriptionRU(local.getDescription())
+                        .additionalRU(local.getAdditional());
             }
             if (local.getLocalization() == Localization.EN) {
                 builder
                         .titleEN(local.getTitle())
-                        .introductionEN(local.getIntroduction().replaceAll("\n", "|"))
-                        .descriptionEN(local.getDescription().replaceAll("\n", "|"))
-                        .additionalEN(local.getAdditional().replaceAll("\n", "|"));
+                        .introductionEN(local.getIntroduction())
+                        .descriptionEN(local.getDescription())
+                        .additionalEN(local.getAdditional());
             }
             if (local.getLocalization() == Localization.UZ) {
                 builder
                         .titleUZ(local.getTitle())
-                        .introductionUZ(local.getIntroduction().replaceAll("\n", "|"))
-                        .descriptionUZ(local.getDescription().replaceAll("\n", "|"))
-                        .additionalUZ(local.getAdditional().replaceAll("\n", "|"));
+                        .introductionUZ(local.getIntroduction())
+                        .descriptionUZ(local.getDescription())
+                        .additionalUZ(local.getAdditional());
             }
         }
         log.debug("End ImportExportService.tourToRow");
