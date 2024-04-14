@@ -7,9 +7,14 @@ import org.mae.twg.backend.models.Local;
 import org.mae.twg.backend.models.Model;
 import org.mae.twg.backend.models.travel.*;
 import org.mae.twg.backend.models.travel.enums.Localization;
+import org.mae.twg.backend.models.travel.enums.Stars;
 import org.mae.twg.backend.models.travel.enums.TourType;
+import org.mae.twg.backend.models.travel.localization.HotelLocal;
 import org.mae.twg.backend.models.travel.localization.TourLocal;
 import org.mae.twg.backend.repositories.travel.*;
+import org.mae.twg.backend.repositories.travel.localization.HospitalLocalRepo;
+import org.mae.twg.backend.repositories.travel.localization.HotelLocalRepo;
+import org.mae.twg.backend.repositories.travel.localization.SightLocalRepo;
 import org.mae.twg.backend.repositories.travel.localization.TourLocalRepo;
 import org.mae.twg.backend.utils.SlugUtils;
 import org.mae.twg.backend.utils.excel.*;
@@ -29,8 +34,11 @@ public class ImportExportService {
     private final TourRepo tourRepo;
     private final TourLocalRepo tourLocalRepo;
     private final HotelRepo hotelRepo;
+    private final HotelLocalRepo hotelLocalRepo;
     private final HospitalRepo hospitalRepo;
+    private final HospitalLocalRepo hospitalLocalRepo;
     private final SightRepo sightRepo;
+    private final SightLocalRepo sightLocalRepo;
     private final ExcelUtils excelUtils;
     private final SlugUtils slugUtils;
     private String getName(Model model) {
@@ -101,6 +109,52 @@ public class ImportExportService {
     }
 
     private HotelRow hotelToRow(Hotel hotel) {
+        log.debug("Start ImportExportService.hotelToRow");
+        HotelRow.HotelRowBuilder builder = HotelRow.builder();
+        builder
+                .stars(hotel.getStars().name())
+                .longitude(hotel.getLongitude())
+                .latitude(hotel.getLatitude());
+        List<HotelLocal> locals = hotel.getLocals();
+        for (HotelLocal local : locals) {
+            if (local.getIntroduction() == null) {
+                local.setIntroduction("");
+            }
+            if (local.getDescription() == null) {
+                local.setDescription("");
+            }
+            if (local.getAddress() == null) {
+                local.setAddress("");
+            }
+            if (local.getCity() == null) {
+                local.setCity("");
+            }
+            if (local.getLocalization() == Localization.RU) {
+                builder
+                        .nameRU(local.getName())
+                        .introductionRU(local.getIntroduction())
+                        .descriptionRU(local.getDescription())
+                        .cityRU(local.getCity())
+                        .addressRU(local.getAddress());
+            }
+            if (local.getLocalization() == Localization.EN) {
+                builder
+                        .nameEN(local.getName())
+                        .introductionEN(local.getIntroduction())
+                        .descriptionEN(local.getDescription())
+                        .cityEN(local.getCity())
+                        .addressEN(local.getAddress());
+            }
+            if (local.getLocalization() == Localization.UZ) {
+                builder
+                        .nameUZ(local.getName())
+                        .introductionUZ(local.getIntroduction())
+                        .descriptionUZ(local.getDescription())
+                        .cityUZ(local.getCity())
+                        .addressUZ(local.getAddress());
+            }
+        }
+        log.debug("End ImportExportService.hotelToRow");
         return null;
     }
 
@@ -113,7 +167,51 @@ public class ImportExportService {
     }
 
     private Hotel rowToHotel(HotelRow row) {
-        return null;
+        log.debug("Start ImportExportService.rowToHotel");
+        Hotel hotel = new Hotel();
+        hotelRepo.save(hotel);
+        try {
+            hotel.setStars(Stars.valueOf(row.getStars()));
+        } catch (Exception e) {
+            log.error("Could not parse hotel stars: " + row.getStars());
+            throw new ValidationException("Could not parse hotel stars: " + row.getStars());
+        }
+
+        List<HotelLocal> locals = new ArrayList<>();
+        if (row.getNameRU() != null) {
+            locals.add(new HotelLocal(
+                    row.getNameRU(),
+                    row.getCityRU(),
+                    row.getIntroductionRU(),
+                    row.getDescriptionRU(),
+                    row.getAddressRU(),
+                    Localization.RU));
+        }
+        if (row.getNameEN() != null) {
+            locals.add(new HotelLocal(
+                    row.getNameEN(),
+                    row.getCityEN(),
+                    row.getIntroductionEN(),
+                    row.getDescriptionEN(),
+                    row.getAddressEN(),
+                    Localization.EN));
+        }
+        if (row.getNameUZ() != null) {
+            locals.add(new HotelLocal(
+                    row.getNameUZ(),
+                    row.getCityUZ(),
+                    row.getIntroductionUZ(),
+                    row.getDescriptionUZ(),
+                    row.getAddressUZ(),
+                    Localization.UZ));
+        }
+        hotelLocalRepo.saveAll(locals);
+        for (HotelLocal local : locals) {
+            hotel.addLocal(local);
+        }
+        hotel.setSlug(slugUtils.getSlug(hotel));
+        log.debug("End ImportExportService.rowToHotel");
+        return hotel;
     }
 
     private Sight rowToSight(SightRow row) {
@@ -190,8 +288,8 @@ public class ImportExportService {
         List<Hotel> hotels = hotelRows.stream()
                 .map(this::rowToHotel)
                 .toList();
-        log.debug("End ImportExportService.loadToursFromExcel");
         //tourRepo.saveAll(tours);
+        log.debug("End ImportExportService.loadToursFromExcel");
     }
 
     @Transactional

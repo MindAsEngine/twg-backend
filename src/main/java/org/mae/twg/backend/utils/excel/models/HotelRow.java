@@ -6,19 +6,19 @@ import lombok.Data;
 @Data
 @Builder
 public class HotelRow {
-    private String titleRU;
+    private String nameRU;
     private String introductionRU;
     private String descriptionRU;
     private String cityRU;
     private String addressRU;
 
-    private String titleEN;
+    private String nameEN;
     private String introductionEN;
     private String descriptionEN;
     private String cityEN;
     private String addressEN;
 
-    private String titleUZ;
+    private String nameUZ;
     private String introductionUZ;
     private String descriptionUZ;
     private String cityUZ;
