@@ -1,4 +1,4 @@
-package org.mae.twg.backend.utils.excel;
+package org.mae.twg.backend.utils.excel.models;
 
 import lombok.Builder;
 import lombok.Data;
