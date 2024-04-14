@@ -34,14 +34,14 @@ public class SlugUtils {
         List<? extends Local> locals = model.getLocalizations();
         List<Localization> localizations = locals.stream().map(Local::getLocalization).toList();
         String slug = null;
-        if (localizations.contains(Localization.EN)) {
-            slug = slugFromEN(locals.get(localizations.indexOf(Localization.EN)));
+        if (localizations.contains(Localization.UZ)) {
+            slug = slugFromUZ(locals.get(localizations.indexOf(Localization.UZ)));
         }
         if (localizations.contains(Localization.RU)) {
             slug = slugFromRU(locals.get(localizations.indexOf(Localization.RU)));
         }
-        if (localizations.contains(Localization.UZ)) {
-            slug = slugFromUZ(locals.get(localizations.indexOf(Localization.UZ)));
+        if (localizations.contains(Localization.EN)) {
+            slug = slugFromEN(locals.get(localizations.indexOf(Localization.EN)));
         }
         if (slug == null) {
             throw new SlugException("Locals for model with id=" + model.getId() + " not found");
