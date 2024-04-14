@@ -59,9 +59,8 @@ public class ExcelUtils {
         while(attributes.size() < 16) {
             attributes.add(null);
         }
-        log.debug("Start ExcelUtils.createTour");
+        log.debug("End ExcelUtils.createTour");
         try {
-
             return TourRow.builder()
                     .titleRU(attributes.get(0))
                     .introductionRU(attributes.get(1))
@@ -88,15 +87,106 @@ public class ExcelUtils {
     }
 
     private HotelRow createHotelRow(List<String> attributes) {
-        return null;
+        log.debug("Start ExcelUtils.createHotelRow");
+        while(attributes.size() < 19) {
+            attributes.add(null);
+        }
+        log.debug("End ExcelUtils.createHotelRow");
+        try {
+            return HotelRow.builder()
+                    .nameRU(attributes.get(0))
+                    .introductionRU(attributes.get(1))
+                    .descriptionRU(attributes.get(2))
+                    .cityRU(attributes.get(3))
+                    .addressRU(attributes.get(4))
+
+                    .nameEN(attributes.get(5))
+                    .introductionEN(attributes.get(6))
+                    .descriptionEN(attributes.get(7))
+                    .cityEN(attributes.get(8))
+                    .addressEN(attributes.get(9))
+
+                    .nameUZ(attributes.get(10))
+                    .introductionUZ(attributes.get(11))
+                    .descriptionUZ(attributes.get(12))
+                    .cityUZ(attributes.get(13))
+                    .addressUZ(attributes.get(14))
+
+                    .stars(attributes.get(15))
+                    .latitude(attributes.get(16) == null ? null : Double.valueOf(attributes.get(16)))
+                    .longitude(attributes.get(17) == null ? null : Double.valueOf(attributes.get(17)))
+                    .build();
+        } catch (Exception e) {
+            log.error("Вы не передали число, где это необходимо");
+            throw new ValidationException("Вы не передали число, где это необходимо");
+        }
     }
 
     private HospitalRow createHospitalRow(List<String> attributes) {
-        return null;
+        log.debug("Start ExcelUtils.createHospitalRow");
+        while(attributes.size() < 18) {
+            attributes.add(null);
+        }
+        log.debug("End ExcelUtils.createHospitalRow");
+        try {
+            return HospitalRow.builder()
+                    .nameRU(attributes.get(0))
+                    .introductionRU(attributes.get(1))
+                    .descriptionRU(attributes.get(2))
+                    .cityRU(attributes.get(3))
+                    .addressRU(attributes.get(4))
+
+                    .nameEN(attributes.get(5))
+                    .introductionEN(attributes.get(6))
+                    .descriptionEN(attributes.get(7))
+                    .cityEN(attributes.get(8))
+                    .addressEN(attributes.get(9))
+
+                    .nameUZ(attributes.get(10))
+                    .introductionUZ(attributes.get(11))
+                    .descriptionUZ(attributes.get(12))
+                    .cityUZ(attributes.get(13))
+                    .addressUZ(attributes.get(14))
+
+                    .latitude(attributes.get(15) == null ? null : Double.valueOf(attributes.get(15)))
+                    .longitude(attributes.get(16) == null ? null : Double.valueOf(attributes.get(16)))
+                    .build();
+        } catch (Exception e) {
+            log.error("Вы не передали число, где это необходимо");
+            throw new ValidationException("Вы не передали число, где это необходимо");
+        }
     }
 
     private SightRow createSightRow(List<String> attributes) {
-        return null;
+        log.debug("Start ExcelUtils.createSightRow");
+        while(attributes.size() < 15) {
+            attributes.add(null);
+        }
+        log.debug("End ExcelUtils.createSightRow");
+        try {
+            return SightRow.builder()
+                    .nameRU(attributes.get(0))
+                    .introductionRU(attributes.get(1))
+                    .descriptionRU(attributes.get(2))
+                    .addressRU(attributes.get(3))
+
+                    .nameEN(attributes.get(4))
+                    .introductionEN(attributes.get(5))
+                    .descriptionEN(attributes.get(6))
+                    .addressEN(attributes.get(7))
+
+                    .nameUZ(attributes.get(8))
+                    .introductionUZ(attributes.get(9))
+                    .descriptionUZ(attributes.get(10))
+                    .addressUZ(attributes.get(11))
+
+                    .latitude(attributes.get(12) == null ? null : Double.valueOf(attributes.get(12)))
+                    .longitude(attributes.get(13) == null ? null : Double.valueOf(attributes.get(13)))
+                    .build();
+        } catch (Exception e) {
+            log.error("Вы не передали число, где это необходимо");
+            throw new ValidationException("Вы не передали число, где это необходимо");
+        }
     }
 
     public List<TourRow> parseTourExcel(MultipartFile file) throws IOException {
@@ -210,14 +300,147 @@ public class ExcelUtils {
         }
     }
 
-    public String convertHotelsToExcel(List<HotelRow> tourRows) throws IOException {
-        return null;
+    public String convertHotelsToExcel(List<HotelRow> hotelRows) throws IOException {
+        log.debug("Start ExcelUtils.convertHotelsToExcel");
+
+        File currDir = new File(parent_path);
+        String path = currDir.getAbsolutePath();
+        String fileLocation = path + "/hotels.xlsx";
+
+        try (OutputStream os = Files.newOutputStream(Paths.get(fileLocation)); Workbook wb = new Workbook(os, "MyApplication", "1.0")) {
+            Worksheet sheet = wb.newWorksheet("Hotels");
+            String[] headers = {"nameRU", "introductionRU", "descriptionRU", "cityRU", "addressRU",
+                    "nameEN", "introductionEN", "descriptionEN", "cityEN", "addressEN",
+                    "nameUZ", "introductionUZ", "descriptionUZ", "cityUZ", "addressUZ",
+                    "stars", "latitude", "longitude"};
+            sheet.width(0, 25);
+            sheet.width(1, 15);
+            for (int i = 0; i < headers.length; ++i) {
+                sheet.value(0, i, headers[i]);
+            }
+            int num = 0;
+            for (HotelRow hotelRow : hotelRows) {
+                ++num;
+                sheet.value(num, 0, hotelRow.getNameRU());
+                sheet.value(num, 1, hotelRow.getIntroductionRU());
+                sheet.value(num, 2, hotelRow.getDescriptionRU());
+                sheet.value(num, 3, hotelRow.getCityRU());
+                sheet.value(num, 4, hotelRow.getAddressRU());
+
+                sheet.value(num, 5, hotelRow.getNameEN());
+                sheet.value(num, 6, hotelRow.getIntroductionEN());
+                sheet.value(num, 7, hotelRow.getDescriptionEN());
+                sheet.value(num, 8, hotelRow.getCityEN());
+                sheet.value(num, 9, hotelRow.getAddressEN());
+
+                sheet.value(num, 10, hotelRow.getNameUZ());
+                sheet.value(num, 11, hotelRow.getIntroductionUZ());
+                sheet.value(num, 12, hotelRow.getDescriptionUZ());
+                sheet.value(num, 13, hotelRow.getCityUZ());
+                sheet.value(num, 14, hotelRow.getAddressUZ());
+
+                sheet.value(num, 15, hotelRow.getStars());
+                sheet.value(num, 16, hotelRow.getLatitude());
+                sheet.value(num, 17, hotelRow.getLongitude());
+            }
+            log.debug("End ExcelUtils.convertHotelsToExcel");
+            return fileLocation;
+        } finally {
+            log.debug("Somethings wrong");
+        }
     }
 
-    public String convertHospitalsToExcel(List<HospitalRow> tourRows) throws IOException {
-        return null;
+    public String convertHospitalsToExcel(List<HospitalRow> hospitalRows) throws IOException {
+        log.debug("Start ExcelUtils.convertHospitalsToExcel");
+
+        File currDir = new File(parent_path);
+        String path = currDir.getAbsolutePath();
+        String fileLocation = path + "/hospitals.xlsx";
+
+        try (OutputStream os = Files.newOutputStream(Paths.get(fileLocation)); Workbook wb = new Workbook(os, "MyApplication", "1.0")) {
+            Worksheet sheet = wb.newWorksheet("Hospitals");
+            String[] headers = {"nameRU", "introductionRU", "descriptionRU", "cityRU", "addressRU",
+                    "nameEN", "introductionEN", "descriptionEN", "cityEN", "addressEN",
+                    "nameUZ", "introductionUZ", "descriptionUZ", "cityUZ", "addressUZ",
+                    "latitude", "longitude"};
+            sheet.width(0, 25);
+            sheet.width(1, 15);
+            for (int i = 0; i < headers.length; ++i) {
+                sheet.value(0, i, headers[i]);
+            }
+            int num = 0;
+            for (HospitalRow hospitalRow : hospitalRows) {
+                ++num;
+                sheet.value(num, 0, hospitalRow.getNameRU());
+                sheet.value(num, 1, hospitalRow.getIntroductionRU());
+                sheet.value(num, 2, hospitalRow.getDescriptionRU());
+                sheet.value(num, 3, hospitalRow.getCityRU());
+                sheet.value(num, 4, hospitalRow.getAddressRU());
+
+                sheet.value(num, 5, hospitalRow.getNameEN());
+                sheet.value(num, 6, hospitalRow.getIntroductionEN());
+                sheet.value(num, 7, hospitalRow.getDescriptionEN());
+                sheet.value(num, 8, hospitalRow.getCityEN());
+                sheet.value(num, 9, hospitalRow.getAddressEN());
+
+                sheet.value(num, 10, hospitalRow.getNameUZ());
+                sheet.value(num, 11, hospitalRow.getIntroductionUZ());
+                sheet.value(num, 12, hospitalRow.getDescriptionUZ());
+                sheet.value(num, 13, hospitalRow.getCityUZ());
+                sheet.value(num, 14, hospitalRow.getAddressUZ());
+
+                sheet.value(num, 15, hospitalRow.getLatitude());
+                sheet.value(num, 16, hospitalRow.getLongitude());
+            }
+            log.debug("End ExcelUtils.convertHospitalsToExcel");
+            return fileLocation;
+        } finally {
+            log.debug("Somethings wrong");
+        }
     }
-    public String convertSightsToExcel(List<SightRow> tourRows) throws IOException {
-        return null;
+    public String convertSightsToExcel(List<SightRow> sightRows) throws IOException {
+        log.debug("Start ExcelUtils.convertSightsToExcel");
+
+        File currDir = new File(parent_path);
+        String path = currDir.getAbsolutePath();
+        String fileLocation = path + "/sights.xlsx";
+
+        try (OutputStream os = Files.newOutputStream(Paths.get(fileLocation)); Workbook wb = new Workbook(os, "MyApplication", "1.0")) {
+            Worksheet sheet = wb.newWorksheet("Sights");
+            String[] headers = {"nameRU", "introductionRU", "descriptionRU", "addressRU",
+                    "nameEN", "introductionEN", "descriptionEN", "addressEN",
+                    "nameUZ", "introductionUZ", "descriptionUZ", "addressUZ",
+                    "latitude", "longitude"};
+            sheet.width(0, 25);
+            sheet.width(1, 15);
+            for (int i = 0; i < headers.length; ++i) {
+                sheet.value(0, i, headers[i]);
+            }
+            int num = 0;
+            for (SightRow sightRow : sightRows) {
+                ++num;
+                sheet.value(num, 0, sightRow.getNameRU());
+                sheet.value(num, 1, sightRow.getIntroductionRU());
+                sheet.value(num, 2, sightRow.getDescriptionRU());
+                sheet.value(num, 3, sightRow.getAddressRU());
+
+                sheet.value(num, 4, sightRow.getNameEN());
+                sheet.value(num, 5, sightRow.getIntroductionEN());
+                sheet.value(num, 6, sightRow.getDescriptionEN());
+                sheet.value(num, 7, sightRow.getAddressEN());
+
+                sheet.value(num, 8, sightRow.getNameUZ());
+                sheet.value(num, 9, sightRow.getIntroductionUZ());
+                sheet.value(num, 10, sightRow.getDescriptionUZ());
+                sheet.value(num, 11, sightRow.getAddressUZ());
+
+                sheet.value(num, 12, sightRow.getLatitude());
+                sheet.value(num, 13, sightRow.getLongitude());
+            }
+            log.debug("End ExcelUtils.convertSightsToExcel");
+            return fileLocation;
+        } finally {
+            log.debug("Somethings wrong");
+        }
     }
 }
