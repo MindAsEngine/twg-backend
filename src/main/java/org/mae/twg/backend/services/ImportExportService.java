@@ -155,7 +155,7 @@ public class ImportExportService {
             }
         }
         log.debug("End ImportExportService.hotelToRow");
-        return null;
+        return builder.build();
     }
 
     private SightRow sightToRow(Sight sight) {
