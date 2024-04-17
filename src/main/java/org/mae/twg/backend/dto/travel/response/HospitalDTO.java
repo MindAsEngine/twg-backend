@@ -24,6 +24,8 @@ public class HospitalDTO implements ModelDTO {
     private String description;
     private String address;
     private Double grade;
+    private Double latitude;
+    private Double longitude;
     private Long commentAmount;
     private Localization localization;
     private String header;
@@ -44,6 +46,8 @@ public class HospitalDTO implements ModelDTO {
         this.introduction = cur_local.getIntroduction();
         this.description = cur_local.getDescription();
         this.address = cur_local.getAddress();
+        this.latitude = hospital.getLatitude();
+        this.longitude = hospital.getLongitude();
         this.header = (hospital.getHeader() != null ? hospital.getHeader().getMediaPath() : null);
         this.medias = hospital.getMedias().stream().map(HospitalMedia::getMediaPath).toList();
         this.localization = localization;
