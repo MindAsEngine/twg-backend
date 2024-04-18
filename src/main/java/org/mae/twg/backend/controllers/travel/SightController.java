@@ -93,7 +93,7 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
         return ResponseEntity.ok(getService().updateLogicData(id, sightDTO, local));
     }
 
-    @PostMapping("/{id}/image/upload")
+    @PostMapping("/{id}/header/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить обложку",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
@@ -109,7 +109,7 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
         return ResponseEntity.ok(getService().uploadImage(id, local, image));
     }
 
-    @PostMapping("/{id}/images")
+    @PostMapping("/{id}/images/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")

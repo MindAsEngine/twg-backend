@@ -41,7 +41,7 @@ public class HospitalController extends BaseController<HospitalService, Hospital
         }
     }
 
-    @PostMapping("/{id}/image/upload")
+    @PostMapping("/{id}/header/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить обложку",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")

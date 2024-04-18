@@ -73,7 +73,7 @@ public abstract class BaseController<
     }
 
     @Override
-    @PatchMapping("/{id}/locals/add")
+    @PostMapping("/{id}/locals/add")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить локаль",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
