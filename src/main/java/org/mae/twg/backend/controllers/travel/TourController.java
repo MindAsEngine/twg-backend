@@ -122,7 +122,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
     }
 
 
-    @PostMapping("/{id}/image/upload")
+    @PostMapping("/{id}/header/upload")
     @Operation(summary = "Добавить обложку",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -136,7 +136,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
         return ResponseEntity.ok(getService().uploadImage(id, local, image));
     }
 
-    @PostMapping("/{id}/images")
+    @PostMapping("/{id}/images/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
     @Operation(summary = "Добавить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")

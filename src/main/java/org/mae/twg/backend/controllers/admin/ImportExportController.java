@@ -10,17 +10,15 @@ import org.mae.twg.backend.services.ImportExportService;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-//@PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
+@PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
 @RequestMapping("/admin/import-export/excel")
 @Tag(name = "Импорт/экспорт")
 @Log4j2
@@ -41,7 +39,7 @@ public class ImportExportController {
                 .body(fileResource);
     }
 
-    @GetMapping("/tours/upload")
+    @PostMapping("/tours/upload")
     @Operation(summary = "Загрузить Excel файл с турами",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -65,7 +63,7 @@ public class ImportExportController {
                 .body(fileResource);
     }
 
-    @GetMapping("/hotels/upload")
+    @PostMapping("/hotels/upload")
     @Operation(summary = "Загрузить Excel файл с отелями",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -89,7 +87,7 @@ public class ImportExportController {
                 .body(fileResource);
     }
 
-    @GetMapping("/hospitals/upload")
+    @PostMapping("/hospitals/upload")
     @Operation(summary = "Загрузить Excel файл с больницами",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -113,7 +111,7 @@ public class ImportExportController {
                 .body(fileResource);
     }
 
-    @GetMapping("/sights/upload")
+    @PostMapping("/sights/upload")
     @Operation(summary = "Загрузить Excel файл с достопримечательностями",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
