@@ -33,7 +33,6 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,6 +168,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                                        Integer page, Integer size) {
         log.debug("Start TourService.findByFilters");
         return modelsToDTOs(tourRepo.findFilteredFours(
+                localization.name(),
                 countryIds, tagIds, hospitalId, hotelIds,
                 types.stream().map(TourType::name).toList(),
                 minDuration, maxDuration,
@@ -226,23 +226,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
 
     public List<TourDTO> getAll(Localization localization) {
         log.debug("Start TourService.getAll");
-        List<Tour> tours = tourRepo.findAll(Sort.by("slug"));
-        log.debug("End TourService.getAll");
-        return modelsToDTOs(tours.stream(), localization);
-    }
-
-    public List<TourDTO> getAllAdmins(Localization localization, Integer page, Integer size) {
-        log.debug("Start TourService.getAll");
-        Pageable toursPage = null;
-        if (page != null && size != null) {
-            toursPage = PageRequest.of(page, size);
-        }
-        List<Tour> tours;
-        if (toursPage == null) {
-            tours = tourRepo.findAll(Sort.by("slug"));
-        } else {
-            tours = tourRepo.findAll(toursPage).stream().toList();
-        }
+        Page<Tour> tours = tourRepo.findAllByLocal(localization.name(), null);
         log.debug("End TourService.getAll");
         return modelsToDTOs(tours.stream(), localization);
     }
@@ -250,7 +234,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     public List<TourDTO> getAllPaged(Localization localization, int page, int size) {
         log.debug("Start TourService.getAllPaged");
         Pageable toursPage = PageRequest.of(page, size);
-        Page<Tour> tours = tourRepo.findAll(toursPage);
+        Page<Tour> tours = tourRepo.findAllByLocal(localization.name(), toursPage);
         log.debug("End TourService.getAllPaged");
         return modelsToDTOs(tours.stream(), localization);
     }
@@ -407,6 +391,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
 
         return modelsToDTOs(
                 tourRepo.findToursByGeoData(
+                        localization.name(),
                         minLongitude,
                         maxLongitude,
                         minLatitude,

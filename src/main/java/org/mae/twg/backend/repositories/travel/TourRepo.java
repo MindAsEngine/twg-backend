@@ -16,12 +16,27 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
     Optional<Tour> findBySlug(String slug);
 
     @Query(value = """
+    select t.*
+    from tours t
+    join tour_local l on t.tour_id = l.tour_id and l.localization = :local
+    where t.is_deleted = false and t.is_active = true
+""", nativeQuery = true,
+    countQuery = """
+                select count(*) from (select t.*
+                                      from tours t
+                                      join tour_local l on t.tour_id = l.tour_id and l.localization = :local
+                                      where t.is_deleted = false and t.is_active = true) src
+            """)
+    Page<Tour> findAllByLocal(@Param("local") String local, Pageable pageable);
+
+    @Query(value = """
     select distinct on (t.slug)
         t.*
     from tours t
+    join tour_local l on t.tour_id = l.tour_id and l.localization = :local
     join tour_hotels th on th.tour_id = t.tour_id
     join twg_database.public.hotels h on h.hotel_id = th.hotel_id
-    where\s
+    where t.is_deleted = false and t.is_active = true and
         (h.longitude between :minLo and :maxLo) and
         (h.latitude between :minLa and :maxLa)
     order by t.slug
@@ -30,13 +45,15 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
     select count(*) from (select distinct on (t.tour_id)
         t.*
             from tours t
+            join tour_local l on t.tour_id = l.tour_id and l.localization = :local
             join tour_hotels th on th.tour_id = t.tour_id
             join twg_database.public.hotels h on h.hotel_id = th.hotel_id
-            where\s
+            where t.is_deleted = false and t.is_active = true and
         (h.longitude between :minLo and :maxLo) and
         (h.latitude between :minLa and :maxLa)) as src
     """)
-    Page<Tour> findToursByGeoData(@Param("minLo") Double minLongitude, @Param("maxLo") Double maxLongitude,
+    Page<Tour> findToursByGeoData(@Param("local") String local,
+                                  @Param("minLo") Double minLongitude, @Param("maxLo") Double maxLongitude,
                                   @Param("minLa") Double minLatitude, @Param("maxLa") Double maxLatitude,
                                   Pageable pageable);
 
@@ -60,11 +77,13 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
     @Query(value = """
             select distinct on (t.slug) t.*
             from tours t
-            left join tour_tags tt using (tour_id)
-            left join tour_hotels th using (tour_id)
+            join tour_local l on t.tour_id = l.tour_id and l.localization = :local
+            left join tour_tags tt on t.tour_id = tt.tour_id
+            left join tour_hotels th on t.tour_id = th.tour_id
             left join hotels h using (hotel_id)
             left join resorts r on h.resort_id = r.resort_id
-            where (:countries is null or t.country_id in :countries)
+            where t.is_deleted = false and t.is_active = true
+                and (:countries is null or t.country_id in :countries)
                 and (:hotels is null or h.hotel_id in :hotels)
                 and (:tags is null or tt.tag_id in :tags)
                 and (:types is null or t.type in :types)
@@ -82,11 +101,13 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
             countQuery = """
             select count(*) from (select distinct on (t.tour_id) t.*
             from tours t
-            left join tour_tags tt using (tour_id)
-            left join tour_hotels th using (tour_id)
+            join tour_local l on t.tour_id = l.tour_id and l.localization = :local
+            left join tour_tags tt on t.tour_id = tt.tour_id
+            left join tour_hotels th on t.tour_id = th.tour_id
             left join hotels h using (hotel_id)
             left join resorts r on h.resort_id = r.resort_id
-            where (:countries is null or t.country_id in :countries)
+            where t.is_deleted = false and t.is_active = true
+                and (:countries is null or t.country_id in :countries)
                 and (:hotels is null or h.hotel_id in :hotels)
                 and (:tags is null or tt.tag_id in :tags)
                 and (:types is null or t.type in :types)
@@ -100,7 +121,8 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
                     or t.price is not null
                     and coalesce(:minCost <= t.price, true) and coalesce(:maxCost >= t.price, true))) as src
     """)
-    Page<Tour> findFilteredFours(@Param("countries") List<Long> countryIds,
+    Page<Tour> findFilteredFours(@Param("local") String local,
+                                 @Param("countries") List<Long> countryIds,
                                  @Param("tags") List<Long> tagIds,
                                  @Param("hospitals") List<Long> hospitalIds,
                                  @Param("hotels") List<Long> hotelId,
