@@ -19,13 +19,13 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
-@RequestMapping("/admin/import-export/excel")
+@RequestMapping("/admin/excel")
 @Tag(name = "Импорт/экспорт")
 @Log4j2
 public class ImportExportController {
     private final ImportExportService service;
 
-    @GetMapping("/tours/download")
+    @GetMapping("/export/tours")
     @Operation(summary = "Получить Excel файл с турами",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -39,7 +39,7 @@ public class ImportExportController {
                 .body(fileResource);
     }
 
-    @PostMapping("/tours/upload")
+    @PostMapping("/import/tours")
     @Operation(summary = "Загрузить Excel файл с турами",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -49,7 +49,7 @@ public class ImportExportController {
         return ResponseEntity.ok("Tours was successfully uploaded");
     }
 
-    @GetMapping("/hotels/download")
+    @GetMapping("/export/hotels")
     @Operation(summary = "Получить Excel файл с отелями",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -63,7 +63,7 @@ public class ImportExportController {
                 .body(fileResource);
     }
 
-    @PostMapping("/hotels/upload")
+    @PostMapping("/import/hotels")
     @Operation(summary = "Загрузить Excel файл с отелями",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -73,7 +73,7 @@ public class ImportExportController {
         return ResponseEntity.ok("Hotels was successfully uploaded");
     }
 
-    @GetMapping("/hospitals/download")
+    @GetMapping("/export/hospitals")
     @Operation(summary = "Получить Excel файл с больницами",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -87,7 +87,7 @@ public class ImportExportController {
                 .body(fileResource);
     }
 
-    @PostMapping("/hospitals/upload")
+    @PostMapping("/import/hospitals")
     @Operation(summary = "Загрузить Excel файл с больницами",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -97,7 +97,7 @@ public class ImportExportController {
         return ResponseEntity.ok("Hospitals was successfully uploaded");
     }
 
-    @GetMapping("/sights/download")
+    @GetMapping("/export/sights")
     @Operation(summary = "Получить Excel файл с достопримечательностями",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -111,7 +111,7 @@ public class ImportExportController {
                 .body(fileResource);
     }
 
-    @PostMapping("/sights/upload")
+    @PostMapping("/import/sights")
     @Operation(summary = "Загрузить Excel файл с достопримечательностями",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
