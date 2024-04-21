@@ -262,6 +262,8 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
     public TourDTO create(TourLocalDTO tourDTO, Localization localization) {
         log.debug("Start TourService.create");
         Tour tour = new Tour();
+        tour.setIsActive(true);
+        tour.setIsDeleted(false);
         tourRepo.saveAndFlush(tour);
 
         TourLocal local = new TourLocal(tourDTO.getTitle(),
