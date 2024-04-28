@@ -67,8 +67,11 @@ public class PropertyService implements TravelService<PropertyDTO, PropertyLocal
 
     public List<PropertyDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start PropertyService.getAllPaged");
-        Pageable propertyPage = PageRequest.of(page, size);
-        Page<Property> properties = propertyRepo.findAll(propertyPage);
+        Pageable propertyPage = null;
+        if (page != null && size != null) {
+            propertyPage = PageRequest.of(page, size);
+        }
+        Page<Property> properties = propertyRepo.findAllByIsDeletedFalse(propertyPage);
         log.debug("End PropertyService.getAllPaged");
         return modelsToDTOs(properties.stream(), localization);
     }

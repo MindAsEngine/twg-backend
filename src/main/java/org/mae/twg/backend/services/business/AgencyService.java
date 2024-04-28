@@ -70,8 +70,11 @@ public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO>
     @Override
     public List<AgencyDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start AgencyService.getAllPaged");
-        Pageable agencyPage = PageRequest.of(page, size);
-        Page<Agency> agencies = agencyRepo.findAll(agencyPage);
+        Pageable agencyPage = null;
+        if (page != null && size != null) {
+            agencyPage = PageRequest.of(page, size);
+        }
+        Page<Agency> agencies = agencyRepo.findAllByIsDeletedFalse(agencyPage);
         log.debug("End AgencyService.getAllPaged");
         return modelsToDTOs(agencies.stream(), localization);
     }

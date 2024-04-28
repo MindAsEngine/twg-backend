@@ -190,8 +190,11 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
 
     public List<HospitalDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start HospitalService.getAllPaged");
-        Pageable hospitalPage = PageRequest.of(page, size);
-        Page<Hospital> hospitals = hospitalRepo.findAll(hospitalPage);
+        Pageable hospitalPage = null;
+        if (page != null && size != null) {
+            hospitalPage = PageRequest.of(page, size);
+        }
+        Page<Hospital> hospitals = hospitalRepo.findAllByIsDeletedFalse(hospitalPage);
         log.debug("End HospitalService.getAllPaged");
         return modelsToDTOs(hospitals.stream(), localization);
     }

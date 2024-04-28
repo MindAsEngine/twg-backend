@@ -199,8 +199,11 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
 
     public List<HotelDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start HotelService.getAllPaged");
-        Pageable hotelPage = PageRequest.of(page, size);
-        Page<Hotel> hotels = hotelRepo.findAll(hotelPage);
+        Pageable hotelPage = null;
+        if (page != null && size != null) {
+            hotelPage = PageRequest.of(page, size);
+        }
+        Page<Hotel> hotels = hotelRepo.findAllByIsDeletedFalse(hotelPage);
         log.debug("End HotelService.getAllPaged");
         return modelsToDTOs(hotels.stream(), localization);
     }

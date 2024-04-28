@@ -69,8 +69,11 @@ public class TagService implements TravelService<TagDTO, TagLocalDTO> {
 
     public List<TagDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start TagService.getAllPaged");
-        Pageable tagPage = PageRequest.of(page, size);
-        Page<Tag> tags = tagRepo.findAll(tagPage);
+        Pageable tagPage = null;
+        if (page != null && size != null) {
+            tagPage = PageRequest.of(page, size);
+        }
+        Page<Tag> tags = tagRepo.findAllByIsDeletedFalse(tagPage);
         log.debug("End TagService.getAllPaged");
         return modelsToDTOs(tags.stream(), localization);
     }

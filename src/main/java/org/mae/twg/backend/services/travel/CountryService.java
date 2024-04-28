@@ -116,8 +116,11 @@ public class CountryService implements TravelService<CountryDTO, CountryLocalDTO
 
     public List<CountryDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start CountryService.getAllPaged");
-        Pageable countryPage = PageRequest.of(page, size);
-        Page<Country> countries = countryRepo.findAll(countryPage);
+        Pageable countryPage = null;
+        if (page != null && size != null) {
+            countryPage = PageRequest.of(page, size);
+        }
+        Page<Country> countries = countryRepo.findAllByIsDeletedFalse(countryPage);
         log.debug("End CountryService.getAllPaged");
         return modelsToDTOs(countries.stream(), localization);
     }

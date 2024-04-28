@@ -194,8 +194,11 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
 
     public List<SightDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start SightService.getAllPaged");
-        Pageable sightsPage = PageRequest.of(page, size);
-        Page<Sight> sights = sightRepo.findAll(sightsPage);
+        Pageable sightsPage = null;
+        if (page != null && size != null) {
+            sightsPage = PageRequest.of(page, size);
+        }
+        Page<Sight> sights = sightRepo.findAllByIsDeletedFalse(sightsPage);
         log.debug("End SightService.getAllPaged");
         return modelsToDTOs(sights.stream(), localization);
     }

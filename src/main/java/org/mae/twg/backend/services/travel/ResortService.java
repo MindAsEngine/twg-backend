@@ -71,8 +71,11 @@ public class ResortService implements TravelService<ResortDTO, ResortLocalDTO> {
 
     public List<ResortDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start ResortService.getAllPaged");
-        Pageable resortPage = PageRequest.of(page, size);
-        Page<Resort> resorts = resortRepo.findAll(resortPage);
+        Pageable resortPage = null;
+        if (page != null && size != null) {
+            resortPage = PageRequest.of(page, size);
+        }
+        Page<Resort> resorts = resortRepo.findAllByIsDeletedFalse(resortPage);
         log.debug("End ResortService.getAllPaged");
         return modelsToDTOs(resorts.stream(), localization);
     }

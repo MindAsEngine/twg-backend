@@ -118,8 +118,11 @@ public class NewsService implements TravelService<NewsDTO, NewsLocalRequestDTO> 
 
     public List<NewsDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start NewsService.getAllPaged");
-        Pageable newsPage = PageRequest.of(page, size);
-        Page<News> news_m = newsRepo.findAll(newsPage);
+        Pageable newsPage = null;
+        if (page != null && size != null) {
+            newsPage = PageRequest.of(page, size);
+        }
+        Page<News> news_m = newsRepo.findAllByIsDeletedFalse(newsPage);
         log.debug("End NewsService.getAllPaged");
         return modelsToDTOs(news_m.stream(), localization);
     }
