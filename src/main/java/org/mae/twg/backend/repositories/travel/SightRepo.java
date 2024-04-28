@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface SightRepo extends JpaRepository<Sight, Long> {
     Optional<Sight> findBySlug(String slug);
 
+    Page<Sight> findAllByIsDeletedFalse(Pageable pageable);
     @Query(value = """
                 select
                     s.*

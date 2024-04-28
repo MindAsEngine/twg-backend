@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface CountryRepo extends JpaRepository<Country, Long> {
 
+    Page<Country> findAllByIsDeletedFalse(Pageable pageable);
     @Query(value = """
     select distinct on (c.country_id)
                 c.*

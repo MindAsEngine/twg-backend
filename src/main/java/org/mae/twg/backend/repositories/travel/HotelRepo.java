@@ -16,6 +16,7 @@ public interface HotelRepo extends JpaRepository<Hotel, Long> {
 
     Optional<Hotel> findBySlug(String slug);
 
+    Page<Hotel> findAllByIsDeletedFalse(Pageable pageable);
     @Query(value = """
             select distinct on (h.slug) h.*
             from hotels h

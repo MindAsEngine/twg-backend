@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface ResortRepo extends JpaRepository<Resort, Long> {
 
+    Page<Resort> findAllByIsDeletedFalse(Pageable pageable);
     @Query(value = """
             select distinct on (r.resort_id) r.*
             from resorts r

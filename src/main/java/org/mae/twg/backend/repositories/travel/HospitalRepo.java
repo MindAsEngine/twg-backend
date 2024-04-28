@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface HospitalRepo extends JpaRepository<Hospital, Long> {
     Optional<Hospital> findBySlug(String slug);
 
+    Page<Hospital> findAllByIsDeletedFalse(Pageable pageable);
     @Query(value = """
                 select
                     h.*
