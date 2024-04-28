@@ -144,12 +144,12 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         return hotelDTOs;
     }
 
-    public List<HotelDTO> getAll(Localization localization) {
-        log.debug("Start HotelService.getAll");
-        List<Hotel> hotels = hotelRepo.findAll(Sort.by("slug"));
-        log.debug("End HotelService.getAll");
-        return modelsToDTOs(hotels.stream(), localization);
-    }
+//    public List<HotelDTO> getAll(Localization localization) {
+//        log.debug("Start HotelService.getAll");
+//        List<Hotel> hotels = hotelRepo.findAll(Sort.by("slug"));
+//        log.debug("End HotelService.getAll");
+//        return modelsToDTOs(hotels.stream(), localization);
+//    }
 
     @Transactional
     public HotelDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
@@ -197,7 +197,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         return new HotelDTO(findById(id), local);
     }
 
-    public List<HotelDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<HotelDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start HotelService.getAllPaged");
         Pageable hotelPage = PageRequest.of(page, size);
         Page<Hotel> hotels = hotelRepo.findAll(hotelPage);

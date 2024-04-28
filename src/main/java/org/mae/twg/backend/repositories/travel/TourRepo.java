@@ -27,6 +27,20 @@ public interface TourRepo extends JpaRepository<Tour, Long> {
                                       join tour_local l on t.tour_id = l.tour_id and l.localization = :local
                                       where t.is_deleted = false and t.is_active = true) src
             """)
+    Page<Tour> findAllActiveByLocal(@Param("local") String local, Pageable pageable);
+
+    @Query(value = """
+    select t.*
+    from tours t
+    join tour_local l on t.tour_id = l.tour_id and l.localization = :local
+    where t.is_deleted = false
+""", nativeQuery = true,
+    countQuery = """
+                select count(*) from (select t.*
+                                      from tours t
+                                      join tour_local l on t.tour_id = l.tour_id and l.localization = :local
+                                      where t.is_deleted = false) src
+            """)
     Page<Tour> findAllByLocal(@Param("local") String local, Pageable pageable);
 
     @Query(value = """

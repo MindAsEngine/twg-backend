@@ -62,13 +62,13 @@ public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO>
         return agencyDTOs;
     }
 
-    public List<AgencyDTO> getAll(Localization localization) {
-        log.debug("Start AgencyService.getAll");
-        return modelsToDTOs(agencyRepo.findAll().stream(), localization);
-    }
+//    public List<AgencyDTO> getAll(Localization localization) {
+//        log.debug("Start AgencyService.getAll");
+//        return modelsToDTOs(agencyRepo.findAll().stream(), localization);
+//    }
 
     @Override
-    public List<AgencyDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<AgencyDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start AgencyService.getAllPaged");
         Pageable agencyPage = PageRequest.of(page, size);
         Page<Agency> agencies = agencyRepo.findAll(agencyPage);

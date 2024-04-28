@@ -58,14 +58,14 @@ public class SightTypeService implements TravelService<SightTypeDTO, SightTypeLo
         return sightTypeDTOS;
     }
 
-    public List<SightTypeDTO> getAll(Localization localization) {
-        log.debug("Start SightTypeService.getAll");
-        List<SightType> sightTypes = sightTypeRepo.findAll();
-        log.debug("End SightTypeService.getAll");
-        return modelsToDTOs(sightTypes.stream(), localization);
-    }
+//    public List<SightTypeDTO> getAll(Localization localization) {
+//        log.debug("Start SightTypeService.getAll");
+//        List<SightType> sightTypes = sightTypeRepo.findAll();
+//        log.debug("End SightTypeService.getAll");
+//        return modelsToDTOs(sightTypes.stream(), localization);
+//    }
 
-    public List<SightTypeDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<SightTypeDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start SightTypeService.getAllPaged");
         Pageable sightTypePage = PageRequest.of(page, size);
         Page<SightType> sightTypes = sightTypeRepo.findAll(sightTypePage);

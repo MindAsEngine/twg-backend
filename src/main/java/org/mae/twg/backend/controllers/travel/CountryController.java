@@ -30,12 +30,12 @@ public class CountryController extends BaseController<CountryService, CountryDTO
         super(service);
     }
 
-    private void validatePageable(Integer page, Integer size) {
-        if (page != null && size == null || page == null && size != null) {
-            log.warn("Only both 'page' and 'size' params required");
-            throw new ValidationException("Only both 'page' and 'size' params required");
-        }
-    }
+//    private void validatePageable(Integer page, Integer size) {
+//        if (page != null && size == null || page == null && size != null) {
+//            log.warn("Only both 'page' and 'size' params required");
+//            throw new ValidationException("Only both 'page' and 'size' params required");
+//        }
+//    }
 
     @GetMapping("/find/filters")
     @Operation(summary = "Получение стран по фильтрам")

@@ -28,12 +28,12 @@ public class ResortController extends BaseController<ResortService, ResortDTO, R
         super(service);
     }
 
-    private void validatePageable(Integer page, Integer size) {
-        if (page != null && size == null || page == null && size != null) {
-            log.warn("Only both 'page' and 'size' params required");
-            throw new ValidationException("Only both 'page' and 'size' params required");
-        }
-    }
+//    private void validatePageable(Integer page, Integer size) {
+//        if (page != null && size == null || page == null && size != null) {
+//            log.warn("Only both 'page' and 'size' params required");
+//            throw new ValidationException("Only both 'page' and 'size' params required");
+//        }
+//    }
 
     @GetMapping("/get")
     @Operation(summary = "Отдать курорт по id")

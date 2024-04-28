@@ -185,14 +185,14 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         return new SightDTO(findById(id), local);
     }
 
-    public List<SightDTO> getAll(Localization localization) {
-        log.debug("Start SightService.getAll");
-        List<Sight> sights = sightRepo.findAll(Sort.by("slug"));
-        log.debug("End SightService.getAll");
-        return modelsToDTOs(sights.stream(), localization);
-    }
+//    public List<SightDTO> getAll(Localization localization) {
+//        log.debug("Start SightService.getAll");
+//        List<Sight> sights = sightRepo.findAll(Sort.by("slug"));
+//        log.debug("End SightService.getAll");
+//        return modelsToDTOs(sights.stream(), localization);
+//    }
 
-    public List<SightDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<SightDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start SightService.getAllPaged");
         Pageable sightsPage = PageRequest.of(page, size);
         Page<Sight> sights = sightRepo.findAll(sightsPage);

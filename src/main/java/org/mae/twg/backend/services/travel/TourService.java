@@ -224,17 +224,20 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         return new TourDTO(findById(id), local);
     }
 
-    public List<TourDTO> getAll(Localization localization) {
-        log.debug("Start TourService.getAll");
-        Page<Tour> tours = tourRepo.findAllByLocal(localization.name(), null);
-        log.debug("End TourService.getAll");
-        return modelsToDTOs(tours.stream(), localization);
-    }
+//    public List<TourDTO> getAll(Localization localization) {
+//        log.debug("Start TourService.getAll");
+//        Page<Tour> tours = tourRepo.findAllActiveByLocal(localization.name(), null);
+//        log.debug("End TourService.getAll");
+//        return modelsToDTOs(tours.stream(), localization);
+//    }
 
-    public List<TourDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<TourDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start TourService.getAllPaged");
-        Pageable toursPage = PageRequest.of(page, size);
-        Page<Tour> tours = tourRepo.findAllByLocal(localization.name(), toursPage);
+        Pageable toursPage = null;
+        if (page != null && size != null) {
+            toursPage = PageRequest.of(page, size);
+        }
+        Page<Tour> tours = tourRepo.findAllActiveByLocal(localization.name(), toursPage);
         log.debug("End TourService.getAllPaged");
         return modelsToDTOs(tours.stream(), localization);
     }

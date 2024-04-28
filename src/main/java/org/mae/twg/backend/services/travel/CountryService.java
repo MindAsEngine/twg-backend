@@ -107,14 +107,14 @@ public class CountryService implements TravelService<CountryDTO, CountryLocalDTO
         return new CountryDTO(findById(id), local);
     }
 
-    public List<CountryDTO> getAll(Localization localization) {
-        log.debug("Start CountryService.getAll");
-        List<Country> countries = countryRepo.findAll();
-        log.debug("End CountryService.getAll");
-        return modelsToDTOs(countries.stream(), localization);
-    }
+//    public List<CountryDTO> getAll(Localization localization) {
+//        log.debug("Start CountryService.getAll");
+//        List<Country> countries = countryRepo.findAll();
+//        log.debug("End CountryService.getAll");
+//        return modelsToDTOs(countries.stream(), localization);
+//    }
 
-    public List<CountryDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<CountryDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start CountryService.getAllPaged");
         Pageable countryPage = PageRequest.of(page, size);
         Page<Country> countries = countryRepo.findAll(countryPage);

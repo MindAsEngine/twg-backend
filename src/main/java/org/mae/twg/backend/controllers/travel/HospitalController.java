@@ -34,12 +34,12 @@ public class HospitalController extends BaseController<HospitalService, Hospital
         super(service);
     }
 
-    private void validatePageable(Integer page, Integer size) {
-        if (page != null && size == null || page == null && size != null) {
-            log.warn("Only both 'page' and 'size' params required");
-            throw new ValidationException("Only both 'page' and 'size' params required");
-        }
-    }
+//    private void validatePageable(Integer page, Integer size) {
+//        if (page != null && size == null || page == null && size != null) {
+//            log.warn("Only both 'page' and 'size' params required");
+//            throw new ValidationException("Only both 'page' and 'size' params required");
+//        }
+//    }
 
     @PostMapping("/{id}/header/upload")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")

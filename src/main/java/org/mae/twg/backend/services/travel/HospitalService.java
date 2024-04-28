@@ -135,12 +135,12 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
         return hospitalDTOs;
     }
 
-    public List<HospitalDTO> getAll(Localization localization) {
-        log.debug("Start HospitalService.getAll");
-        List<Hospital> hospitals = hospitalRepo.findAll(Sort.by("slug"));
-        log.debug("End HospitalService.getAll");
-        return modelsToDTOs(hospitals.stream(), localization);
-    }
+//    public List<HospitalDTO> getAll(Localization localization) {
+//        log.debug("Start HospitalService.getAll");
+//        List<Hospital> hospitals = hospitalRepo.findAll(Sort.by("slug"));
+//        log.debug("End HospitalService.getAll");
+//        return modelsToDTOs(hospitals.stream(), localization);
+//    }
 
     @Transactional
     public HospitalDTO uploadImage(Long id, Localization local, MultipartFile image) throws IOException {
@@ -188,7 +188,7 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
         return new HospitalDTO(findById(id), local);
     }
 
-    public List<HospitalDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<HospitalDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start HospitalService.getAllPaged");
         Pageable hospitalPage = PageRequest.of(page, size);
         Page<Hospital> hospitals = hospitalRepo.findAll(hospitalPage);

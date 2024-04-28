@@ -62,14 +62,14 @@ public class ResortService implements TravelService<ResortDTO, ResortLocalDTO> {
         return resortsDTOs;
     }
 
-    public List<ResortDTO> getAll(Localization localization) {
-        log.debug("Start ResortService.getAll");
-        List<Resort> resorts = resortRepo.findAll();
-        log.debug("End ResortService.getAll");
-        return modelsToDTOs(resorts.stream(), localization);
-    }
+//    public List<ResortDTO> getAll(Localization localization) {
+//        log.debug("Start ResortService.getAll");
+//        List<Resort> resorts = resortRepo.findAll();
+//        log.debug("End ResortService.getAll");
+//        return modelsToDTOs(resorts.stream(), localization);
+//    }
 
-    public List<ResortDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<ResortDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start ResortService.getAllPaged");
         Pageable resortPage = PageRequest.of(page, size);
         Page<Resort> resorts = resortRepo.findAll(resortPage);

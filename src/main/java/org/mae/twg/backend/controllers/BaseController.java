@@ -30,6 +30,13 @@ public abstract class BaseController<
         return service;
     }
 
+    protected void validatePageable(Integer page, Integer size) {
+        if (page != null && size == null || page == null && size != null) {
+            log.warn("Only both 'page' and 'size' params required");
+            throw new ValidationException("Only both 'page' and 'size' params required");
+        }
+    }
+
     @Override
     @GetMapping
     @Operation(summary = "Отдать все сущности")
@@ -37,14 +44,8 @@ public abstract class BaseController<
                                                     @RequestParam(required = false) Integer page,
                                                     @RequestParam(required = false) Integer size) {
         log.info("Отдать все сущности");
-        if (page == null && size == null) {
-            return ResponseEntity.ok(service.getAll(local));
-        }
-        if (page != null && size != null) {
-            return ResponseEntity.ok(service.getAllPaged(local, page, size));
-        }
-        log.warn("Only both 'page' and 'size' params are required");
-        throw new ValidationException("Only both 'page' and 'size' params are required");
+        validatePageable(page, size);
+        return ResponseEntity.ok(service.getAllPaged(local, page, size));
     }
 
     @Override

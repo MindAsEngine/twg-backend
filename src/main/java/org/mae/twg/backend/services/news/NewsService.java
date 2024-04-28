@@ -83,12 +83,12 @@ public class NewsService implements TravelService<NewsDTO, NewsLocalRequestDTO> 
         return newsDTOs;
     }
 
-    public List<NewsDTO> getAll(Localization localization) {
-        log.debug("Start NewsService.getAll");
-        List<News> news_m = newsRepo.findAll();
-        log.debug("End NewsService.getAll");
-        return modelsToDTOs(news_m.stream(), localization);
-    }
+//    public List<NewsDTO> getAll(Localization localization) {
+//        log.debug("Start NewsService.getAll");
+//        List<News> news_m = newsRepo.findAll();
+//        log.debug("End NewsService.getAll");
+//        return modelsToDTOs(news_m.stream(), localization);
+//    }
     @Transactional
     public NewsDTO uploadImages(Long id, Localization local, List<MultipartFile> images) throws IOException {
         log.debug("Start NewsService.uploadImages");
@@ -116,7 +116,7 @@ public class NewsService implements TravelService<NewsDTO, NewsLocalRequestDTO> 
         return new NewsDTO(findById(id), local);
     }
 
-    public List<NewsDTO> getAllPaged(Localization localization, int page, int size) {
+    public List<NewsDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start NewsService.getAllPaged");
         Pageable newsPage = PageRequest.of(page, size);
         Page<News> news_m = newsRepo.findAll(newsPage);
