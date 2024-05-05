@@ -41,7 +41,7 @@ public class TourRequestController {
     }
 
     @GetMapping("/get")
-    @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
     @Operation(summary = "Отдать все заявки агентству",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
@@ -65,7 +65,7 @@ public class TourRequestController {
 
 
     @PostMapping("/set-agent")
-//    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
     @Operation(summary = "Установать агента заявке")
     public ResponseEntity<TourReqResponseDTO> setAgent(@PathVariable Localization local,
                                                        @RequestBody Long requestId)  {
