@@ -64,11 +64,11 @@ public class TourRequestController {
     }
 
 
-    @PostMapping("/set-agent")
+    @PostMapping("/{id}/set-agent")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
     @Operation(summary = "Установать агента заявке")
     public ResponseEntity<TourReqResponseDTO> setAgent(@PathVariable Localization local,
-                                                       @RequestBody Long requestId)  {
+                                                       @PathVariable(name = "id") Long requestId)  {
         log.info("Установать агента заявке на тур с id: " + requestId);
         if (requestId == null) {
             log.warn("Не передали заявку на звонок");
@@ -77,13 +77,13 @@ public class TourRequestController {
         return ResponseEntity.ok(tourRequestService.setAgent(requestId, local));
     }
 
-    @PostMapping("/resolve")
+    @PostMapping("/{id}/resolve")
     @PreAuthorize("@AuthService.hasAccess(@UserRole.AGENT)")
     @Operation(summary = "Решить заявку",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     public ResponseEntity<List<TourReqResponseDTO>> resolve(@PathVariable Localization local,
-                                                            @RequestBody Long requestId)  {
+                                                            @PathVariable(name = "id") Long requestId)  {
         log.info("Решить заявку на тур с id: " + requestId);
         if (requestId == null) {
             log.warn("Не передали заявку на тур");
