@@ -121,7 +121,6 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
                 .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
         List<TourDTO> tourDTOs = tours
-                .filter(tour -> !tour.getIsDeleted() && tour.getIsActive())
                 .filter(tour -> tour.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
                 .map(tour -> new TourDTO(tour, localization))
                 .map(tourDTO -> addGrade(tourDTO, grades.getOrDefault(tourDTO.getId(), null)))
