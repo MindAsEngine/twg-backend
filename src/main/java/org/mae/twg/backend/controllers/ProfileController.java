@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.StringDTO;
 import org.mae.twg.backend.dto.auth.PasswordDTO;
 import org.mae.twg.backend.dto.profile.FavouriteTourDTO;
 import org.mae.twg.backend.dto.profile.ProfileDTO;
@@ -119,7 +120,7 @@ public class ProfileController {
     @Operation(summary = "Удалить фотографии",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<UserDTO> deleteImages(@RequestBody String image) {
+    public ResponseEntity<UserDTO> deleteImages(@RequestBody StringDTO image) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long id = ((User) authentication.getPrincipal()).getId();
         log.info("Delete images from user profile with id = " + id);
@@ -127,7 +128,7 @@ public class ProfileController {
             log.warn("Empty images list from user profile with id: " + id);
             throw new ValidationException("Empty images list");
         }
-        return ResponseEntity.ok(userService.deleteImages(image));
+        return ResponseEntity.ok(userService.deleteImages(image.getData()));
     }
 
     @DeleteMapping("/delete")

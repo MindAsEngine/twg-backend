@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.StringDTO;
 import org.mae.twg.backend.dto.admin.ConfigDTO;
 import org.mae.twg.backend.models.Currency;
 import org.mae.twg.backend.models.CurrencyHistory;
@@ -62,9 +63,9 @@ public class ConfigBusinessController {
     )
     @PostMapping("/{key}/put")
     public ResponseEntity<ConfigDTO> put(@PathVariable ConfigBusinessEnum key,
-                                         @RequestBody String value) {
+                                         @RequestBody StringDTO value) {
         log.info("Положили конфиг по ключу " + key.name());
-        return ResponseEntity.ok(configBusinessService.put(key, value));
+        return ResponseEntity.ok(configBusinessService.put(key, value.getData()));
     }
 
     @Operation(summary = "Удалить конфиг по ключу",
