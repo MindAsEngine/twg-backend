@@ -77,7 +77,7 @@ public class TourDTO implements ModelDTO {
     }
 
     static public TourDTO getDTO(Tour tour, Localization localization) {
-        if (tour == null || tour.getIsDeleted()) {
+        if (tour == null) {
             return null;
         }
         return new TourDTO(tour, localization);
