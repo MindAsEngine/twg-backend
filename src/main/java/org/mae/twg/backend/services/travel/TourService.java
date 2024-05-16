@@ -68,8 +68,8 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                     log.error("Tour with id=" + id + " not found");
                     return new ObjectNotFoundException("Tour with id=" + id + " not found");
                 });
-        if (tour.getIsDeleted() || !tour.getIsActive()) {
-            log.error("Tour with id=" + id + " marked as deleted or inactive");
+        if (tour.getIsDeleted()) {
+            log.error("Tour with id=" + id + " marked as deleted");
             throw new ObjectNotFoundException("Tour with id=" + id + " marked as deleted");
         }
         log.debug("End TourService.findById");
@@ -83,8 +83,8 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                     log.error("Tour with slug=" + slug + " not found");
                     return new ObjectNotFoundException("Tour with slug=" + slug + " not found");
                 });
-        if (tour.getIsDeleted() || !tour.getIsActive()) {
-            log.error("Tour with slug=" + slug + " marked as deleted or inactive");
+        if (tour.getIsDeleted()) {
+            log.error("Tour with slug=" + slug + " marked as deleted");
             throw new ObjectNotFoundException("Tour with slug=" + slug + " marked as deleted");
         }
         log.debug("End TourService.findBySlug");
