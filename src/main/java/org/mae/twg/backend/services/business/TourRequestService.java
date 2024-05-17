@@ -14,6 +14,8 @@ import org.mae.twg.backend.repositories.business.TourRequestRepo;
 import org.mae.twg.backend.services.auth.UserService;
 import org.mae.twg.backend.services.travel.TourService;
 import org.mae.twg.backend.utils.BotUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +45,14 @@ public class TourRequestService {
         log.debug("End TourRequestService.findById");
         return tourRequest;
     }
+
     private List<TourReqResponseDTO> modelsToDTOs(Stream<TourRequest> tourRequests, Localization localization) {
         log.debug("Start TourRequestService.modelsToDTOs");
         return tourRequests
                 .map(tourRequest -> new TourReqResponseDTO(tourRequest, localization))
                 .collect(Collectors.toList());
     }
+
     @Transactional
     public TourReqResponseDTO addRequest(TourRequestDTO tourRequestDTO, Localization localization) {
         log.debug("Start TourRequestService.addRequest");
@@ -63,25 +67,47 @@ public class TourRequestService {
         return new TourReqResponseDTO(tourRequest, localization);
     }
 
-    public List<TourReqResponseDTO> getAll(Long agencyId,
-                                           String username,
-                                           Boolean isAgent,
-                                           Localization localization) {
-        log.debug("Start TourRequestService.getAll");
-        if (agencyId != null) {
-            log.debug("End TourRequestService.getAll");
-            return modelsToDTOs(tourRequestRepo.findByAgency_IdAndAgentIsNullAndClosedAtIsNull(agencyId).stream(), localization);
+
+    public List<TourReqResponseDTO> getUsersRequest(String username,
+                                                    Boolean isAgent,
+                                                    Boolean isClosed,
+                                                    Localization localization,
+                                                    Integer page,
+                                                    Integer size) {
+        log.debug("Start TourRequestService.getUsersRequest");
+        Pageable pageable = null;
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size);
         }
-        if (username != null) {
-            if (isAgent) {
-                log.debug("End TourRequestService.getAll");
-                return modelsToDTOs(tourRequestRepo.findAllByAgent_Username(username).stream(), localization);
+        if (isAgent) {
+            log.debug("End TourRequestService.getUsersRequest");
+            if (isClosed) {
+                return modelsToDTOs(tourRequestRepo.findClosedByAgent(username, pageable).stream(), localization);
             }
-            log.debug("End TourRequestService.getAll");
-            return modelsToDTOs(tourRequestRepo.findAllByUser_Username(username).stream(), localization);
+            return modelsToDTOs(tourRequestRepo.findOpenByAgent(username, pageable).stream(), localization);
         }
-        log.debug("End TourRequestService.getAll");
-        return modelsToDTOs(tourRequestRepo.findByAgentIsNullAndClosedAtIsNull().stream(), localization);
+        log.debug("End TourRequestService.getUsersRequest");
+        if (isClosed) {
+            return modelsToDTOs(tourRequestRepo.findClosedByUser(username, pageable).stream(), localization);
+        }
+        return modelsToDTOs(tourRequestRepo.findOpenByUser(username, pageable).stream(), localization);
+    }
+
+    public List<TourReqResponseDTO> getPool(Long agencyId,
+                                            Localization localization,
+                                            Integer page,
+                                            Integer size) {
+        log.debug("Start TourRequestService.getPool");
+        Pageable pageable = null;
+        if (page != null && size != null) {
+            pageable = PageRequest.of(page, size);
+        }
+        if (agencyId != null) {
+            log.debug("End TourRequestService.getPool");
+            return modelsToDTOs(tourRequestRepo.findOpenByAgency(agencyId, pageable).stream(), localization);
+        }
+        log.debug("End TourRequestService.getPool");
+        return modelsToDTOs(tourRequestRepo.findOpen(pageable).stream(), localization);
     }
 
     public TourReqResponseDTO setAgent(Long requestId, Localization localization) {
@@ -96,13 +122,12 @@ public class TourRequestService {
         return new TourReqResponseDTO(tourRequest, localization);
     }
 
-    public List<TourReqResponseDTO> resolve(Long requestId, Localization localization) {
+    public void resolve(Long requestId) {
         log.debug("Start TourRequestService.resolve");
         TourRequest tourRequest = findById(requestId);
         tourRequest.setClosedAt(LocalDateTime.now());
         tourRequestRepo.saveAndFlush(tourRequest);
         log.debug("End TourRequestService.resolve");
-        return getAll(null, null, null, localization);
     }
 
 
