@@ -11,6 +11,9 @@ public class ExcelValidation {
 
     public void excelTourValidation(List<String> header) {
         StringBuilder exceptionMsg = new StringBuilder();
+        if (header.isEmpty() || header.size() != 15) {
+            throw new ValidationException("В файле неверное число заголовков");
+        }
         if (!Objects.equals(header.get(0), "titleRU")) {
             exceptionMsg.append("В файле отсутствует titleRU\n");
         }
@@ -61,6 +64,9 @@ public class ExcelValidation {
         }
     }
     public void excelHotelValidation(List<String> header) {
+        if (header.isEmpty() || header.size() != 18) {
+            throw new ValidationException("В файле неверное число заголовков\n");
+        }
         StringBuilder exceptionMsg = new StringBuilder();
         if (!Objects.equals(header.get(0), "nameRU")) {
             exceptionMsg.append("В файле отсутствует nameRU\n");
@@ -121,6 +127,9 @@ public class ExcelValidation {
         }
     }
     public void excelHospitalValidation(List<String> header) {
+        if (header.isEmpty() || header.size() != 17) {
+            throw new ValidationException("В файле неверное число заголовков\n");
+        }
         StringBuilder exceptionMsg = new StringBuilder();
         if (!Objects.equals(header.get(0), "nameRU")) {
             exceptionMsg.append("В файле отсутствует nameRU\n");
@@ -178,6 +187,9 @@ public class ExcelValidation {
         }
     }
     public void excelSightValidation(List<String> header) {
+        if (header.isEmpty() || header.size() != 14) {
+            throw new ValidationException("В файле неверное число заголовков\n");
+        }
         StringBuilder exceptionMsg = new StringBuilder();
         if (!Objects.equals(header.get(0), "nameRU")) {
             exceptionMsg.append("В файле отсутствует nameRU\n");

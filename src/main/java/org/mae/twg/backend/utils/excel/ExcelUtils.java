@@ -48,6 +48,7 @@ public class ExcelUtils {
                 });
             }
         }
+        data.entrySet().removeIf(entry -> entry.getValue().stream().allMatch(Objects::isNull));
         log.debug("End ExcelUtils.readExcel");
         return data;
     }
