@@ -19,12 +19,13 @@ public class RefreshToken {
     private Long id;
 
     @NonNull
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "token",
-            nullable = false)
+            nullable = false,
+            unique = true)
     private String token;
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
