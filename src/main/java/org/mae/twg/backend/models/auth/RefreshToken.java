@@ -24,8 +24,7 @@ public class RefreshToken {
     private User user;
 
     @Column(name = "token",
-            nullable = false,
-            unique = true)
+            nullable = false)
     private String token;
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
