@@ -70,7 +70,7 @@ public class JwtUtils {
     }
 
     public RefreshToken createRefreshToken(User user) {
-        refreshTokenRepo.findByUser(user).ifPresent(refreshTokenRepo::delete);
+        refreshTokenRepo.findFirstByUser(user).ifPresent(refreshTokenRepo::delete);
 
         RefreshToken refreshToken = new RefreshToken();
 

@@ -132,6 +132,18 @@ public class AuthService {
         return new JwtAuthenticationResponse(accessToken, token.getToken());
     }
 
+    public JwtAuthenticationResponse tokenForBot(String telegramId) {
+        log.debug("Start AuthService.tokenForBot");
+
+        RefreshToken token = refreshTokenRepo.findFirstByUser_TelegramId(telegramId)
+                .orElseThrow(() -> new TokenValidationException(
+                        "Refresh token for telegram id '" + telegramId + "' not found"));
+        jwtUtils.verifyExpiration(token);
+        String accessToken = jwtUtils.generateToken(token.getUser());
+        log.debug("End AuthService.tokenForBot");
+        return new JwtAuthenticationResponse(accessToken, token.getToken());
+    }
+
     @Transactional
     public void logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -141,7 +153,7 @@ public class AuthService {
 
         User user = (User) authentication.getPrincipal();
 
-        Optional<RefreshToken> refreshToken = refreshTokenRepo.findByUser(user);
+        Optional<RefreshToken> refreshToken = refreshTokenRepo.findFirstByUser(user);
         if (refreshToken.isEmpty()) {
             return;
         }

@@ -48,6 +48,13 @@ public class AuthController {
         return ResponseEntity.ok(authService.refreshToken(request));
     }
 
+//    @CrossOrigin(origins = "https://tg.prodamgaraj.ru")
+    @GetMapping("/bot-auth")
+    public ResponseEntity<JwtAuthenticationResponse> botRefresh(@RequestParam String tgId) {
+        log.info("Получение токена для бота");
+        return ResponseEntity.ok(authService.tokenForBot(tgId));
+    }
+
     @Operation(
             summary = "Выход",
             parameters = @Parameter(in = ParameterIn.HEADER,
