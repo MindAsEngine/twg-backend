@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class TelegramDataDTO {
-    private String username;
+    private String uuid;
     private String telegramId;
 }
