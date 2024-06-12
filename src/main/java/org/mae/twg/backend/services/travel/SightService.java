@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.GradeData;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
@@ -30,7 +31,6 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,20 +121,17 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         return sightDTO;
     }
 
-    private List<SightDTO> modelsToDTOs(Stream<Sight> sights, Localization localization) {
+    private PageDTO<SightDTO> modelsToDTOs(PageDTO<Sight> sights, Localization localization) {
         log.debug("Start SightService.modelsToDTOs");
-        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
-                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
-        List<SightDTO> sightDTOs = sights
-                .filter(sight -> !sight.getIsDeleted())
-                .filter(sight -> sight.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(sight -> new SightDTO(sight, localization))
-                .map(sightDTO -> addGrade(sightDTO, grades.getOrDefault(sightDTO.getId(), null)))
-                .toList();
-        if (sightDTOs.isEmpty()) {
+        if (sights.isEmpty()) {
             log.error("Sights with " + localization + " not found");
             throw new ObjectNotFoundException("Sights with " + localization + " not found");
         }
+        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
+                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
+        PageDTO<SightDTO> sightDTOs = sights
+                .apply(sight -> new SightDTO(sight, localization))
+                .apply(sightDTO -> addGrade(sightDTO, grades.getOrDefault(sightDTO.getId(), null)));
         log.debug("End SightService.modelsToDTOs");
         return sightDTOs;
     }
@@ -192,7 +189,7 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
 //        return modelsToDTOs(sights.stream(), localization);
 //    }
 
-    public List<SightDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<SightDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start SightService.getAllPaged");
         Pageable sightsPage = null;
         if (page != null && size != null) {
@@ -200,7 +197,7 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         }
         Page<Sight> sights = sightRepo.findAllByIsDeletedFalse(sightsPage);
         log.debug("End SightService.getAllPaged");
-        return modelsToDTOs(sights.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(sights), localization);
     }
 
     public SightDTO getById(Long id, Localization local) {
@@ -293,7 +290,7 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
         return new SightDTO(sight, localization);
     }
 
-    public List<SightDTO> findByGeoData(Double minLongitude,
+    public PageDTO<SightDTO> findByGeoData(Double minLongitude,
                                        Double maxLongitude,
                                        Double minLatitude,
                                        Double maxLatitude,
@@ -301,12 +298,12 @@ public class SightService implements TravelService<SightDTO, SightLocalDTO> {
                                        Integer page, Integer size) {
         log.debug("Start SightService.findByGeoData");
 
-        return modelsToDTOs(
+        return modelsToDTOs(new PageDTO<>(
                 sightRepo.findByGeoData(
                         minLongitude,
                         maxLongitude,
                         minLatitude,
-                        maxLatitude, getPageable(page, size)).stream(), localization);
+                        maxLatitude, getPageable(page, size))), localization);
     }
 
     @Transactional

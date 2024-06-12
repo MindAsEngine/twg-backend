@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightTypeLocalDTO;
 import org.mae.twg.backend.dto.travel.response.SightTypeDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
@@ -17,9 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -43,17 +41,14 @@ public class SightTypeService implements TravelService<SightTypeDTO, SightTypeLo
         return property;
     }
 
-    private List<SightTypeDTO> modelsToDTOs(Stream<SightType> sightTypes, Localization localization) {
+    private PageDTO<SightTypeDTO> modelsToDTOs(PageDTO<SightType> sightTypes, Localization localization) {
         log.debug("Start SightTypeService.modelsToDTOs");
-        List<SightTypeDTO> sightTypeDTOS = sightTypes
-                .filter(sightType -> !sightType.getIsDeleted())
-                .filter(sightType -> sightType.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(sightType -> new SightTypeDTO(sightType, localization))
-                .toList();
-        if (sightTypeDTOS.isEmpty()) {
+        if (sightTypes.isEmpty()) {
             log.error("SightTypes with " + localization + " localization not found");
             throw new ObjectNotFoundException("SightTypes with " + localization + " localization not found");
         }
+        PageDTO<SightTypeDTO> sightTypeDTOS = sightTypes
+                .apply(sightType -> new SightTypeDTO(sightType, localization));
         log.debug("End SightTypeService.modelsToDTOs");
         return sightTypeDTOS;
     }
@@ -65,7 +60,7 @@ public class SightTypeService implements TravelService<SightTypeDTO, SightTypeLo
 //        return modelsToDTOs(sightTypes.stream(), localization);
 //    }
 
-    public List<SightTypeDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<SightTypeDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start SightTypeService.getAllPaged");
         Pageable sightTypePage = null;
         if (page != null && size != null) {
@@ -73,7 +68,7 @@ public class SightTypeService implements TravelService<SightTypeDTO, SightTypeLo
         }
         Page<SightType> sightTypes = sightTypeRepo.findAllByIsDeletedFalse(sightTypePage);
         log.debug("End SightTypeService.getAllPaged");
-        return modelsToDTOs(sightTypes.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(sightTypes), localization);
     }
 
     @Transactional

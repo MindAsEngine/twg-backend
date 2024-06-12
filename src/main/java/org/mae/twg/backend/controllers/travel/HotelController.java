@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.HotelGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.HotelLocalDTO;
@@ -44,13 +45,13 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
 
     @GetMapping("/find/geo")
     @Operation(summary = "Отели по координатам")
-    public ResponseEntity<List<HotelDTO>> findByGeo(@PathVariable Localization local,
-                                                    @RequestParam(required = false) Integer page,
-                                                    @RequestParam(required = false) Integer size,
-                                                    @RequestParam Double minLongitude,
-                                                    @RequestParam Double maxLongitude,
-                                                    @RequestParam Double minLatitude,
-                                                    @RequestParam Double maxLatitude) {
+    public ResponseEntity<PageDTO<HotelDTO>> findByGeo(@PathVariable Localization local,
+                                                       @RequestParam(required = false) Integer page,
+                                                       @RequestParam(required = false) Integer size,
+                                                       @RequestParam Double minLongitude,
+                                                       @RequestParam Double maxLongitude,
+                                                       @RequestParam Double minLatitude,
+                                                       @RequestParam Double maxLatitude) {
         validatePageable(page, size);
         return ResponseEntity.ok(getService().findByGeoData(
                 minLongitude, maxLongitude,
@@ -60,7 +61,7 @@ public class HotelController extends BaseController<HotelService, HotelDTO, Hote
 
     @GetMapping("/find/filters")
     @Operation(summary = "Получение отелей по фильтрам")
-    public ResponseEntity<List<HotelDTO>> getByFilters(@PathVariable Localization local,
+    public ResponseEntity<PageDTO<HotelDTO>> getByFilters(@PathVariable Localization local,
                                                          @RequestParam(required = false) List<Long> resortIds,
                                                          @RequestParam(required = false) List<Long> countryIds,
                                                          @RequestParam(required = false) Integer page,

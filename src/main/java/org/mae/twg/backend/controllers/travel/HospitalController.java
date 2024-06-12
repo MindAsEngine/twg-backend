@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.HospitalGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.HospitalLocalDTO;
@@ -110,13 +111,13 @@ public class HospitalController extends BaseController<HospitalService, Hospital
 
     @GetMapping("/find/geo")
     @Operation(summary = "Больницы по координатам")
-    public ResponseEntity<List<HospitalDTO>> findByGeo(@PathVariable Localization local,
-                                                    @RequestParam(required = false) Integer page,
-                                                    @RequestParam(required = false) Integer size,
-                                                    @RequestParam Double minLongitude,
-                                                    @RequestParam Double maxLongitude,
-                                                    @RequestParam Double minLatitude,
-                                                    @RequestParam Double maxLatitude) {
+    public ResponseEntity<PageDTO<HospitalDTO>> findByGeo(@PathVariable Localization local,
+                                                          @RequestParam(required = false) Integer page,
+                                                          @RequestParam(required = false) Integer size,
+                                                          @RequestParam Double minLongitude,
+                                                          @RequestParam Double maxLongitude,
+                                                          @RequestParam Double minLatitude,
+                                                          @RequestParam Double maxLatitude) {
         validatePageable(page, size);
         return ResponseEntity.ok(getService().findByGeoData(
                 minLongitude, maxLongitude,

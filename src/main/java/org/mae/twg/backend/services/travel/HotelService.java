@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.GradeData;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.HotelGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.HotelLocalDTO;
@@ -34,7 +35,6 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,20 +126,17 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         return hotelDTO;
     }
 
-    private List<HotelDTO> modelsToDTOs(Stream<Hotel> hotels, Localization localization) {
+    private PageDTO<HotelDTO> modelsToDTOs(PageDTO<Hotel> hotels, Localization localization) {
         log.debug("Start HotelService.modelsToDTOs");
-        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
-                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
-        List<HotelDTO> hotelDTOs = hotels
-                .filter(hotel -> !hotel.getIsDeleted())
-                .filter(hotel -> hotel.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(hotel -> new HotelDTO(hotel, localization))
-                .map(hotelDTO -> addGrade(hotelDTO, grades.getOrDefault(hotelDTO.getId(), null)))
-                .toList();
-        if (hotelDTOs.isEmpty()) {
+        if (hotels.isEmpty()) {
             log.error("Hotels with " + localization + " with localization not found");
             throw new ObjectNotFoundException("Hotels with " + localization + " with localization not found");
         }
+        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
+                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
+        PageDTO<HotelDTO> hotelDTOs = hotels
+                .apply(hotel -> new HotelDTO(hotel, localization))
+                .apply(hotelDTO -> addGrade(hotelDTO, grades.getOrDefault(hotelDTO.getId(), null)));
         log.debug("End HotelService.modelsToDTOs");
         return hotelDTOs;
     }
@@ -197,7 +194,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         return new HotelDTO(findById(id), local);
     }
 
-    public List<HotelDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<HotelDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start HotelService.getAllPaged");
         Pageable hotelPage = null;
         if (page != null && size != null) {
@@ -205,10 +202,10 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         }
         Page<Hotel> hotels = hotelRepo.findAllByIsDeletedFalse(hotelPage);
         log.debug("End HotelService.getAllPaged");
-        return modelsToDTOs(hotels.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(hotels), localization);
     }
 
-    public List<HotelDTO> getByFilters(List<Long> resortIds, List<Long> countryIds,
+    public PageDTO<HotelDTO> getByFilters(List<Long> resortIds, List<Long> countryIds,
                                        Localization localization,
                                          Integer page, Integer size) {
         log.debug("Start HotelService.getByFilters");
@@ -217,7 +214,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
             pageable = PageRequest.of(page, size);
         }
         log.debug("End HotelService.getByFilters");
-        return modelsToDTOs(hotelRepo.findAllByFilters(resortIds, countryIds, pageable).stream(), localization);
+        return modelsToDTOs(new PageDTO<>(hotelRepo.findAllByFilters(resortIds, countryIds, pageable)), localization);
     }
 
     public HotelDTO getById(Long id, Localization localization) {
@@ -351,7 +348,7 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
         return new HotelDTO(hotel, localization);
     }
 
-    public List<HotelDTO> findByGeoData(Double minLongitude,
+    public PageDTO<HotelDTO> findByGeoData(Double minLongitude,
                                         Double maxLongitude,
                                         Double minLatitude,
                                         Double maxLatitude,
@@ -359,12 +356,12 @@ public class HotelService implements TravelService<HotelDTO, HotelLocalDTO> {
                                         Integer page, Integer size) {
         log.debug("Start HotelService.findByGeoData");
 
-        return modelsToDTOs(
+        return modelsToDTOs(new PageDTO<>(
                 hotelRepo.findByGeoData(
                         minLongitude,
                         maxLongitude,
                         minLatitude,
-                        maxLatitude, getPageable(page, size)).stream(), localization);
+                        maxLatitude, getPageable(page, size))), localization);
     }
 
     @Transactional

@@ -8,14 +8,13 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.ModelDTO;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
 import org.mae.twg.backend.services.TravelService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -40,9 +39,9 @@ public abstract class BaseController<
     @Override
     @GetMapping
     @Operation(summary = "Отдать все сущности")
-    public ResponseEntity<List<ResponseDTO>> getAll(@PathVariable Localization local,
-                                                    @RequestParam(required = false) Integer page,
-                                                    @RequestParam(required = false) Integer size) {
+    public ResponseEntity<PageDTO<ResponseDTO>> getAll(@PathVariable Localization local,
+                                                       @RequestParam(required = false) Integer page,
+                                                       @RequestParam(required = false) Integer size) {
         log.info("Отдать все сущности");
         validatePageable(page, size);
         return ResponseEntity.ok(service.getAllPaged(local, page, size));

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.SightGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.SightLocalDTO;
@@ -61,13 +62,13 @@ public class SightController extends BaseController<SightService, SightDTO, Sigh
 
     @GetMapping("/find/geo")
     @Operation(summary = "Точки интереса по координатам")
-    public ResponseEntity<List<SightDTO>> findByGeo(@PathVariable Localization local,
-                                                   @RequestParam(required = false) Integer page,
-                                                   @RequestParam(required = false) Integer size,
-                                                   @RequestParam Double minLongitude,
-                                                   @RequestParam Double maxLongitude,
-                                                   @RequestParam Double minLatitude,
-                                                   @RequestParam Double maxLatitude) {
+    public ResponseEntity<PageDTO<SightDTO>> findByGeo(@PathVariable Localization local,
+                                                       @RequestParam(required = false) Integer page,
+                                                       @RequestParam(required = false) Integer size,
+                                                       @RequestParam Double minLongitude,
+                                                       @RequestParam Double maxLongitude,
+                                                       @RequestParam Double minLatitude,
+                                                       @RequestParam Double maxLatitude) {
         validatePageable(page, size);
         return ResponseEntity.ok(getService().findByGeoData(
                 minLongitude, maxLongitude,

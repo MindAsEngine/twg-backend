@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.news;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.news.NewsDTO;
 import org.mae.twg.backend.dto.news.NewsLocalRequestDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
@@ -26,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Service
@@ -68,17 +68,14 @@ public class NewsService implements TravelService<NewsDTO, NewsLocalRequestDTO> 
         return news;
     }
 
-    private List<NewsDTO> modelsToDTOs(Stream<News> news_m, Localization localization) {
+    private PageDTO<NewsDTO> modelsToDTOs(PageDTO<News> news_m, Localization localization) {
         log.debug("Start NewsService.modelsToDTOs");
-        List<NewsDTO> newsDTOs = news_m
-                .filter(news -> !news.getIsDeleted())
-                .filter(news -> news.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(news -> new NewsDTO(news, localization))
-                .toList();
-        if (newsDTOs.isEmpty()) {
+        if (news_m.isEmpty()) {
             log.error("News with " + localization + " with localization not found");
             throw new ObjectNotFoundException("News with " + localization + " with localization not found");
         }
+        PageDTO<NewsDTO> newsDTOs = news_m
+                .apply(news -> new NewsDTO(news, localization));
         log.debug("End NewsService.modelsToDTOs");
         return newsDTOs;
     }
@@ -116,7 +113,7 @@ public class NewsService implements TravelService<NewsDTO, NewsLocalRequestDTO> 
         return new NewsDTO(findById(id), local);
     }
 
-    public List<NewsDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<NewsDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start NewsService.getAllPaged");
         Pageable newsPage = null;
         if (page != null && size != null) {
@@ -124,7 +121,7 @@ public class NewsService implements TravelService<NewsDTO, NewsLocalRequestDTO> 
         }
         Page<News> news_m = newsRepo.findAllByIsDeletedFalse(newsPage);
         log.debug("End NewsService.getAllPaged");
-        return modelsToDTOs(news_m.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(news_m), localization);
     }
 
     public NewsDTO getById(Long id, Localization localization) {

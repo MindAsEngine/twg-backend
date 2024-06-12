@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.locals.ResortLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.ResortLogicDTO;
 import org.mae.twg.backend.dto.travel.response.ResortDTO;
@@ -21,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Stream;
-
 
 @Service
 @RequiredArgsConstructor
@@ -47,17 +46,14 @@ public class ResortService implements TravelService<ResortDTO, ResortLocalDTO> {
         return resort;
     }
 
-    private List<ResortDTO> modelsToDTOs(Stream<Resort> resorts, Localization localization) {
+    private PageDTO<ResortDTO> modelsToDTOs(PageDTO<Resort> resorts, Localization localization) {
         log.debug("Start ResortService.modelsToDTOs");
-        List<ResortDTO> resortsDTOs = resorts
-                .filter(resort -> !resort.getIsDeleted())
-                .filter(resort -> resort.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(resort -> new ResortDTO(resort, localization))
-                .toList();
-        if (resortsDTOs.isEmpty()) {
+        if (resorts.isEmpty()) {
             log.error("Resorts with " + localization + " not found");
             throw new ObjectNotFoundException("Resorts with " + localization + " not found");
         }
+        PageDTO<ResortDTO> resortsDTOs = resorts
+                .apply(resort -> new ResortDTO(resort, localization));
         log.debug("End ResortService.modelsToDTOs");
         return resortsDTOs;
     }
@@ -69,7 +65,7 @@ public class ResortService implements TravelService<ResortDTO, ResortLocalDTO> {
 //        return modelsToDTOs(resorts.stream(), localization);
 //    }
 
-    public List<ResortDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<ResortDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start ResortService.getAllPaged");
         Pageable resortPage = null;
         if (page != null && size != null) {
@@ -77,18 +73,18 @@ public class ResortService implements TravelService<ResortDTO, ResortLocalDTO> {
         }
         Page<Resort> resorts = resortRepo.findAllByIsDeletedFalse(resortPage);
         log.debug("End ResortService.getAllPaged");
-        return modelsToDTOs(resorts.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(resorts), localization);
     }
 
-    public List<ResortDTO> getByFilters(List<Long> countryIds, Localization localization,
-                                       Integer page, Integer size) {
+    public PageDTO<ResortDTO> getByFilters(List<Long> countryIds, Localization localization,
+                                           Integer page, Integer size) {
         log.debug("Start ResortService.getByFilters");
         Pageable pageable = null;
         if (page != null && size != null) {
             pageable = PageRequest.of(page, size);
         }
         log.debug("End ResortService.getByFilters");
-        return modelsToDTOs(resortRepo.findAllByFilters(countryIds, pageable).stream(), localization);
+        return modelsToDTOs(new PageDTO<>(resortRepo.findAllByFilters(countryIds, pageable)), localization);
     }
 
     public ResortDTO getById(Long id, Localization local) {

@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.business;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.business.AgencyDTO;
 import org.mae.twg.backend.dto.business.AgencyRequestDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
@@ -19,10 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Stream;
-
 
 @Service
 @RequiredArgsConstructor
@@ -47,17 +44,14 @@ public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO>
         return agency;
     }
 
-    private List<AgencyDTO> modelsToDTOs(Stream<Agency> agencies, Localization localization) {
+    private PageDTO<AgencyDTO> modelsToDTOs(PageDTO<Agency> agencies, Localization localization) {
         log.debug("Start AgencyService.modelsToDTOs");
-        List<AgencyDTO> agencyDTOs = agencies
-                .filter(agency -> !agency.getIsDeleted())
-                 .filter(agency -> agency.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(tour -> new AgencyDTO(tour, localization))
-                .toList();
-        if (agencyDTOs.isEmpty()) {
+        if (agencies.isEmpty()) {
             log.error("Agencies with " + localization + " with localization not found");
             throw new ObjectNotFoundException("Agencies with " + localization + " with localization not found");
         }
+        PageDTO<AgencyDTO> agencyDTOs = agencies
+                .apply(tour -> new AgencyDTO(tour, localization));
         log.debug("End AgencyService.modelsToDTOs");
         return agencyDTOs;
     }
@@ -68,7 +62,7 @@ public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO>
 //    }
 
     @Override
-    public List<AgencyDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<AgencyDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start AgencyService.getAllPaged");
         Pageable agencyPage = null;
         if (page != null && size != null) {
@@ -76,7 +70,7 @@ public class AgencyService implements TravelService<AgencyDTO, AgencyRequestDTO>
         }
         Page<Agency> agencies = agencyRepo.findAllByIsDeletedFalse(agencyPage);
         log.debug("End AgencyService.getAllPaged");
-        return modelsToDTOs(agencies.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(agencies), localization);
     }
 
     public AgencyDTO getById(Long id, Localization local) {

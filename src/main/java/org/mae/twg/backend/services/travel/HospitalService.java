@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.GradeData;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.HospitalGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.HospitalLocalDTO;
@@ -28,7 +29,6 @@ import org.mae.twg.backend.utils.SlugUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,20 +117,18 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
         return hospitalDTO;
     }
 
-    private List<HospitalDTO> modelsToDTOs(Stream<Hospital> hospitals, Localization localization) {
+    private PageDTO<HospitalDTO> modelsToDTOs(PageDTO<Hospital> hospitals, Localization localization) {
         log.debug("Start HospitalService.modelsToDTOs");
-        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
-                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
-        List<HospitalDTO> hospitalDTOs = hospitals
-                .filter(hospital -> !hospital.getIsDeleted())
-                .filter(hospital -> hospital.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(hospital -> new HospitalDTO(hospital, localization))
-                .map(hospitalDTO -> addGrade(hospitalDTO, grades.getOrDefault(hospitalDTO.getId(), null)))
-                .toList();
-        if (hospitalDTOs.isEmpty()) {
+        if (hospitals.isEmpty()) {
             log.error("Hospitals with " + localization + " with localization not found");
             throw new ObjectNotFoundException("Hospitals with " + localization + " with localization not found");
         }
+        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
+                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
+        PageDTO<HospitalDTO> hospitalDTOs = hospitals
+                .apply(hospital -> new HospitalDTO(hospital, localization))
+                .apply(hospitalDTO -> addGrade(hospitalDTO,
+                        grades.getOrDefault(hospitalDTO.getId(), null)));
         log.debug("End HospitalService.modelsToDTOs");
         return hospitalDTOs;
     }
@@ -188,7 +186,7 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
         return new HospitalDTO(findById(id), local);
     }
 
-    public List<HospitalDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<HospitalDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start HospitalService.getAllPaged");
         Pageable hospitalPage = null;
         if (page != null && size != null) {
@@ -196,7 +194,7 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
         }
         Page<Hospital> hospitals = hospitalRepo.findAllByIsDeletedFalse(hospitalPage);
         log.debug("End HospitalService.getAllPaged");
-        return modelsToDTOs(hospitals.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(hospitals), localization);
     }
 
     public HospitalDTO getById(Long id, Localization localization) {
@@ -292,7 +290,7 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
         return new HospitalDTO(hospital, localization);
     }
 
-    public List<HospitalDTO> findByGeoData(Double minLongitude,
+    public PageDTO<HospitalDTO> findByGeoData(Double minLongitude,
                                         Double maxLongitude,
                                         Double minLatitude,
                                         Double maxLatitude,
@@ -300,12 +298,12 @@ public class HospitalService implements TravelService<HospitalDTO, HospitalLocal
                                         Integer page, Integer size) {
         log.debug("Start HotelService.findByGeoData");
 
-        return modelsToDTOs(
+        return modelsToDTOs(new PageDTO<>(
                 hospitalRepo.findByGeoData(
                         minLongitude,
                         maxLongitude,
                         minLatitude,
-                        maxLatitude, getPageable(page, size)).stream(), localization);
+                        maxLatitude, getPageable(page, size))), localization);
     }
 
     @Transactional
