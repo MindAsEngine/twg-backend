@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.locals.TagLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.TagLogicDTO;
 import org.mae.twg.backend.dto.travel.response.TagDTO;
@@ -18,10 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Stream;
-
 
 @Service
 @RequiredArgsConstructor
@@ -45,17 +42,14 @@ public class TagService implements TravelService<TagDTO, TagLocalDTO> {
         return tag;
     }
 
-    private List<TagDTO> modelsToDTOs(Stream<Tag> resorts, Localization localization) {
+    private PageDTO<TagDTO> modelsToDTOs(PageDTO<Tag> tags, Localization localization) {
         log.debug("Start TagService.modelsToDTOs");
-        List<TagDTO> tagDTOs = resorts
-                .filter(tag -> !tag.getIsDeleted())
-                .filter(tag -> tag.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(tag -> new TagDTO(tag, localization))
-                .toList();
-        if (tagDTOs.isEmpty()) {
+        if (tags.isEmpty()) {
             log.error("Tag with " + localization + " not found");
             throw new ObjectNotFoundException("Tag with " + localization + " not found");
         }
+        PageDTO<TagDTO> tagDTOs = tags
+                .apply(tag -> new TagDTO(tag, localization));
         log.debug("End TagService.modelsToDTOs");
         return tagDTOs;
     }
@@ -67,7 +61,7 @@ public class TagService implements TravelService<TagDTO, TagLocalDTO> {
 //        return modelsToDTOs(tags.stream(), localization);
 //    }
 
-    public List<TagDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<TagDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start TagService.getAllPaged");
         Pageable tagPage = null;
         if (page != null && size != null) {
@@ -75,7 +69,7 @@ public class TagService implements TravelService<TagDTO, TagLocalDTO> {
         }
         Page<Tag> tags = tagRepo.findAllByIsDeletedFalse(tagPage);
         log.debug("End TagService.getAllPaged");
-        return modelsToDTOs(tags.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(tags), localization);
     }
 
     public TagDTO getById(Long id, Localization local) {

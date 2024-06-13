@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.response.CountryDTO;
 import org.mae.twg.backend.dto.travel.request.geo.CountryGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.CountryLocalDTO;
@@ -25,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -50,17 +50,14 @@ public class CountryService implements TravelService<CountryDTO, CountryLocalDTO
         return country;
     }
 
-    private List<CountryDTO> modelsToDTOs(Stream<Country> hotels, Localization localization) {
+    private PageDTO<CountryDTO> modelsToDTOs(PageDTO<Country> countries, Localization localization) {
         log.debug("Start CountryService.modelsToDTOs");
-        List<CountryDTO> countryDTOS = hotels
-                .filter(country -> !country.getIsDeleted())
-                .filter(country -> country.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(country -> new CountryDTO(country, localization))
-                .toList();
-        if (countryDTOS.isEmpty()) {
+        if (countries.isEmpty()) {
             log.error("Countries with " + localization + " with localization not found");
             throw new ObjectNotFoundException("Countries with " + localization + " with localization not found");
         }
+        PageDTO<CountryDTO> countryDTOS = countries
+                .apply(country -> new CountryDTO(country, localization));
         log.debug("End CountryService.modelsToDTOs");
         return countryDTOS;
     }
@@ -114,7 +111,7 @@ public class CountryService implements TravelService<CountryDTO, CountryLocalDTO
 //        return modelsToDTOs(countries.stream(), localization);
 //    }
 
-    public List<CountryDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<CountryDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start CountryService.getAllPaged");
         Pageable countryPage = null;
         if (page != null && size != null) {
@@ -122,10 +119,10 @@ public class CountryService implements TravelService<CountryDTO, CountryLocalDTO
         }
         Page<Country> countries = countryRepo.findAllByIsDeletedFalse(countryPage);
         log.debug("End CountryService.getAllPaged");
-        return modelsToDTOs(countries.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(countries), localization);
     }
 
-    public List<CountryDTO> getByFilters(List<TourType> types, Localization localization,
+    public PageDTO<CountryDTO> getByFilters(List<TourType> types, Localization localization,
                                          Integer page, Integer size) {
         log.debug("Start CountryService.getByFilters");
         Pageable pageable = null;
@@ -133,8 +130,8 @@ public class CountryService implements TravelService<CountryDTO, CountryLocalDTO
             pageable = PageRequest.of(page, size);
         }
         log.debug("End CountryService.getByFilters");
-        return modelsToDTOs(countryRepo.findAllByTourType(
-                types.stream().map(TourType::name).toList(), pageable).stream(), localization);
+        return modelsToDTOs(new PageDTO<>(countryRepo.findAllByTourType(
+                types.stream().map(TourType::name).toList(), pageable)), localization);
     }
 
     @Transactional

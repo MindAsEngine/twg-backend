@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.travel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.response.PropertyDTO;
 import org.mae.twg.backend.dto.travel.request.locals.PropertyLocalDTO;
 import org.mae.twg.backend.exceptions.ObjectAlreadyExistsException;
@@ -17,9 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -43,17 +41,14 @@ public class PropertyService implements TravelService<PropertyDTO, PropertyLocal
         return property;
     }
 
-    private List<PropertyDTO> modelsToDTOs(Stream<Property> properties, Localization localization) {
+    private PageDTO<PropertyDTO> modelsToDTOs(PageDTO<Property> properties, Localization localization) {
         log.debug("Start PropertyService.modelsToDTOs");
-        List<PropertyDTO> propertyDTOs = properties
-                .filter(property -> !property.getIsDeleted())
-                .filter(property -> property.getLocalizations().stream().anyMatch(local -> local.getLocalization() == localization))
-                .map(property -> new PropertyDTO(property, localization))
-                .toList();
-        if (propertyDTOs.isEmpty()) {
+        if (properties.isEmpty()) {
             log.error("Properties with " + localization + " localization not found");
             throw new ObjectNotFoundException("Properties with " + localization + " localization not found");
         }
+        PageDTO<PropertyDTO> propertyDTOs = properties
+                .apply(property -> new PropertyDTO(property, localization));
         log.debug("End PropertyService.modelsToDTOs");
         return propertyDTOs;
     }
@@ -65,7 +60,7 @@ public class PropertyService implements TravelService<PropertyDTO, PropertyLocal
 //        return modelsToDTOs(properties.stream(), localization);
 //    }
 
-    public List<PropertyDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<PropertyDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start PropertyService.getAllPaged");
         Pageable propertyPage = null;
         if (page != null && size != null) {
@@ -73,7 +68,7 @@ public class PropertyService implements TravelService<PropertyDTO, PropertyLocal
         }
         Page<Property> properties = propertyRepo.findAllByIsDeletedFalse(propertyPage);
         log.debug("End PropertyService.getAllPaged");
-        return modelsToDTOs(properties.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(properties), localization);
     }
 
     @Transactional

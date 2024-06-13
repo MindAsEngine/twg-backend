@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.locals.ResortLocalDTO;
 import org.mae.twg.backend.dto.travel.request.logic.ResortLogicDTO;
 import org.mae.twg.backend.dto.travel.response.ResortDTO;
@@ -45,10 +45,10 @@ public class ResortController extends BaseController<ResortService, ResortDTO, R
 
     @GetMapping("/find/filters")
     @Operation(summary = "Получение курортов по фильтрам")
-    public ResponseEntity<List<ResortDTO>> getByFilters(@PathVariable Localization local,
-                                                        @RequestParam(required = false) List<Long> countryIds,
-                                                        @RequestParam(required = false) Integer page,
-                                                        @RequestParam(required = false) Integer size) {
+    public ResponseEntity<PageDTO<ResortDTO>> getByFilters(@PathVariable Localization local,
+                                                           @RequestParam(required = false) List<Long> countryIds,
+                                                           @RequestParam(required = false) Integer page,
+                                                           @RequestParam(required = false) Integer size) {
         validatePageable(page, size);
         if (countryIds == null) {
             log.warn("countryIds is empty");

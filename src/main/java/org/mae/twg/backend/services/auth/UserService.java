@@ -9,11 +9,14 @@ import org.mae.twg.backend.dto.profile.TelegramDataDTO;
 import org.mae.twg.backend.dto.profile.UserDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
+import org.mae.twg.backend.exceptions.TokenValidationException;
 import org.mae.twg.backend.exceptions.UserNotFound;
+import org.mae.twg.backend.models.auth.BotLink;
 import org.mae.twg.backend.models.auth.User;
 import org.mae.twg.backend.models.auth.UserRole;
 import org.mae.twg.backend.models.travel.Tour;
 import org.mae.twg.backend.models.travel.enums.Localization;
+import org.mae.twg.backend.repositories.auth.BotLinkRepo;
 import org.mae.twg.backend.repositories.business.UserRepo;
 import org.mae.twg.backend.services.ImageService;
 import org.mae.twg.backend.services.ModelType;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +42,7 @@ public class UserService implements UserDetailsService{
     private final UserRepo userRepo;
     private final ImageService imageService;
     private final TourService tourService;
+    private final BotLinkRepo botLinkRepo;
 
     /**
      * Сохранение пользователя
@@ -87,9 +92,16 @@ public class UserService implements UserDetailsService{
 
     public void setTelegramId(TelegramDataDTO telegramDataDTO) {
         log.debug("Start UserService.setTelegramId");
-        User user = findByUsername(telegramDataDTO.getUsername());
-        user.setTelegramId(telegramDataDTO.getTelegramId());
-        userRepo.saveAndFlush(user);
+        Optional<BotLink> linkOptional = botLinkRepo.findById(telegramDataDTO.getUuid());
+        if (linkOptional.isPresent()) {
+            User user = linkOptional.get().getUser();
+            userRepo.saveAndFlush(user);
+            user.setTelegramId(telegramDataDTO.getTelegramId());
+            botLinkRepo.delete(linkOptional.get());
+        } else {
+            log.error("BotLink with UUID " + telegramDataDTO.getUuid() + " not found");
+            throw new TokenValidationException("Auth link not found");
+        }
         log.debug("End UserService.setTelegramId");
     }
 

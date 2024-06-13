@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.business.TourReqResponseDTO;
 import org.mae.twg.backend.dto.business.TourRequestDTO;
 import org.mae.twg.backend.models.travel.enums.Localization;
@@ -15,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/business/requests/tour/{local}")
@@ -41,10 +40,6 @@ public class TourRequestController {
     public ResponseEntity<TourReqResponseDTO> addRequest(@PathVariable Localization local,
                                                          @RequestBody TourRequestDTO tourRequestDTO)  {
         log.info("Добавить заявку на тур с id: " + tourRequestDTO.getTourId());
-        if (tourRequestDTO == null) {
-            log.warn("Заявка на тур пустая");
-            throw new ValidationException("Заявка пустая");
-        }
         return ResponseEntity.ok(tourRequestService.addRequest(tourRequestDTO, local));
     }
 
@@ -53,10 +48,10 @@ public class TourRequestController {
     @Operation(summary = "Отдать все заявки агентству",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<List<TourReqResponseDTO>> getRequests(@PathVariable Localization local,
-                                                                @RequestParam (required = false) Long agencyId,
-                                                                @RequestParam(required = false) Integer page,
-                                                                @RequestParam(required = false) Integer size)  {
+    public ResponseEntity<PageDTO<TourReqResponseDTO>> getRequests(@PathVariable Localization local,
+                                                                   @RequestParam (required = false) Long agencyId,
+                                                                   @RequestParam(required = false) Integer page,
+                                                                   @RequestParam(required = false) Integer size)  {
         log.info("Отдать все заявки по агентству");
         validatePageable(page, size);
         return ResponseEntity.ok(tourRequestService.getPool(agencyId, local, page, size));
@@ -67,7 +62,7 @@ public class TourRequestController {
     @Operation(summary = "Отдать все заявки авторизованного пользователя",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<List<TourReqResponseDTO>> getRequestsByUser(@PathVariable Localization local,
+    public ResponseEntity<PageDTO<TourReqResponseDTO>> getRequestsByUser(@PathVariable Localization local,
                                                                       @RequestParam (required = false, defaultValue = "false") Boolean isAgent,
                                                                       @RequestParam (required = false, defaultValue = "false") Boolean isClosed,
                                                                       @RequestParam(required = false) Integer page,

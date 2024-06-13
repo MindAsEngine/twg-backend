@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.dto.GradeData;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.TourLocalDTO;
@@ -133,6 +134,21 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         return tourDTOs;
     }
 
+    public PageDTO<TourDTO> modelsToDTOs(PageDTO<Tour> tours, Localization localization) {
+        log.debug("Start TourService.modelsToAdminDTOs");
+        if (tours.isEmpty()) {
+            log.error("Tours with " + localization + " with localization not found");
+            throw new ObjectNotFoundException("Tours with " + localization + " with localization not found");
+        }
+        Map<Long, GradeData> grades = commentsRepo.allAverageGrades()
+                .stream().collect(Collectors.toMap(GradeData::getId, Function.identity()));
+        PageDTO<TourDTO> tourDTOs = tours
+                .apply(tour -> new TourDTO(tour, localization))
+                .apply(tourDTO -> addGrade(tourDTO, grades.getOrDefault(tourDTO.getId(), null)));
+        log.debug("End TourService.modelsToAdminDTOs");
+        return tourDTOs;
+    }
+
 
     public Pageable getPageable(Integer page, Integer size) {
         log.debug("Start TourService.getPageable");
@@ -144,15 +160,15 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         return null;
     }
 
-    public List<TourDTO> findByTitle(String title,
+    public PageDTO<TourDTO> findByTitle(String title,
                                      Localization localization,
                                      Integer page, Integer size) {
         log.debug("Start TourService.findByTitle");
-        return modelsToDTOs(tourRepo.findByTitle(localization.name(), title,
-                getPageable(page, size)).stream(), localization);
+        return modelsToDTOs(new PageDTO<>(tourRepo.findByTitle(localization.name(), title,
+                getPageable(page, size))), localization);
     }
 
-    public List<TourDTO> findByFilters(List<Long> countryIds,
+    public PageDTO<TourDTO> findByFilters(List<Long> countryIds,
                                        List<Long> tagIds,
                                        List<Long> hospitalId,
                                        List<Long> hotelIds,
@@ -166,7 +182,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                                        Localization localization,
                                        Integer page, Integer size) {
         log.debug("Start TourService.findByFilters");
-        return modelsToDTOs(tourRepo.findFilteredFours(
+        return modelsToDTOs(new PageDTO<>(tourRepo.findFilteredFours(
                 localization.name(),
                 countryIds, tagIds, hospitalId, hotelIds,
                 types.stream().map(TourType::name).toList(),
@@ -174,7 +190,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                 minCost, maxCost,
                 stars.stream().map(Stars::name).toList(),
                 resortIds,
-                getPageable(page, size)).stream(), localization);
+                getPageable(page, size))), localization);
     }
 
     @Transactional
@@ -230,7 +246,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
 //        return modelsToDTOs(tours.stream(), localization);
 //    }
 
-    public List<TourDTO> getAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<TourDTO> getAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start TourService.getAllPaged");
         Pageable toursPage = null;
         if (page != null && size != null) {
@@ -238,10 +254,10 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         }
         Page<Tour> tours = tourRepo.findAllActiveByLocal(localization.name(), toursPage);
         log.debug("End TourService.getAllPaged");
-        return modelsToDTOs(tours.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(tours), localization);
     }
 
-    public List<TourDTO> getAdminAllPaged(Localization localization, Integer page, Integer size) {
+    public PageDTO<TourDTO> getAdminAllPaged(Localization localization, Integer page, Integer size) {
         log.debug("Start TourService.getAdminAllPaged");
         Pageable toursPage = null;
         if (page != null && size != null) {
@@ -249,7 +265,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         }
         Page<Tour> tours = tourRepo.findAllByLocal(localization.name(), toursPage);
         log.debug("End TourService.getAdminAllPaged");
-        return modelsToDTOs(tours.stream(), localization);
+        return modelsToDTOs(new PageDTO<>(tours), localization);
     }
 
     public TourDTO getById(Long id, Localization localization) {
@@ -396,7 +412,7 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
         return new TourDTO(tour, localization);
     }
 
-    public List<TourDTO> findByGeoData(Double minLongitude,
+    public PageDTO<TourDTO> findByGeoData(Double minLongitude,
                                        Double maxLongitude,
                                        Double minLatitude,
                                        Double maxLatitude,
@@ -404,13 +420,12 @@ public class TourService implements TravelService<TourDTO, TourLocalDTO> {
                                        Integer page, Integer size) {
         log.debug("Start TourService.findByGeoData");
 
-        return modelsToDTOs(
+        return modelsToDTOs(new PageDTO<>(
                 tourRepo.findToursByGeoData(
                         localization.name(),
-                        minLongitude,
-                        maxLongitude,
-                        minLatitude,
-                        maxLatitude, getPageable(page, size)).stream(), localization);
+                        minLongitude, maxLongitude,
+                        minLatitude, maxLatitude,
+                        getPageable(page, size))), localization);
     }
 
     @Transactional

@@ -2,6 +2,7 @@ package org.mae.twg.backend.services.business;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.business.TourReqResponseDTO;
 import org.mae.twg.backend.dto.business.TourRequestDTO;
 import org.mae.twg.backend.exceptions.ObjectNotFoundException;
@@ -21,9 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -46,11 +44,10 @@ public class TourRequestService {
         return tourRequest;
     }
 
-    private List<TourReqResponseDTO> modelsToDTOs(Stream<TourRequest> tourRequests, Localization localization) {
+    private PageDTO<TourReqResponseDTO> modelsToDTOs(PageDTO<TourRequest> tourRequests, Localization localization) {
         log.debug("Start TourRequestService.modelsToDTOs");
         return tourRequests
-                .map(tourRequest -> new TourReqResponseDTO(tourRequest, localization))
-                .collect(Collectors.toList());
+                .apply(tourRequest -> new TourReqResponseDTO(tourRequest, localization));
     }
 
     @Transactional
@@ -68,7 +65,7 @@ public class TourRequestService {
     }
 
 
-    public List<TourReqResponseDTO> getUsersRequest(String username,
+    public PageDTO<TourReqResponseDTO> getUsersRequest(String username,
                                                     Boolean isAgent,
                                                     Boolean isClosed,
                                                     Localization localization,
@@ -82,21 +79,21 @@ public class TourRequestService {
         if (isAgent) {
             log.debug("End TourRequestService.getUsersRequest");
             if (isClosed) {
-                return modelsToDTOs(tourRequestRepo.findClosedByAgent(username, pageable).stream(), localization);
+                return modelsToDTOs(new PageDTO<>(tourRequestRepo.findClosedByAgent(username, pageable)), localization);
             }
-            return modelsToDTOs(tourRequestRepo.findOpenByAgent(username, pageable).stream(), localization);
+            return modelsToDTOs(new PageDTO<>(tourRequestRepo.findOpenByAgent(username, pageable)), localization);
         }
         log.debug("End TourRequestService.getUsersRequest");
         if (isClosed) {
-            return modelsToDTOs(tourRequestRepo.findClosedByUser(username, pageable).stream(), localization);
+            return modelsToDTOs(new PageDTO<>(tourRequestRepo.findClosedByUser(username, pageable)), localization);
         }
-        return modelsToDTOs(tourRequestRepo.findOpenByUser(username, pageable).stream(), localization);
+        return modelsToDTOs(new PageDTO<>(tourRequestRepo.findOpenByUser(username, pageable)), localization);
     }
 
-    public List<TourReqResponseDTO> getPool(Long agencyId,
-                                            Localization localization,
-                                            Integer page,
-                                            Integer size) {
+    public PageDTO<TourReqResponseDTO> getPool(Long agencyId,
+                                               Localization localization,
+                                               Integer page,
+                                               Integer size) {
         log.debug("Start TourRequestService.getPool");
         Pageable pageable = null;
         if (page != null && size != null) {
@@ -104,10 +101,10 @@ public class TourRequestService {
         }
         if (agencyId != null) {
             log.debug("End TourRequestService.getPool");
-            return modelsToDTOs(tourRequestRepo.findOpenByAgency(agencyId, pageable).stream(), localization);
+            return modelsToDTOs(new PageDTO<>(tourRequestRepo.findOpenByAgency(agencyId, pageable)), localization);
         }
         log.debug("End TourRequestService.getPool");
-        return modelsToDTOs(tourRequestRepo.findOpen(pageable).stream(), localization);
+        return modelsToDTOs(new PageDTO<>(tourRequestRepo.findOpen(pageable)), localization);
     }
 
     public TourReqResponseDTO setAgent(Long requestId, Localization localization) {

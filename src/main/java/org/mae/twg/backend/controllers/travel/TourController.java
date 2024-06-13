@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.CommentDTO;
 import org.mae.twg.backend.dto.travel.response.TourDTO;
 import org.mae.twg.backend.dto.travel.request.geo.TourGeoDTO;
@@ -48,9 +49,9 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
     @PreAuthorize("@AuthService.hasAccess(@UserRole.TWG_ADMIN)")
-    public ResponseEntity<List<TourDTO>> getAllTours(@PathVariable Localization local,
-                                                     @RequestParam(required = false) Integer page,
-                                                     @RequestParam(required = false) Integer size) {
+    public ResponseEntity<PageDTO<TourDTO>> getAllTours(@PathVariable Localization local,
+                                                        @RequestParam(required = false) Integer page,
+                                                        @RequestParam(required = false) Integer size) {
         validatePageable(page, size);
         log.info("Все туры");
         return ResponseEntity.ok(getService().getAdminAllPaged(local, page, size));
@@ -58,7 +59,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
 
     @GetMapping("/find/title")
     @Operation(summary = "Туры по фильтрам")
-    public ResponseEntity<List<TourDTO>> findByTitle(@PathVariable Localization local,
+    public ResponseEntity<PageDTO<TourDTO>> findByTitle(@PathVariable Localization local,
                                                      @RequestParam(required = false) Integer page,
                                                      @RequestParam(required = false) Integer size,
                                                      @RequestParam(required = false) String title) {
@@ -69,7 +70,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
 
     @GetMapping("/find/filters")
     @Operation(summary = "Туры по координатам")
-    public ResponseEntity<List<TourDTO>> findByFilters(@PathVariable Localization local,
+    public ResponseEntity<PageDTO<TourDTO>> findByFilters(@PathVariable Localization local,
                                                        @RequestParam(required = false) Integer page,
                                                        @RequestParam(required = false) Integer size,
                                                        @RequestParam(required = false) List<Long> countryIds,
@@ -126,7 +127,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
     @Operation(summary = "Добавить обложку",
             parameters = @Parameter(in = ParameterIn.HEADER, name = "Authorization", description = "JWT токен", required = true, example = "Bearer <token>")
     )
-    public ResponseEntity<?> uploadImage(@PathVariable Localization local,
+    public ResponseEntity<TourDTO> uploadImage(@PathVariable Localization local,
                                          @PathVariable Long id,
                                          MultipartFile image) throws IOException {
         log.info("Добавление обложки к отелю");
@@ -197,7 +198,7 @@ public class TourController extends BaseController<TourService, TourDTO, TourLoc
 
     @GetMapping("/find/geo")
     @Operation(summary = "Туры по координатам")
-    public ResponseEntity<List<TourDTO>> findByGeo(@PathVariable Localization local,
+    public ResponseEntity<PageDTO<TourDTO>> findByGeo(@PathVariable Localization local,
                                                    @RequestParam(required = false) Integer page,
                                                    @RequestParam(required = false) Integer size,
                                                    @RequestParam Double minLongitude,

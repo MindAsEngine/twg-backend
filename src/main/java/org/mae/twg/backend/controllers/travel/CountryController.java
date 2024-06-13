@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import org.mae.twg.backend.controllers.BaseController;
+import org.mae.twg.backend.dto.PageDTO;
 import org.mae.twg.backend.dto.travel.request.geo.CountryGeoDTO;
 import org.mae.twg.backend.dto.travel.request.locals.CountryLocalDTO;
 import org.mae.twg.backend.dto.travel.response.CountryDTO;
@@ -39,10 +40,10 @@ public class CountryController extends BaseController<CountryService, CountryDTO
 
     @GetMapping("/find/filters")
     @Operation(summary = "Получение стран по фильтрам")
-    public ResponseEntity<List<CountryDTO>> getByFilters(@PathVariable Localization local,
-                                                         @RequestParam(required = false) List<TourType> tourTypes,
-                                                         @RequestParam(required = false) Integer page,
-                                                         @RequestParam(required = false) Integer size) {
+    public ResponseEntity<PageDTO<CountryDTO>> getByFilters(@PathVariable Localization local,
+                                                            @RequestParam(required = false) List<TourType> tourTypes,
+                                                            @RequestParam(required = false) Integer page,
+                                                            @RequestParam(required = false) Integer size) {
         validatePageable(page, size);
         if (tourTypes == null) {
             log.warn("tourTypes is empty");
