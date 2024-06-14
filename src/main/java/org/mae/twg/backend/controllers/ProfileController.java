@@ -49,6 +49,7 @@ public class ProfileController {
                     example = "Bearer <token>")
     )
     @GetMapping("/me")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     public ResponseEntity<UserDTO> currentUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDTO userDTO = new UserDTO((User) authentication.getPrincipal());
@@ -66,6 +67,7 @@ public class ProfileController {
                     example = "Bearer <token>")
     )
     @PostMapping("/password/check")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     public ResponseEntity<String> checkPassword(@RequestBody PasswordDTO passwordDTO) {
         log.info("Проверка пароля");
         authService.checkPassword(passwordDTO);
@@ -82,6 +84,7 @@ public class ProfileController {
                     example = "Bearer <token>")
     )
     @PostMapping("/password/update")
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     public ResponseEntity<String> updatePassword(@RequestBody PasswordDTO passwordDTO) {
         log.info("Обновление пароля");
         authService.updatePassword(passwordDTO);
@@ -153,6 +156,7 @@ public class ProfileController {
                     required = true,
                     example = "Bearer <token>")
     )
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     public ResponseEntity<List<TourDTO>> getFavourites(@PathVariable Localization local) {
         log.info("Получение избранных туров");
         return ResponseEntity.ok(userService.getFavouriteTours(local));
@@ -167,6 +171,7 @@ public class ProfileController {
                     required = true,
                     example = "Bearer <token>")
     )
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     public ResponseEntity<String> addToFavourites(@RequestBody FavouriteTourDTO tourDTO) {
         log.info("Добавление тура в избранное");
         userService.addTourToFavourite(tourDTO);
@@ -182,6 +187,7 @@ public class ProfileController {
                     required = true,
                     example = "Bearer <token>")
     )
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     public ResponseEntity<String> deleteFromFavourites(@PathVariable Long tourId) {
         log.info("Удаление тура из избранного");
         userService.deleteTourFromFavourite(tourId);
@@ -197,6 +203,7 @@ public class ProfileController {
                     required = true,
                     example = "Bearer <token>")
     )
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     public ResponseEntity<Boolean> checkInFavourites(@RequestParam Long tourId) {
         log.info("Проверка тура в избранном");
         return ResponseEntity.ok(userService.checkInFavourite(tourId));
@@ -211,6 +218,7 @@ public class ProfileController {
                     required = true,
                     example = "Bearer <token>")
     )
+    @PreAuthorize("@AuthService.hasAccess(@UserRole.USER)")
     public ResponseEntity<String> getBotIntegrationUrl() {
         log.info("Получение ссылки для привязки телеграма");
         return ResponseEntity.ok(botUtils.getBotIntegrationUrl());
